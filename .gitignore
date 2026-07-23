@@ -1,0 +1,26 @@
+# Node and package-manager output
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Framework and deployment output
+.next/
+dist/
+.wrangler/
+.vinext/
+
+# Generated from repository Markdown
+app/generated-content.ts
+
+# Local runtime configuration
+.env
+.env.*
+!.env.example
+
+# Editors and operating systems
+.DS_Store
+*.swp
+*.swo
+*~

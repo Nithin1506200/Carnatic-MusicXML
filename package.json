@@ -1,0 +1,54 @@
+{
+  "name": "swara-adhyaaya",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "content": "node scripts/generate-content.mjs",
+    "predev": "npm run content",
+    "dev": "vinext dev",
+    "prebuild": "npm run content",
+    "build": "vinext build",
+    "start": "vinext start",
+    "format": "prettier --write \"README.md\" \"AGENTS.md\" \"docs/**/*.{md,mdx}\" \"scores/**/*.{md,mdx}\" && node scripts/format-notation-text.mjs",
+    "format:check": "prettier --check \"README.md\" \"AGENTS.md\" \"docs/**/*.{md,mdx}\" \"scores/**/*.{md,mdx}\" && node scripts/format-notation-text.mjs --check",
+    "format:md": "prettier --write \"README.md\" \"AGENTS.md\" \"docs/**/*.md\" \"scores/**/*.md\"",
+    "format:md:check": "prettier --check \"README.md\" \"AGENTS.md\" \"docs/**/*.md\" \"scores/**/*.md\"",
+    "format:mdx": "prettier --write \"scores/**/*.mdx\" && node scripts/format-notation-text.mjs",
+    "format:mdx:check": "prettier --check \"scores/**/*.mdx\" && node scripts/format-notation-text.mjs --check",
+    "prelint": "npm run content",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@mdx-js/mdx": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@mdx-js/rollup": "^3.1.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "0.31.10",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "prettier": "^3.9.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module"
+}

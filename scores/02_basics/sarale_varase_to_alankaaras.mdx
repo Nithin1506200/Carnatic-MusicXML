@@ -1,0 +1,569 @@
+# Swara Adhyaaya
+
+```yaml
+title: Swara Adhyaaya
+category: basics
+form: swara exercises
+language: Not applicable
+composer: Traditional
+raga: Mayamalavagowla
+raga_type: Melakarta
+melakarta_number: 15
+arohana: S R1 G3 M1 P D1 N3 S
+avarohana: S N3 D1 P M1 G3 R1 S
+tala: Aadi for varases; Saptasulaadi talas for alankaaras
+```
+
+import {
+  parseNotationText,
+  SwaraGrid,
+} from "../../components/score-notation.mjs";
+
+export const notation = parseNotationText(/* prettier-ignore */ `
+# Varase 1 [swaras]
+S R G M | P D | N Ṡ ||
+Ṡ N D P | M G | R S ||
+
+# Varase 2 [swaras]
+
+S R G M | S R | G M ||
+S R G M | P D | N Ṡ ||
+Ṡ N D P | Ṡ N | D P ||
+Ṡ N D P | M G | R S ||
+
+# Varase 3 [swaras]
+
+S R G M | S R | S R ||
+S R G M | P D | N Ṡ ||
+Ṡ N D P | Ṡ N | Ṡ N ||
+Ṡ N D P | M G | R S ||
+
+# Varase 4 [swaras]
+
+S R G S | R G | S R ||
+S R G M | P D | N Ṡ ||
+Ṡ N D Ṡ | N D | Ṡ N ||
+Ṡ N D P | M G | R S ||
+
+# Varase 5 [swaras]
+
+S R G M | P - | S R ||
+S R G M | P D | N Ṡ ||
+Ṡ N D P | M - | Ṡ N ||
+Ṡ N D P | M G | R S ||
+
+# Varase 6 [swaras]
+
+S R G M | P M | G R ||
+S R G M | P D | N Ṡ ||
+Ṡ N D P | M P | D N ||
+Ṡ N D P | M G | R S ||
+
+# Varase 7 [swaras]
+
+S R G M | P M | D P ||
+S R G M | P D | N Ṡ ||
+Ṡ N D P | M P | G M ||
+Ṡ N D P | M G | R S ||
+
+# Varase 8 [swaras]
+
+S R G M | P M | D P ||
+Ṡ N Ṙ Ṡ | Ṡ N | D P ||
+D N Ṡ Ṙ | Ṡ N | D P ||
+Ṡ N D P | M G | R S ||
+
+# Taarasthayee Varase 1 [swaras]
+
+S R G M | P D | N Ṡ ||
+Ṡ - - - | Ṡ - | Ṡ - ||
+D N Ṡ Ṙ | Ṡ N | D P ||
+Ṡ N D P | M G | R S ||
+
+# Taarasthayee Varase 2 [swaras]
+
+S R G M | P D | N Ṡ ||
+Ṡ - - - | Ṡ - | Ṡ - ||
+D N Ṡ Ṙ | Ṡ Ṡ | Ṙ Ṡ ||
+Ṡ Ṙ Ṡ N | D P | M P ||
+D N Ṡ Ṙ | Ṡ N | D P ||
+Ṡ N D P | M G | R S ||
+
+# Taarasthayee Varase 3 [swaras]
+
+S R G M | P D | N Ṡ ||
+Ṡ - - - | Ṡ - | Ṡ - ||
+D N Ṡ Ṙ | Ġ Ṙ | Ṡ Ṙ ||
+Ṡ Ṙ Ṡ N | D P | M P ||
+D N Ṡ Ṙ | Ṡ Ṡ | Ṙ Ṡ ||
+Ṡ Ṙ Ṡ N | D P | M P ||
+D N Ṡ Ṙ | Ṡ N | D P ||
+Ṡ N D P | M G | R S ||
+
+# Taarasthayee Varase 4 [swaras]
+
+S R G M | P D | N Ṡ ||
+Ṡ - - - | Ṡ - | Ṡ - ||
+D N Ṡ Ṙ | Ġ Ṁ | Ġ Ṙ ||
+Ṡ Ṙ Ṡ N | D P | M P ||
+D N Ṡ Ṙ | Ġ Ṙ | Ṡ Ṙ ||
+Ṡ Ṙ Ṡ N | D P | M P ||
+D N Ṡ Ṙ | Ṡ Ṡ | Ṙ Ṡ ||
+Ṡ Ṙ Ṡ N | D P | M P ||
+D N Ṡ Ṙ | Ṡ N | D P ||
+Ṡ N D P | M G | R S ||
+
+# Mandrasthayee Varase 1 [swaras]
+
+Ṡ N D P | M G | R S ||
+S - - - | S - | S - ||
+G R S Ṇ | S R | G M ||
+S R G M | P D | N Ṡ ||
+
+# Mandrasthayee Varase 2 [swaras]
+
+Ṡ N D P | M G | R S ||
+S - - - | S - | S - ||
+G R S Ṇ | S S | Ṇ S ||
+S Ṇ S R | G M | P M ||
+G R S Ṇ | S R | G M ||
+S R G M | P D | N Ṡ ||
+
+# Mandrasthayee Varase 3 [swaras]
+
+Ṡ N D P | M G | R S ||
+S - - - | S - | S - ||
+G R S Ṇ | Ḍ Ṇ | S Ṇ ||
+S Ṇ S R | G M | P M ||
+G R S Ṇ | S S | Ṇ S ||
+S Ṇ S R | G M | P M ||
+G R S Ṇ | S R | G M ||
+S R G M | P D | N Ṡ ||
+
+# Mandrasthayee Varase 4 [swaras]
+
+Ṡ N D P | M G | R S ||
+S - - - | S - | S - ||
+G R S Ṇ | Ḍ P̣ | Ḍ Ṇ ||
+S Ṇ S R | G M | P M ||
+G R S Ṇ | Ḍ Ṇ | S Ṇ ||
+S Ṇ S R | G M | P M ||
+G R S Ṇ | S S | Ṇ S ||
+S Ṇ S R | G M | P M ||
+G R S Ṇ | S R | G M ||
+S R G M | P D | N Ṡ ||
+
+# Daatu Varase 1 [swaras]
+
+S G R M | S M | G R ||
+S M G M | P N | D Ṡ ||
+Ṡ D N P | Ṡ P | D N ||
+Ṡ P D P | M R | G S ||
+
+# Daatu Varase 2 [swaras]
+
+S G R M | R M | G P ||
+G P M D | P N | D Ṡ ||
+Ṡ D N P | N P | D M ||
+D M P G | M R | G S ||
+
+# Daatu Varase 3 [swaras]
+
+S P M G | S M | G R ||
+G P M D | P N | D Ṡ ||
+Ṡ M P D | Ṡ P | D N ||
+D M P G | M R | G S ||
+
+# Daatu Varase 4 [swaras]
+
+S M G M | G P | M P ||
+M N D N | P Ṡ | N Ṡ ||
+Ṡ P D P | D M | P M ||
+P R G R | M S | R S ||
+
+# Janti Varase 1 [swaras]
+
+S S R R G G M M | P P D D | N N Ṡ Ṡ ||
+Ṡ Ṡ N N D D P P | M M G G | R R S S ||
+
+# Janti Varase 2 [swaras]
+
+S S R R G G M M | R R G G | M M P P ||
+G G M M P P D D | M M P P | D D N N ||
+P P D D N N Ṡ Ṡ | Ṡ Ṡ N N | D D P P ||
+N N D D P P M M | D D P P | M M G G ||
+P P M M G G R R | M M G G | R R S S ||
+
+# Janti Varase 3 [swaras]
+
+S S R R G G R R | S S R R | G G M M ||
+R R G G M M G G | R R G G | M M P P ||
+G G M M P P M M | G G M M | P P D D ||
+M M P P D D P P | M M P P | D D N N ||
+P P D D N N D D | P P D D | N N Ṡ Ṡ ||
+Ṡ Ṡ N N D D N N | Ṡ Ṡ N N | D D P P ||
+N N D D P P D D | N N D D | P P M M ||
+D D P P M M P P | D D P P | M M G G ||
+P P M M G G M M | P P M M | G G R R ||
+M M G G R R G G | M M G G | R R S S ||
+
+# Janti Varase 4 [swaras]
+
+S S R S S R S R | S S R R | G G M M ||
+R R G R R G R G | R R G G | M M P P ||
+G G M G G M G M | G G M M | P P D D ||
+M M P M M P M P | M M P P | D D N N ||
+P P D P P D P D | P P D D | N N Ṡ Ṡ ||
+Ṡ Ṡ N Ṡ Ṡ N Ṡ N | Ṡ Ṡ N N | D D P P ||
+N N D N N D N D | N N D D | P P M M ||
+D D P D D P D P | D D P P | M M G G ||
+P P M P P M P M | P P M M | G G R R ||
+M M G M M G M G | M M G G | R R S S ||
+
+# Janti Varase 5 [swaras]
+
+S S R R G S R G | S S R R | G G M M ||
+R R G G M R G M | R R G G | M M P P ||
+G G M M P G M P | G G M M | P P D D ||
+M M P P D M P D | M M P P | D D N N ||
+P P D D N P D N | P P D D | N N Ṡ Ṡ ||
+Ṡ Ṡ N N D Ṡ N D | Ṡ Ṡ N N | D D P P ||
+N N D D P N D P | N N D D | P P M M ||
+D D P P M D P M | D D P P | M M G G ||
+P P M M G P M G | P P M M | G G R R ||
+M M G G R M G R | M M G G | R R S S ||
+
+# Janti Varase 6 [swaras]
+
+S S R G S R G R | S S R R | G G M M ||
+R R G M R G M G | R R G G | M M P P ||
+G G M M G M P M | G G M M | P P D D ||
+M M P D M P D P | M M P P | D D N N ||
+P P D N P D N D | P P D D | N N Ṡ Ṡ ||
+Ṡ Ṡ N D Ṡ N D N | Ṡ Ṡ N N | D D P P ||
+N N D P N D P D | N N D D | P P M M ||
+D D P M D P M P | D D P P | M M G G ||
+P P M G P M G M | P P M M | G G R R ||
+M M G R M G R G | M M G G | R R S S ||
+
+# Janti Varase 7 [swaras]
+
+M M G G R R G G | S S R R | G G M M ||
+P P M M G G M M | R R G G | M M P P ||
+D D P P M M P P | G G M M | P P D D ||
+N N D D P P D D | M M P P | D D N N ||
+Ṡ Ṡ N N D D N N | P P D D | N N Ṡ Ṡ ||
+P P D D N N D D | Ṡ Ṡ N N | D D P P ||
+M M P P D D P P | N N D D | P P M M ||
+G G M M P P M M | D D P P | M M G G ||
+R R G G M M G G | P P M M | G G R R ||
+S S R R G G R R | M M G G | R R S S ||
+
+# 1. Chuturashra Jaathi Dhruva Taala [swaras]
+
+S R G M | G R | S R G R | S R G M ||
+R G M P | M G | R G M G | R G M P ||
+G M P D | P M | G M P M | G M P D ||
+M P D N | D P | M P D P | M P D N ||
+P D N Ṡ | N D | P D N D | P D N Ṡ ||
+Ṡ N D P | D N | Ṡ N D N | Ṡ N D P ||
+N D P M | P D | N D P D | N D P M ||
+D P M G | M P | D P M P | D P M G ||
+P M G R | G M | P M G M | P M G R ||
+M G R S | R G | M G R G | M G R S ||
+
+# 2. Chuturashra Jaathi Matya Taala [swaras]
+
+S R G R | S R | S R G M ||
+R G M G | R G | R G M P ||
+G M P M | G M | G M P D ||
+M P D P | M P | M P D N ||
+P D N D | P D | P D N Ṡ ||
+Ṡ N D N | Ṡ N | Ṡ N D P ||
+N D P D | N D | N D P M ||
+D P M P | D P | D P M G ||
+P M G M | P M | P M G R ||
+M G R G | M G | M G R S ||
+
+# 3. Chuturashra Jaathi Roopaka Taala [swaras]
+
+S R | S R G M ||
+R G | R G M P ||
+G M | G M P D ||
+M P | M P D N ||
+P D | P D N Ṡ ||
+Ṡ N | Ṡ N D P ||
+N D | N D P M ||
+D P | D P M G ||
+P M | P M G R ||
+M G | M G R S ||
+
+# 4. Mishra Jaathi Jampe Taala [swaras]
+
+S R G S R S R | G | M - ||
+R G M R G R G | M | P - ||
+G M P G M G M | P | D - ||
+M P D M P M P | D | N - ||
+P D N P D P D | N | Ṡ - ||
+Ṡ N D Ṡ N Ṡ N | D | P - ||
+N D P N D N D | P | M - ||
+D P M D P D P | M | G - ||
+P M G P M P M | G | R - ||
+M G R M G M G | R | S - ||
+
+# 5. Trishra Jaathi Tiruputa Taala [swaras]
+
+S R G | S R | G M ||
+R G M | R G | M P ||
+G M P | G M | P D ||
+M P D | M P | D N ||
+P D N | P D | N Ṡ ||
+Ṡ N D | Ṡ N | D P ||
+N D P | N D | P M ||
+D P M | D P | M G ||
+P M G | P M | G R ||
+M G R | M G | R S ||
+
+# 6. Khanda Jaathi Atta Taala [swaras]
+
+S R - G - | S - R G - | M - | M - ||
+R G - M - | R - G M - | P - | P - ||
+G M - P - | G - M P - | D - | D - ||
+M P - D - | M - P D - | N - | N - ||
+P D - N - | P - D N - | Ṡ - | Ṡ - ||
+Ṡ N - D - | Ṡ - N D - | P - | P - ||
+N D - P - | N - D P - | M - | M - ||
+D P - M - | D - P M - | G - | G - ||
+P M - G - | P - M G - | R - | R - ||
+M G - R - | M - G R - | S - | S - ||
+
+# 7. Chuturashra Jaathi Eka Taala [swaras]
+
+S R G M ||
+R G M P ||
+G M P D ||
+M P D N ||
+P D N Ṡ ||
+Ṡ N D P ||
+N D P M ||
+D P M G ||
+P M G R ||
+M G R S ||
+`);
+
+## Files
+
+- `sarale_varase_to_alankaaras.mscz` — MuseScore edition
+
+## Index
+
+- [Sarale Varase](#sarale-varase):
+  [1](#varase-1) · [2](#varase-2) · [3](#varase-3) ·
+  [4](#varase-4) · [5](#varase-5) · [6](#varase-6) ·
+  [7](#varase-7) · [8](#varase-8)
+- [Taarasthayi Varase](#taarasthayi-varase):
+  [1](#taarasthayee-varase-1) · [2](#taarasthayee-varase-2) ·
+  [3](#taarasthayee-varase-3) · [4](#taarasthayee-varase-4)
+- [Mandrasthayi Varase](#mandrasthayi-varase):
+  [1](#mandrasthayee-varase-1) · [2](#mandrasthayee-varase-2) ·
+  [3](#mandrasthayee-varase-3) · [4](#mandrasthayee-varase-4)
+- [Daatu Varase](#daatu-varase):
+  [1](#daatu-varase-1) · [2](#daatu-varase-2) ·
+  [3](#daatu-varase-3) · [4](#daatu-varase-4)
+- [Janti Varase](#janti-varase):
+  [1](#janti-varase-1) · [2](#janti-varase-2) ·
+  [3](#janti-varase-3) · [4](#janti-varase-4) ·
+  [5](#janti-varase-5) · [6](#janti-varase-6) ·
+  [7](#janti-varase-7)
+- [Saptasulaadi Taala Alankaaras](#saptasulaadi-taala-alankaaras):
+  [Dhruva](#1-chuturashra-jaathi-dhruva-taala) ·
+  [Matya](#2-chuturashra-jaathi-matya-taala) ·
+  [Roopaka](#3-chuturashra-jaathi-roopaka-taala) ·
+  [Jampe](#4-mishra-jaathi-jampe-taala) ·
+  [Tiruputa](#5-trishra-jaathi-tiruputa-taala) ·
+  [Atta](#6-khanda-jaathi-atta-taala) ·
+  [Eka](#7-chuturashra-jaathi-eka-taala)
+
+## Swaras and Lyrics
+
+Lyrics: Not applicable.
+
+## Sarale Varase
+
+### Varase 1
+
+<SwaraGrid rows={notation.varase1} />
+
+### Varase 2
+
+<SwaraGrid rows={notation.varase2} />
+
+### Varase 3
+
+<SwaraGrid rows={notation.varase3} />
+
+### Varase 4
+
+<SwaraGrid rows={notation.varase4} />
+
+### Varase 5
+
+<SwaraGrid rows={notation.varase5} />
+
+### Varase 6
+
+<SwaraGrid rows={notation.varase6} />
+
+### Varase 7
+
+<SwaraGrid rows={notation.varase7} />
+
+### Varase 8
+
+<SwaraGrid rows={notation.varase8} />
+
+## Taarasthayi Varase
+
+### Taarasthayee Varase 1
+
+<SwaraGrid rows={notation.taarasthayeeVarase1} />
+
+### Taarasthayee Varase 2
+
+<SwaraGrid rows={notation.taarasthayeeVarase2} />
+
+### Taarasthayee Varase 3
+
+<SwaraGrid rows={notation.taarasthayeeVarase3} />
+
+### Taarasthayee Varase 4
+
+<SwaraGrid rows={notation.taarasthayeeVarase4} />
+
+## Mandrasthayi Varase
+
+### Mandrasthayee Varase 1
+
+<SwaraGrid rows={notation.mandrasthayeeVarase1} />
+
+### Mandrasthayee Varase 2
+
+<SwaraGrid rows={notation.mandrasthayeeVarase2} />
+
+### Mandrasthayee Varase 3
+
+<SwaraGrid rows={notation.mandrasthayeeVarase3} />
+
+### Mandrasthayee Varase 4
+
+<SwaraGrid rows={notation.mandrasthayeeVarase4} />
+
+## Daatu Varase
+
+### Daatu Varase 1
+
+<SwaraGrid rows={notation.daatuVarase1} />
+
+### Daatu Varase 2
+
+<SwaraGrid rows={notation.daatuVarase2} />
+
+### Daatu Varase 3
+
+<SwaraGrid rows={notation.daatuVarase3} />
+
+### Daatu Varase 4
+
+<SwaraGrid rows={notation.daatuVarase4} />
+
+## Janti Varase
+
+### Janti Varase 1
+
+<SwaraGrid rows={notation.jantiVarase1} />
+
+### Janti Varase 2
+
+<SwaraGrid rows={notation.jantiVarase2} />
+
+### Janti Varase 3
+
+<SwaraGrid rows={notation.jantiVarase3} />
+
+### Janti Varase 4
+
+<SwaraGrid rows={notation.jantiVarase4} />
+
+### Janti Varase 5
+
+<SwaraGrid rows={notation.jantiVarase5} />
+
+### Janti Varase 6
+
+<SwaraGrid rows={notation.jantiVarase6} />
+
+### Janti Varase 7
+
+<SwaraGrid rows={notation.jantiVarase7} />
+
+## Saptasulaadi Taala Alankaaras
+
+### 1. Chuturashra Jaathi Dhruva Taala
+
+- Anga's: 1 laghu + 1 dhrutha + 2 laghu's
+- Expansion: 4 + 2 + 4 + 4 = 14 beats (I O I I)
+- Time signature: 14/8
+
+<SwaraGrid rows={notation.chuturashraJaathiDhruvaTaala} />
+
+### 2. Chuturashra Jaathi Matya Taala
+
+- Anga's: 1 laghu + 1 dhrutha + 1 laghu
+- Expansion: 4 + 2 + 4 = 10 beats (I O I)
+- Time signature: 10/8
+
+<SwaraGrid rows={notation.chuturashraJaathiMatyaTaala} />
+
+### 3. Chuturashra Jaathi Roopaka Taala
+
+- Anga's: 1 dhrutha + 1 laghu
+- Expansion: 2 + 4 = 6 beats (O I)
+- Time signature: 6/8
+
+<SwaraGrid rows={notation.chuturashraJaathiRoopakaTaala} />
+
+### 4. Mishra Jaathi Jampe Taala
+
+- Anga's: 1 laghu + 1 anudhrutha + 1 dhrutha
+- Expansion: 7 + 1 + 2 = 10 beats (I U O)
+- Time signature: 10/8
+
+<SwaraGrid rows={notation.mishraJaathiJampeTaala} />
+
+### 5. Trishra Jaathi Tiruputa Taala
+
+- Anga's: 1 laghu + 2 dhrutha
+- Expansion: 3 + 2 + 2 = 7 beats (I O O)
+- Time signature: 7/8
+
+<SwaraGrid rows={notation.trishraJaathiTiruputaTaala} />
+
+### 6. Khanda Jaathi Atta Taala
+
+- Anga's: 2 laghu's + 2 dhrutha's
+- Expansion: 5 + 5 + 2 + 2 = 14 beats (I I O O)
+- Time signature: 14/8
+
+<SwaraGrid rows={notation.khandaJaathiAttaTaala} />
+
+### 7. Chuturashra Jaathi Eka Taala
+
+- Anga's: 1 laghu
+- Expansion: 4 = 4 beats (I)
+- Time signature: 4/8
+
+<SwaraGrid rows={notation.chuturashraJaathiEkaTaala} />
+
+## Meaning
+
+These are instrumental swara exercises without lyrics. A textual meaning is not applicable; their purpose is to develop pitch accuracy, fingering, breath control, octave control, rhythmic stability, and fluency in Mayamalavagowla across the listed tala patterns.
