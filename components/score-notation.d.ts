@@ -33,6 +33,8 @@ export interface MusicSectionProps {
 
 export interface MusicScoreProps {
   source: string;
+  /** Generated static URL for an @source MuseScore file. */
+  museScoreSource?: string | null;
 }
 
 export type ParsedNotation = Record<

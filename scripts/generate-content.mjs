@@ -11,6 +11,8 @@ import { MusicScore } from "../components/score-notation.mjs";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputFile = path.join(root, "app", "generated-content.ts");
 const legacyDownloadsDir = path.join(root, "public", "downloads");
+const generatedScoresDir = path.join(root, "public", "generated-scores");
+const webMscoreVendorDir = path.join(root, "public", "vendor", "webmscore");
 
 const contentFiles = [
   "README.md",
@@ -72,12 +74,59 @@ const allFiles = contentFiles.map((file, order) => {
   };
 });
 
+const sourceDirectivePattern = /^@\s*source(?:\s+file)?\s*:\s*(.+\.mscz)\s*$/im;
+
+const museScoreSourceFor = (mdxFile, notation) => {
+  const directive = notation.match(sourceDirectivePattern);
+  if (!directive) return null;
+
+  const requested = directive[1].trim().replace(/^["']|["']$/g, "");
+  const absolute = path.resolve(root, path.dirname(mdxFile), requested);
+  const scoresRoot = path.join(root, "scores");
+  if (
+    absolute !== scoresRoot &&
+    !absolute.startsWith(`${scoresRoot}${path.sep}`)
+  ) {
+    throw new Error(
+      `${mdxFile}: @source must reference a MuseScore file inside scores/.`,
+    );
+  }
+  if (!fs.existsSync(absolute)) {
+    throw new Error(`${mdxFile}: @source file does not exist: ${requested}`);
+  }
+
+  const repositoryPath = path.relative(root, absolute).replaceAll("\\", "/");
+  return {
+    repositoryPath,
+    publicUrl: `/generated-scores/${repositoryPath.slice("scores/".length)}`,
+  };
+};
+
+const carnaticBlocksFor = (source) =>
+  [...source.matchAll(/```carnatic\r?\n([\s\S]*?)\r?\n```/g)].map(
+    (match) => match[1],
+  );
+
+const museScoreSourcesFor = (file, source) => {
+  if (!file.endsWith(".mdx") || !file.startsWith("scores/")) return [];
+  return carnaticBlocksFor(source)
+    .map((notation) => museScoreSourceFor(file, notation))
+    .filter(Boolean);
+};
+
+const scoreSourceFor = (file, source) =>
+  museScoreSourcesFor(file, source)[0]?.publicUrl ?? null;
+
+const withoutSourceDirective = (notation) =>
+  notation.replace(sourceDirectivePattern, "").replace(/^\s+/, "");
+
 const idByAbsolutePath = new Map(
   allFiles.map((item) => [path.resolve(root, item.file), item.id]),
 );
 
 const rewriteHref = (sourceFile, href) => {
-  if (/^(https?:|mailto:|tel:)/i.test(href) || href.startsWith("#")) return href;
+  if (/^(https?:|mailto:|tel:)/i.test(href) || href.startsWith("#"))
+    return href;
   const [target, anchor = ""] = href.split("#", 2);
   const resolved = path.resolve(root, path.dirname(sourceFile), target);
   if (/\.mdx?$/i.test(target) && idByAbsolutePath.has(resolved)) {
@@ -95,16 +144,13 @@ const renderInline = (text, sourceFile) => {
     return key;
   });
   rendered = escapeHtml(rendered);
-  rendered = rendered.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    (_, label, href) => {
-      const target = href.split("#", 1)[0];
-      if (/\.mscz$/i.test(target)) {
-        return `<span class="repository-only">${label} · repository only</span>`;
-      }
-      return `<a href="${escapeHtml(rewriteHref(sourceFile, href))}">${label}</a>`;
-    },
-  );
+  rendered = rendered.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, label, href) => {
+    const target = href.split("#", 1)[0];
+    if (/\.mscz$/i.test(target)) {
+      return `<span class="repository-only">${label} · repository only</span>`;
+    }
+    return `<a href="${escapeHtml(rewriteHref(sourceFile, href))}">${label}</a>`;
+  });
   rendered = rendered
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, "<em>$1</em>");
@@ -153,7 +199,9 @@ const renderMarkdown = (markdown, sourceFile) => {
     }
 
     if (
-      /^<div class="music-section" data-music-section data-title="[^"]+">$/.test(line.trim()) ||
+      /^<div class="music-section" data-music-section data-title="[^"]+">$/.test(
+        line.trim(),
+      ) ||
       line.trim() === "</div>"
     ) {
       html.push(line.trim());
@@ -377,7 +425,10 @@ const renderMdx = async (mdx, sourceFile) => {
 
   const preparedMdx = mdx.replace(
     /```carnatic\r?\n([\s\S]*?)\r?\n```/g,
-    (_, notation) => `<MusicScore source={${JSON.stringify(notation)}} />`,
+    (_, notation) => {
+      const museScoreSource = museScoreSourceFor(sourceFile, notation);
+      return `<MusicScore source={${JSON.stringify(withoutSourceDirective(notation))}} museScoreSource={${JSON.stringify(museScoreSource?.publicUrl ?? null)}} />`;
+    },
   );
   const mdxModule = await evaluate(preparedMdx, {
     ...runtime,
@@ -418,32 +469,35 @@ const stripTitleAndMetadata = (source) => {
   return { body, metadata };
 };
 
-const documents = await Promise.all(allFiles.map(async (item) => {
-  const { body, metadata } = stripTitleAndMetadata(item.source);
-  const { html, headings } = item.file.endsWith(".mdx")
-    ? await renderMdx(body, item.file)
-    : renderMarkdown(body, item.file);
-  const plainSource = item.file.endsWith(".mdx") ? html : body;
-  const plain = plainSource
-    .replace(/<[^>]+>/g, " ")
-    .replace(/[`*_#|()[\]]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  const excerpt =
-    plain.length > 170 ? `${plain.slice(0, 167).trim()}…` : plain;
-  return {
-    id: item.id,
-    title: item.title,
-    category: item.category,
-    order: item.order,
-    excerpt,
-    html,
-    searchText: `${item.title} ${plain}`.toLowerCase(),
-    headings,
-    metadata,
-    sourcePath: item.file,
-  };
-}));
+const documents = await Promise.all(
+  allFiles.map(async (item) => {
+    const { body, metadata } = stripTitleAndMetadata(item.source);
+    const { html, headings } = item.file.endsWith(".mdx")
+      ? await renderMdx(body, item.file)
+      : renderMarkdown(body, item.file);
+    const plainSource = item.file.endsWith(".mdx") ? html : body;
+    const plain = plainSource
+      .replace(/<[^>]+>/g, " ")
+      .replace(/[`*_#|()[\]]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    const excerpt =
+      plain.length > 170 ? `${plain.slice(0, 167).trim()}…` : plain;
+    return {
+      id: item.id,
+      title: item.title,
+      category: item.category,
+      order: item.order,
+      excerpt,
+      html,
+      searchText: `${item.title} ${plain}`.toLowerCase(),
+      headings,
+      metadata,
+      sourcePath: item.file,
+      scoreSource: scoreSourceFor(item.file, item.source),
+    };
+  }),
+);
 
 fs.mkdirSync(path.dirname(outputFile), { recursive: true });
 fs.writeFileSync(
@@ -455,5 +509,95 @@ fs.writeFileSync(
 // MuseScore source files belong in the repository, not in the static website.
 // Remove output made by older generator versions so stale downloads cannot ship.
 fs.rmSync(legacyDownloadsDir, { recursive: true, force: true });
+
+// Build-only assets: keep the MSCZ files authoritative in scores/ while making
+// them available to the browser in the generated static output.
+fs.rmSync(generatedScoresDir, { recursive: true, force: true });
+const copiedScoreSources = new Set();
+for (const item of allFiles) {
+  for (const scoreSource of museScoreSourcesFor(item.file, item.source)) {
+    if (copiedScoreSources.has(scoreSource.repositoryPath)) continue;
+    copiedScoreSources.add(scoreSource.repositoryPath);
+    const source = path.join(root, scoreSource.repositoryPath);
+    const destination = path.join(root, "public", scoreSource.publicUrl);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(source, destination);
+  }
+}
+
+// Self-host webmscore so score rendering does not depend on a third-party CDN.
+const webMscorePackageDir = path.join(root, "node_modules", "webmscore");
+fs.rmSync(webMscoreVendorDir, { recursive: true, force: true });
+fs.mkdirSync(webMscoreVendorDir, { recursive: true });
+for (const filename of [
+  "webmscore.lib.wasm",
+  "webmscore.lib.mem.wasm",
+  "webmscore.lib.data",
+]) {
+  fs.copyFileSync(
+    path.join(webMscorePackageDir, filename),
+    path.join(webMscoreVendorDir, filename),
+  );
+}
+const browserRuntime = fs
+  .readFileSync(path.join(webMscorePackageDir, "webmscore.cdn.mjs"), "utf8")
+  .replace(
+    /const CDN_PROVIDER = .*?\nconst URL_PREFIX = .*?\n/,
+    "const URL_PREFIX = new URL('./', import.meta.url).href\n",
+  )
+  .replace(
+    "export { WebMscoreW as default };",
+    "globalThis.__webMscoreRuntime = WebMscoreW;\nexport { WebMscoreW as default };",
+  );
+fs.writeFileSync(
+  path.join(webMscoreVendorDir, "webmscore.mjs"),
+  browserRuntime,
+);
+
+// Use MuseScore 4's current engraving fonts when they are available locally.
+// webmscore otherwise falls back to its older bundled font metrics.
+const museScoreFontFiles = [
+  "Edwin-Bold.otf",
+  "Edwin-Italic.otf",
+  "Edwin-Roman.otf",
+  "Edwin-BdIta.otf",
+  "Leland.otf",
+  "LelandText.otf",
+  "FreeSans.ttf",
+];
+const museScoreFontDirectories = [
+  process.env.MUSESCORE_FONT_DIR,
+  "/Applications/MuseScore 4.app/Contents/Resources/fonts",
+  "/Applications/MuseScore4.app/Contents/Resources/fonts",
+  path.resolve(
+    root,
+    "..",
+    "..",
+    "Desktop",
+    "MuseScore 4.app",
+    "Contents",
+    "Resources",
+    "fonts",
+  ),
+].filter(Boolean);
+const museScoreFontDirectory = museScoreFontDirectories.find((directory) =>
+  museScoreFontFiles.every((filename) =>
+    fs.existsSync(path.join(directory, filename)),
+  ),
+);
+if (!museScoreFontDirectory) {
+  throw new Error(
+    "MuseScore 4 fonts were not found. Set MUSESCORE_FONT_DIR to its Resources/fonts directory.",
+  );
+}
+const embeddedFontPayloads = museScoreFontFiles.map((filename) =>
+  fs
+    .readFileSync(path.join(museScoreFontDirectory, filename))
+    .toString("base64"),
+);
+fs.appendFileSync(
+  path.join(webMscoreVendorDir, "webmscore.mjs"),
+  `\nglobalThis.__webMscoreFonts = ${JSON.stringify(embeddedFontPayloads)}.map((encoded) => Uint8Array.from(atob(encoded), (character) => character.charCodeAt(0)));\n`,
+);
 
 console.log(`Generated ${documents.length} documents.`);

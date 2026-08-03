@@ -27,6 +27,8 @@ text block where the rendered sections should appear:
 
 ````mdx
 ```carnatic
+@source: composition_name.mscz
+
 # Pallavi
 @Sahitya: TODO
 S  R  G    M    | P    D    | N    Ṡ    ||
@@ -70,21 +72,22 @@ are automatically italic.
 The content generator converts one fenced `carnatic` block into the following
 React component structure:
 
-| Text inside the `carnatic` block                | Generated behavior or component                                                                      |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `# Pallavi`                                     | Starts `<MusicSection title="Pallavi">` and generates its visible `### Pallavi` heading.             |
-| First notation line after a lyrical heading     | Becomes the `swaras` value for one `SwaraTable`.                                                     |
-| Second notation line                            | Becomes the matching `lyrics` value for that `SwaraTable`.                                           |
-| Additional pairs of lines                       | Generate additional numbered `SwaraTable` components in the same `SwaraLines` section.               |
-| `# Muktayi Swara [swaras]`                      | Starts a swara-only section rendered through `SwaraGrid`; every notation line is one numbered row.   |
-| `@Sahitya: ...` before notation                 | Generates emphasized section text above the tables.                                                  |
-| `@Repeat: ...` or `@Return: ...` after notation | Generates emphasized direction text below the tables.                                                |
-| A token separated by spaces                     | Creates one table cell and therefore one vertical swara/lyric column.                                |
-| `\|`                                            | Adds a single internal tala divider before the next cell.                                            |
-| `\|\|`                                          | Adds a double measure divider before the next cell, or after the final cell when placed at line end. |
-| `Ṡ`, `Ṙ`, and other overdot tokens              | Render automatically as emphasized tara-sthayi swaras.                                               |
-| `Ṇ`, `Ḍ`, and other dot-below tokens            | Render automatically as emphasized mandra-sthayi swaras.                                             |
-| Blank line                                      | Adds source readability only; it does not create a row or break swara–sahitya pairing.               |
+| Text inside the `carnatic` block                | Generated behavior or component                                                                       |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@source: composition_name.mscz`                | Adds a button that opens the MuseScore file as separate Western notation; the directive stays hidden. |
+| `# Pallavi`                                     | Starts `<MusicSection title="Pallavi">` and generates its visible `### Pallavi` heading.              |
+| First notation line after a lyrical heading     | Becomes the `swaras` value for one `SwaraTable`.                                                      |
+| Second notation line                            | Becomes the matching `lyrics` value for that `SwaraTable`.                                            |
+| Additional pairs of lines                       | Generate additional numbered `SwaraTable` components in the same `SwaraLines` section.                |
+| `# Muktayi Swara [swaras]`                      | Starts a swara-only section rendered through `SwaraGrid`; every notation line is one numbered row.    |
+| `@Sahitya: ...` before notation                 | Generates emphasized section text above the tables.                                                   |
+| `@Repeat: ...` or `@Return: ...` after notation | Generates emphasized direction text below the tables.                                                 |
+| A token separated by spaces                     | Creates one table cell and therefore one vertical swara/lyric column.                                 |
+| `\|`                                            | Adds a single internal tala divider before the next cell.                                             |
+| `\|\|`                                          | Adds a double measure divider before the next cell, or after the final cell when placed at line end.  |
+| `Ṡ`, `Ṙ`, and other overdot tokens              | Render automatically as emphasized tara-sthayi swaras.                                                |
+| `Ṇ`, `Ḍ`, and other dot-below tokens            | Render automatically as emphasized mandra-sthayi swaras.                                              |
+| Blank line                                      | Adds source readability only; it does not create a row or break swara–sahitya pairing.                |
 
 For a lyrical section, the significant notation lines always alternate:
 

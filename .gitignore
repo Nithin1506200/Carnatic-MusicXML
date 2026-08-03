@@ -13,6 +13,8 @@ dist/
 
 # Generated from repository Markdown
 app/generated-content.ts
+public/generated-scores/
+public/vendor/webmscore/
 
 # Local runtime configuration
 .env

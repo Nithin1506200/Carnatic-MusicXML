@@ -26,12 +26,26 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at 77% 8%, rgba(217, 120, 63, 0.09), transparent 22rem),
+    radial-gradient(
+      circle at 77% 8%,
+      rgba(217, 120, 63, 0.09),
+      transparent 22rem
+    ),
     linear-gradient(90deg, rgba(87, 56, 26, 0.025) 1px, transparent 1px),
     var(--paper);
-  background-size: auto, 42px 42px, auto;
+  background-size:
+    auto,
+    42px 42px,
+    auto;
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -133,9 +147,16 @@ button {
   background: #fff8e9;
 }
 
-.brand-mark i:nth-child(1) { left: 9px; }
-.brand-mark i:nth-child(2) { left: 17px; top: 6px; }
-.brand-mark i:nth-child(3) { left: 25px; }
+.brand-mark i:nth-child(1) {
+  left: 9px;
+}
+.brand-mark i:nth-child(2) {
+  left: 17px;
+  top: 6px;
+}
+.brand-mark i:nth-child(3) {
+  left: 25px;
+}
 
 .search-trigger {
   width: min(100%, 640px);
@@ -869,7 +890,7 @@ kbd {
 
 .markdown .palm-leaf-frame {
   position: relative;
-  width: fit-content;
+  width: 100%;
   min-width: min(100%, 440px);
   max-width: 100%;
   margin: 18px 0 28px;
@@ -916,6 +937,12 @@ kbd {
 }
 
 .markdown .swara-notation-table {
+  width: 100%;
+  min-width: min(100%, 440px);
+  max-width: 100%;
+  display: table;
+  table-layout: fixed;
+  overflow: visible;
   background:
     radial-gradient(
         ellipse at 50% 0,
@@ -1046,6 +1073,11 @@ kbd {
     filter 240ms ease;
 }
 
+.markdown .swara-notation-table tbody {
+  min-width: 0;
+  display: table-row-group;
+}
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .markdown .palm-leaf-frame:hover .swara-notation-table {
     box-shadow:
@@ -1068,7 +1100,8 @@ kbd {
 }
 
 .markdown .swara-notation-table .swara-cell {
-  min-width: 2em;
+  min-width: 0;
+  padding-inline: clamp(2px, 0.55vw, 9px);
   text-align: center;
 }
 
@@ -1090,10 +1123,8 @@ kbd {
 .markdown.notation-view-swaras .swara-lyrics,
 .markdown.notation-view-swaras .music-direction-sahitya,
 .markdown.notation-view-sahitya .swara-notes,
-.markdown.notation-view-sahitya
-  .music-section[data-notation-kind="swaras"],
-.markdown.notation-view-sahitya
-  .music-direction:not(.music-direction-sahitya) {
+.markdown.notation-view-sahitya .music-section[data-notation-kind="swaras"],
+.markdown.notation-view-sahitya .music-direction:not(.music-direction-sahitya) {
   display: none;
 }
 
@@ -1506,6 +1537,250 @@ kbd {
   zoom: 0.72;
 }
 
+.musescore-viewer {
+  margin: 0 0 38px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #e9e5dc;
+  box-shadow: 0 18px 50px rgba(40, 34, 24, 0.12);
+}
+
+.engraved-score-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px;
+  border: 1px solid #cfbfa7;
+  border-radius: 10px;
+  padding: 9px 13px;
+  background: #fffaf1;
+  color: var(--crimson);
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.engraved-score-trigger:hover {
+  border-color: #bca889;
+  background: #f5ecde;
+}
+
+.engraved-score-trigger span {
+  font-size: 14px;
+}
+
+.engraved-score-layer {
+  position: fixed;
+  z-index: 130;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.engraved-score-dialog {
+  width: min(1320px, 97vw);
+  height: min(960px, 94vh);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: 0 42px 120px rgba(18, 19, 27, 0.42);
+}
+
+.engraved-score-head {
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 16px 12px 24px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 253, 247, 0.97);
+}
+
+.engraved-score-head h2 {
+  margin: 3px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(18px, 2.2vw, 27px);
+  font-weight: 500;
+}
+
+.engraved-score-head > button {
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: #fffdf8;
+  color: var(--ink-soft);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.engraved-score-body {
+  min-height: 0;
+  overflow: auto;
+  padding: clamp(12px, 2vw, 24px);
+}
+
+.engraved-score-body .musescore-viewer {
+  margin: 0;
+}
+
+.musescore-toolbar {
+  min-height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 14px 10px 18px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 253, 247, 0.97);
+}
+
+.musescore-toolbar > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.musescore-toolbar strong {
+  overflow: hidden;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.musescore-controls,
+.zoom-controls {
+  display: flex;
+  align-items: center;
+}
+
+.musescore-controls {
+  gap: 9px;
+}
+
+.zoom-controls {
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fffdf8;
+}
+
+.musescore-controls > .page-count {
+  min-width: auto;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+
+.musescore-controls button {
+  width: 31px;
+  height: 29px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.musescore-controls button:hover:not(:disabled) {
+  background: #f1eadf;
+  color: var(--crimson);
+}
+
+.musescore-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.musescore-controls span {
+  min-width: 46px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.musescore-canvas {
+  position: relative;
+  min-height: 440px;
+  max-height: min(76vh, 920px);
+  overflow: auto;
+  padding: clamp(14px, 2.5vw, 28px);
+}
+
+.musescore-pages {
+  display: grid;
+  gap: clamp(14px, 2.5vw, 28px);
+}
+
+.musescore-page {
+  min-width: 480px;
+  margin: 0 auto;
+  transition: width 180ms ease;
+}
+
+.musescore-page svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: white;
+  box-shadow: 0 8px 30px rgba(30, 28, 22, 0.18);
+}
+
+.musescore-state,
+.musescore-error {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 11px;
+  padding: 30px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  text-align: center;
+}
+
+.musescore-state i {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #cfc5b5;
+  border-top-color: var(--crimson);
+  border-radius: 50%;
+  animation: musescore-spin 800ms linear infinite;
+}
+
+.musescore-error strong {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+}
+
+.musescore-viewer.is-compact {
+  margin-bottom: 26px;
+}
+
+.musescore-viewer.is-compact .musescore-canvas {
+  max-height: 68vh;
+}
+
+@keyframes musescore-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .scrim {
   position: fixed;
   z-index: -1;
@@ -1884,6 +2159,47 @@ kbd {
   .score-preview-content {
     width: calc(100% / 0.62);
     zoom: 0.62;
+  }
+
+  .musescore-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+    padding: 12px;
+  }
+
+  .engraved-score-layer {
+    padding: 8px;
+  }
+
+  .engraved-score-dialog {
+    width: 100%;
+    height: calc(100dvh - 16px);
+    border-radius: 14px;
+  }
+
+  .engraved-score-head {
+    min-height: 64px;
+    padding: 10px 10px 10px 15px;
+  }
+
+  .engraved-score-head .eyebrow {
+    display: none;
+  }
+
+  .musescore-toolbar > div:first-child {
+    max-width: 100%;
+  }
+
+  .musescore-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .musescore-canvas {
+    min-height: 360px;
+    max-height: 70vh;
+    padding: 10px;
   }
 
   .document-head h1 {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import MuseScoreViewer from "../components/musescore-viewer";
 import { documents } from "./generated-content";
 
 type DocumentItem = (typeof documents)[number];
@@ -33,6 +34,10 @@ export default function MusicLibrary() {
   const [query, setQuery] = useState("");
   const [notationView, setNotationView] = useState<NotationView>("both");
   const [notationOverviewOpen, setNotationOverviewOpen] = useState(false);
+  const [engravedScore, setEngravedScore] = useState<{
+    source: string;
+    title: string;
+  } | null>(null);
   const [notationSectionIndex, setNotationSectionIndex] = useState(0);
   const searchInput = useRef<HTMLInputElement>(null);
   const notationScroll = useRef<HTMLDivElement>(null);
@@ -66,6 +71,7 @@ export default function MusicLibrary() {
         setTablePreview(null);
         setPreviewId(null);
         setNotationOverviewOpen(false);
+        setEngravedScore(null);
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -83,13 +89,13 @@ export default function MusicLibrary() {
     : undefined;
 
   useEffect(() => {
-    if (!preview && !tablePreview && !notationOverviewOpen) return;
+    if (!preview && !tablePreview && !notationOverviewOpen && !engravedScore) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [preview, tablePreview, notationOverviewOpen]);
+  }, [preview, tablePreview, notationOverviewOpen, engravedScore]);
 
   const grouped = useMemo(
     () =>
@@ -146,6 +152,15 @@ export default function MusicLibrary() {
       setNotationView("both");
       setNotationSectionIndex(0);
       setNotationOverviewOpen(true);
+      return;
+    }
+
+    const engravedTrigger = element.closest<HTMLElement>("[data-engraved-score]");
+    if (engravedTrigger?.dataset.engravedScore) {
+      setEngravedScore({
+        source: engravedTrigger.dataset.engravedScore,
+        title: preview?.title ?? active.title,
+      });
       return;
     }
 
@@ -454,6 +469,43 @@ export default function MusicLibrary() {
               <div
                 className="markdown table-preview-content notation-view-both"
                 dangerouslySetInnerHTML={{ __html: tablePreview.html }}
+              />
+            </div>
+          </section>
+        </div>
+      )}
+
+      {engravedScore && (
+        <div
+          className="engraved-score-layer"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="engraved-score-title"
+        >
+          <button
+            className="scrim"
+            onClick={() => setEngravedScore(null)}
+            aria-label="Close engraved score"
+          />
+          <section className="engraved-score-dialog">
+            <header className="engraved-score-head">
+              <div>
+                <span className="eyebrow">Western notation · MuseScore</span>
+                <h2 id="engraved-score-title">{engravedScore.title}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEngravedScore(null)}
+                aria-label="Close engraved score"
+              >
+                ×
+              </button>
+            </header>
+            <div className="engraved-score-body">
+              <MuseScoreViewer
+                key={engravedScore.source}
+                source={engravedScore.source}
+                title={engravedScore.title}
               />
             </div>
           </section>

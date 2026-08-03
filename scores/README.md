@@ -32,8 +32,10 @@ Keep its notation in one fenced `carnatic` text block. Headings create named
 sections; alternating lines contain swaras and lyrics, and `[swaras]` marks a
 swara-only section. `@Label:` lines become section directions. Spaces create
 cells, `|` marks internal tala angas, and `||` marks measure boundaries. The
-content generator renders the block through `MusicScore`; do not add imports,
-variables, manual section wrappers, or visible section headings.
+optional first line `@source: same_stem.mscz` links the MuseScore source and
+adds a button that opens its Western notation separately. The content generator
+renders the block through `MusicScore`; do not add imports, variables, manual
+section wrappers, or visible section headings.
 
 Do not use spaces in filenames. Do not store MusicXML, unpacked MSCX,
 temporary MuseScore exports, rendered test pages, or autosave files in the

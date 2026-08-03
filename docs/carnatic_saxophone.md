@@ -189,6 +189,9 @@ For the same-stem MDX companion:
 - Start each section with a `#` heading. In lyrical sections, alternate a swara
   line and its lyric line. Mark a swara-only section by appending `[swaras]` to
   its heading.
+- When a MuseScore source exists, put `@source: same_stem.mscz` before the
+  first section. The website uses it to add a separate Western-notation viewer;
+  the directive is not rendered as section text.
 - The content generator turns the fenced block into `MusicScore`
   automatically. It creates the section wrapper, visible heading, correct
   table type, numbering, and whole-section zoom without imports, variables, or
@@ -226,6 +229,9 @@ The generator replaces each fenced `carnatic` block with `MusicScore`. For
 each heading and its following lines, `MusicScore` creates:
 
 ```text
+@source: composition_name.mscz
+  -> optional button opening the MuseScore engraving separately
+
 # Pallavi
   -> MusicSection title="Pallavi"
   -> visible h3 heading

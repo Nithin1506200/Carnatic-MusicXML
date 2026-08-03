@@ -32,10 +32,12 @@ original title and language should always be preserved.
 
 ## Static website
 
-The Node.js website reads this README and the repository Markdown and MDX during its
-build, then generates a fully static site with client-side global search.
-MuseScore `.mscz` source files remain repository-only and are not copied into
-the website or its static output.
+The Node.js website reads this README and the repository Markdown and MDX during
+its build, then generates a fully static site with client-side global search.
+Score pages render the repository's MuseScore `.mscz` files directly in the
+browser as paginated SVG notation. The build copies the source archives and
+self-hosted WebAssembly renderer into ignored, generated static assets; it does
+not create or commit MusicXML, PDF, or image exports.
 
 ```sh
 npm ci

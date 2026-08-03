@@ -354,7 +354,7 @@ const NotationEyeIcon = () =>
     React.createElement("circle", { cx: 12, cy: 12, r: 2.75 }),
   );
 
-export function MusicScore({ source }) {
+export function MusicScore({ source, museScoreSource }) {
   const sections = parseNotationSource(source);
   const { h3: MdxHeading } = useMDXComponents();
   return React.createElement(
@@ -371,6 +371,19 @@ export function MusicScore({ source }) {
       },
       React.createElement(NotationEyeIcon),
     ),
+    museScoreSource
+      ? React.createElement(
+          "button",
+          {
+            type: "button",
+            className: "engraved-score-trigger",
+            "data-engraved-score": museScoreSource,
+            "aria-label": "Display Western notation",
+          },
+          "Display Western notation",
+          React.createElement("span", { "aria-hidden": true }, "↗"),
+        )
+      : null,
     sections.map((section) => {
       const id = headingId(section.title);
       return React.createElement(
