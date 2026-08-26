@@ -1,8 +1,12 @@
-# Score Metadata Template
+# Score Notation and Metadata
 
 Copy this block into a companion MDX file when adding a score. Replace every
 `TODO`; use `Unknown` only when the source genuinely does not provide the
 information.
+
+This document is the practical contract for
+`components/score-notation.ts`. Vitest reads the fenced `carnatic` example
+below and verifies that it remains accepted by the production parser.
 
 ```yaml
 title: TODO
@@ -18,14 +22,20 @@ arohana: TODO
 avarohana: TODO
 tala: TODO
 tala_grouping: TODO
+keywords:
+  - TODO
 ```
+
+Use `keywords` for source-supported alternate spellings, common form names,
+instrument terms, and other phrases a reader may search for. Search already
+indexes every metadata value, so do not repeat the title, composer, raga, or
+tala unless a common alternate spelling is useful.
 
 ## Swaras and Lyrics
 
 Score companions are MDX files. Put all notation in one fenced `carnatic`
 text block where the rendered sections should appear:
 
-````mdx
 ```carnatic
 @source: composition_name.mscz
 
@@ -42,7 +52,6 @@ TODO TODO TODO TODO | TODO TODO | TODO TODO ||
 S R G M | P D | N Ṡ ||
 Ṡ N D P | M G | R S ||
 ```
-````
 
 The content generator turns that block into `MusicScore` automatically.
 `MusicScore` treats each heading as a named, zoomable section and generates the
@@ -83,8 +92,8 @@ React component structure:
 | `@Sahitya: ...` before notation                 | Generates emphasized section text above the tables.                                                   |
 | `@Repeat: ...` or `@Return: ...` after notation | Generates emphasized direction text below the tables.                                                 |
 | A token separated by spaces                     | Creates one table cell and therefore one vertical swara/lyric column.                                 |
-| `\|`                                            | Adds a single internal tala divider before the next cell.                                             |
-| `\|\|`                                          | Adds a double measure divider before the next cell, or after the final cell when placed at line end.  |
+| Single tala divider                             | Adds an internal tala divider before the next cell.                                                   |
+| Double measure divider                          | Adds a measure divider before the next cell, or after the final cell when placed at line end.         |
 | `Ṡ`, `Ṙ`, and other overdot tokens              | Render automatically as emphasized tara-sthayi swaras.                                                |
 | `Ṇ`, `Ḍ`, and other dot-below tokens            | Render automatically as emphasized mandra-sthayi swaras.                                              |
 | Blank line                                      | Adds source readability only; it does not create a row or break swara–sahitya pairing.                |
@@ -103,6 +112,58 @@ The parser removes extra alignment spaces when determining cells, then
 validates that each swara–sahitya pair has the same number of cells and
 identical `|`/`||` positions. The source formatter adds padding spaces back so
 the corresponding tokens also align visually in the MDX file.
+
+### Parser Model
+
+The TypeScript parser exposes enums instead of passing notation keywords around
+as unrelated strings:
+
+| Enum                       | Values                                            |
+| -------------------------- | ------------------------------------------------- |
+| `TalaDivider`              | `Anga`, `Measure`                                 |
+| `OctavePosition`           | `Lower`, `Middle`, `Upper`                        |
+| `NotationSectionKind`      | `Lyrics`, `Swaras`                                |
+| `NotationSectionKeyword`   | `Swaras`                                          |
+| `NotationDirectiveKeyword` | `Source`, `Sahitya`, `Repeat`, `Return`, `Custom` |
+| `NotationRowKind`          | `Swara`, `Lyrics`                                 |
+
+`TalaDivider.Anga` serializes to `|`; `TalaDivider.Measure` serializes to
+`||`.
+
+`parseNotationLine` tokenizes one grouped line and records tala boundaries.
+`parseNotationDirective` parses case-insensitive `@Keyword: value` lines.
+`parseScoreNotation` validates a complete score block, including section order,
+directive placement, swara–sahitya alignment, and an optional `.mscz` source.
+`parseNotationText` returns the keyed section data used by MDX exercises.
+
+Parser failures are intentional for:
+
+- notation or non-source directives before the first section heading;
+- unknown or malformed bracketed section markers (`[swaras]` is the only
+  supported marker);
+- duplicate or empty sections;
+- lyrical sections with an odd number of notation lines;
+- different cell counts or tala-divider positions in a swara–sahitya pair;
+- leading, consecutive, or trailing single tala dividers;
+- malformed `@Keyword: value` syntax; and
+- duplicate, misplaced, or non-`.mscz` `@source` directives.
+
+### Validation
+
+Run `npm run validate:notation` to validate every fenced `carnatic` block and
+inline `parseNotationText` input. The static build runs this command first and
+fails with the MDX path, line, and column when notation is invalid.
+
+The repository's VS Code workspace starts `npm run validate:notation:watch`
+when the folder opens. With the configured short auto-save delay, parser errors
+appear in the Problems panel and on the affected MDX line shortly after typing.
+This checks saved text; unsaved keystroke-level diagnostics would require a
+dedicated VS Code language extension.
+
+After the task configuration is first added or changed, reload the VS Code
+window or run **Tasks: Run Task > Watch Carnatic notation** once. Open this
+repository root as the workspace and trust it; VS Code does not start automatic
+tasks in an untrusted workspace.
 
 Do not add manual table HTML, `Swaras`/`Lyrics` label columns, inline colors,
 numbered tala headers, or scattered notation text inside the rendered

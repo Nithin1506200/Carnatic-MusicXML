@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 :root {
   --paper: #f5f0e5;
   --paper-deep: #ebe2cf;
@@ -497,6 +495,15 @@ kbd {
 
 .document {
   min-width: 0;
+}
+
+.document-state {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  color: var(--ink-soft);
+  font-size: 13px;
 }
 
 .document-head {

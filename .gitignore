@@ -6,13 +6,12 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Framework and deployment output
-.next/
 dist/
 .wrangler/
-.vinext/
 
 # Generated from repository Markdown
 app/generated-content.ts
+public/generated-content/
 public/generated-scores/
 public/vendor/webmscore/
 

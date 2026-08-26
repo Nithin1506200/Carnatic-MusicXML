@@ -9,7 +9,7 @@ Before creating or changing a score, read:
 1. `docs/carnatic_saxophone.md` — canonical notation, instrument, pitch, tala,
    lyric, layout, and validation rules.
 2. The relevant curriculum page linked from `README.md`.
-3. `docs/score_metadata_template.md` — required facts to record for a new
+3. `docs/score-notation.md` — required facts and notation syntax for a new
    lesson or composition.
 
 If a source manuscript, book, audio recording, or user instruction conflicts
@@ -36,6 +36,23 @@ swara, sahitya, raga, tala, composer, or octave information.
   mutually consistent.
 - Validate the `.mscz` archive and visually inspect a rendered MuseScore page
   before declaring a score complete.
+
+## Notation parser validation
+
+- Put parser-managed notation in a fenced `carnatic` block or an inline
+  `parseNotationText` template. Follow `docs/score-notation.md` for the grammar.
+- Run `npm run validate:notation` after editing notation. It reports failures
+  as an MDX path, line, and column and exits unsuccessfully when any block is
+  invalid.
+- Run `npm test` after changing parser rules. Keep the practical example in
+  `docs/score-notation.md` and real repository notation covered by Vitest.
+- Do not bypass parser failures. `npm run build` runs notation validation before
+  content generation and must remain a hard failure for malformed notation.
+- The VS Code workspace automatically runs `npm run validate:notation:watch`.
+  Saved notation errors should appear on the affected line in the Problems
+  panel; the configured short auto-save delay makes this near-immediate while
+  editing. After task configuration changes, reload VS Code or start **Watch
+  Carnatic notation** once from **Tasks: Run Task**.
 
 ## Safe editing
 

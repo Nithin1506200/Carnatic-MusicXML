@@ -1,13 +1,44 @@
-"use client";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { documents, homeHtml } from "./generated-content";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import MuseScoreViewer from "../components/musescore-viewer";
-import { documents } from "./generated-content";
+const MuseScoreViewer = lazy(() => import("../components/musescore-viewer"));
 
-type DocumentItem = (typeof documents)[number];
+type DocumentSummary = (typeof documents)[number];
+type DocumentItem = DocumentSummary & { html: string };
 type NotationView = "both" | "swaras" | "sahitya";
 
 const categoryOrder = ["Start here", "Learn", "Scores", "Reference", "Project"];
+const documentHtmlCache = new Map<string, Promise<string>>([
+  ["home", Promise.resolve(homeHtml)],
+]);
+
+const loadDocumentHtml = (document: DocumentSummary) => {
+  const cached = documentHtmlCache.get(document.id);
+  if (cached) return cached;
+
+  const request = fetch(document.contentUrl)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Document request failed (${response.status})`);
+      }
+      return response.json() as Promise<{ html?: unknown }>;
+    })
+    .then((content) => {
+      if (typeof content.html !== "string") {
+        throw new Error("Generated document has no HTML content");
+      }
+      return content.html;
+    })
+    .catch((error) => {
+      documentHtmlCache.delete(document.id);
+      throw error;
+    });
+  documentHtmlCache.set(document.id, request);
+  return request;
+};
+
+const displayMetadataValue = (value: unknown) =>
+  Array.isArray(value) ? value.join(" · ") : String(value);
 
 const SearchIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -41,6 +72,10 @@ export default function MusicLibrary() {
   const [notationSectionIndex, setNotationSectionIndex] = useState(0);
   const searchInput = useRef<HTMLInputElement>(null);
   const notationScroll = useRef<HTMLDivElement>(null);
+  const [loadedHtml, setLoadedHtml] = useState<Record<string, string>>({
+    home: homeHtml,
+  });
+  const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const syncFromLocation = () => {
@@ -48,6 +83,8 @@ export default function MusicLibrary() {
       if (id && documents.some((document) => document.id === id)) {
         setActiveId(id);
         setNotationView("both");
+      } else if (!id) {
+        setActiveId("home");
       }
     };
     syncFromLocation();
@@ -82,20 +119,52 @@ export default function MusicLibrary() {
     if (searchOpen) window.setTimeout(() => searchInput.current?.focus(), 60);
   }, [searchOpen]);
 
-  const active =
-    (documents.find((document) => document.id === activeId) ?? documents[0]) as DocumentItem;
-  const preview = previewId
-    ? (documents.find((document) => document.id === previewId) as DocumentItem | undefined)
+  const activeSummary = documents.find((document) => document.id === activeId) ?? documents[0];
+  const active: DocumentItem = {
+    ...activeSummary,
+    html: loadedHtml[activeSummary.id] ?? "",
+  };
+  const previewSummary = previewId
+    ? documents.find((document) => document.id === previewId)
+    : undefined;
+  const preview: DocumentItem | undefined = previewSummary
+    ? { ...previewSummary, html: loadedHtml[previewSummary.id] ?? "" }
     : undefined;
 
   useEffect(() => {
-    if (!preview && !tablePreview && !notationOverviewOpen && !engravedScore) return;
+    const requestedIds = [activeId, previewId].filter(
+      (id): id is string => Boolean(id && loadedHtml[id] === undefined),
+    );
+    requestedIds.forEach((id) => {
+      const document = documents.find((item) => item.id === id);
+      if (!document) return;
+      void loadDocumentHtml(document)
+        .then((html) => {
+          setLoadedHtml((current) => ({ ...current, [id]: html }));
+          setLoadErrors((current) => {
+            const next = { ...current };
+            delete next[id];
+            return next;
+          });
+        })
+        .catch((error: unknown) => {
+          console.error(`Failed to load ${document.sourcePath}:`, error);
+          setLoadErrors((current) => ({
+            ...current,
+            [id]: "This document could not be loaded.",
+          }));
+        });
+    });
+  }, [activeId, previewId, loadedHtml]);
+
+  useEffect(() => {
+    if (!previewId && !tablePreview && !notationOverviewOpen && !engravedScore) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [preview, tablePreview, notationOverviewOpen, engravedScore]);
+  }, [previewId, tablePreview, notationOverviewOpen, engravedScore]);
 
   const grouped = useMemo(
     () =>
@@ -109,17 +178,26 @@ export default function MusicLibrary() {
   );
 
   const results = useMemo(() => {
-    const terms = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const normalizedQuery = query.toLowerCase().trim();
+    const terms = normalizedQuery.split(/\s+/).filter(Boolean);
     if (!terms.length) return documents.slice(0, 8);
     return documents
       .map((document) => {
         const title = document.title.toLowerCase();
-        const score = terms.reduce(
+        const metadataSearch = document.category === "Scores";
+        const phraseScore = title.includes(normalizedQuery)
+          ? 30
+          : document.searchText.includes(normalizedQuery)
+            ? metadataSearch
+              ? 20
+              : 8
+            : 0;
+        const score = phraseScore + terms.reduce(
           (total, term) =>
             total +
-            (title.includes(term) ? 8 : 0) +
+            (title.includes(term) ? 12 : 0) +
             (document.headings.some((heading) => heading.text.toLowerCase().includes(term)) ? 4 : 0) +
-            (document.searchText.includes(term) ? 1 : 0),
+            (document.searchText.includes(term) ? (metadataSearch ? 8 : 3) : 0),
           0,
         );
         return { document, score };
@@ -205,7 +283,7 @@ export default function MusicLibrary() {
   };
 
   const metadata = Object.entries(active.metadata).filter(
-    ([key]) => !["title", "alternate_titles"].includes(key),
+    ([key]) => !["title", "alternate_titles", "keywords"].includes(key),
   );
   const notationOverviewHtml = (
     active.html.match(/<div class="music-section"[\s\S]*?<\/div>/g) ?? []
@@ -345,18 +423,24 @@ export default function MusicLibrary() {
                     {metadata.slice(0, 8).map(([key, value]) => (
                       <span key={key}>
                         <small>{key.replaceAll("_", " ")}</small>
-                        <strong>{String(value)}</strong>
+                        <strong>{displayMetadataValue(value)}</strong>
                       </span>
                     ))}
                   </div>
                 )}
               </header>
             )}
-            <div
-              className="markdown notation-view-both"
-              onClick={handleMarkdownClick}
-              dangerouslySetInnerHTML={{ __html: active.html }}
-            />
+            {loadErrors[active.id] ? (
+              <div className="document-state" role="alert">{loadErrors[active.id]}</div>
+            ) : active.html ? (
+              <div
+                className="markdown notation-view-both"
+                onClick={handleMarkdownClick}
+                dangerouslySetInnerHTML={{ __html: active.html }}
+              />
+            ) : (
+              <div className="document-state" aria-live="polite">Loading document…</div>
+            )}
           </article>
 
           {active.headings.length > 2 && (
@@ -444,11 +528,17 @@ export default function MusicLibrary() {
               </div>
             </header>
             <div className="score-preview-scroll">
-              <article
-                className="markdown score-preview-content notation-view-both"
-                onClick={handleMarkdownClick}
-                dangerouslySetInnerHTML={{ __html: preview.html }}
-              />
+              {loadErrors[preview.id] ? (
+                <div className="document-state" role="alert">{loadErrors[preview.id]}</div>
+              ) : preview.html ? (
+                <article
+                  className="markdown score-preview-content notation-view-both"
+                  onClick={handleMarkdownClick}
+                  dangerouslySetInnerHTML={{ __html: preview.html }}
+                />
+              ) : (
+                <div className="document-state" aria-live="polite">Loading score…</div>
+              )}
             </div>
           </section>
         </div>
@@ -502,11 +592,13 @@ export default function MusicLibrary() {
               </button>
             </header>
             <div className="engraved-score-body">
-              <MuseScoreViewer
-                key={engravedScore.source}
-                source={engravedScore.source}
-                title={engravedScore.title}
-              />
+              <Suspense fallback={<div className="document-state">Loading score viewer…</div>}>
+                <MuseScoreViewer
+                  key={engravedScore.source}
+                  source={engravedScore.source}
+                  title={engravedScore.title}
+                />
+              </Suspense>
             </div>
           </section>
         </div>

@@ -6,35 +6,51 @@ import { evaluate } from "@mdx-js/mdx";
 import { MDXProvider } from "@mdx-js/react";
 import * as runtime from "react/jsx-runtime";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { MusicScore } from "../components/score-notation.mjs";
+import { parse as parseYaml } from "yaml";
+import {
+  MusicScore,
+  NotationDirectiveKeyword,
+  NotationParseError,
+  parseNotationDirective,
+  parseScoreNotation,
+} from "../components/score-notation.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputFile = path.join(root, "app", "generated-content.ts");
+const generatedContentDir = path.join(root, "public", "generated-content");
 const legacyDownloadsDir = path.join(root, "public", "downloads");
 const generatedScoresDir = path.join(root, "public", "generated-scores");
 const webMscoreVendorDir = path.join(root, "public", "vendor", "webmscore");
 
+const discoverFiles = (directory, extensions) => {
+  const absoluteDirectory = path.join(root, directory);
+  if (!fs.existsSync(absoluteDirectory)) return [];
+
+  return fs
+    .readdirSync(absoluteDirectory, { recursive: true, withFileTypes: true })
+    .filter(
+      (entry) => entry.isFile() && extensions.has(path.extname(entry.name)),
+    )
+    .map((entry) =>
+      path
+        .relative(root, path.join(entry.parentPath, entry.name))
+        .replaceAll("\\", "/"),
+    )
+    .sort((left, right) => left.localeCompare(right));
+};
+
 const contentFiles = [
   "README.md",
-  "AGENTS.md",
-  "docs/01_training_and_sight_reading.md",
-  "docs/02_basics_and_ragas.md",
-  "docs/03_jatiswara.md",
-  "docs/04_krithis.md",
-  "docs/05_varnams.md",
-  "docs/06_bhajans.md",
-  "docs/carnatic_saxophone.md",
-  "docs/score_metadata_template.md",
+  ...discoverFiles("docs", new Set([".md", ".mdx"])),
   "scores/README.md",
-  "scores/02_basics/sarale_varase_to_alankaaras.mdx",
-  "scores/02_basics/sri_gananatha_geethe.mdx",
-  "scores/05_varnams/ninnu_kori_vasantha_varnam.mdx",
+  ...discoverFiles("scores", new Set([".mdx"])),
+  "AGENTS.md",
 ];
 
 const categoryFor = (file) => {
   if (file === "README.md") return "Start here";
   if (file === "AGENTS.md" || file === "scores/README.md") return "Project";
-  if (file.includes("score_metadata_template")) return "Reference";
+  if (file.includes("score-notation")) return "Reference";
   if (file.includes("carnatic_saxophone")) return "Reference";
   if (file.startsWith("scores/")) return "Scores";
   return "Learn";
@@ -74,13 +90,28 @@ const allFiles = contentFiles.map((file, order) => {
   };
 });
 
-const sourceDirectivePattern = /^@\s*source(?:\s+file)?\s*:\s*(.+\.mscz)\s*$/im;
+const parseNotationForFile = (mdxFile, notation, blockLine = 1) => {
+  try {
+    return parseScoreNotation(notation);
+  } catch (error) {
+    const relativeLine = error instanceof NotationParseError ? error.line : 1;
+    const column = error instanceof NotationParseError ? error.column : 1;
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `${mdxFile}:${blockLine + relativeLine - 1}:${column} - error Carnatic notation: ${message}`,
+      { cause: error },
+    );
+  }
+};
 
-const museScoreSourceFor = (mdxFile, notation) => {
-  const directive = notation.match(sourceDirectivePattern);
-  if (!directive) return null;
+const museScoreSourceFor = (mdxFile, notation, blockLine = 1) => {
+  const requested = parseNotationForFile(
+    mdxFile,
+    notation,
+    blockLine,
+  ).museScoreSource;
+  if (!requested) return null;
 
-  const requested = directive[1].trim().replace(/^["']|["']$/g, "");
   const absolute = path.resolve(root, path.dirname(mdxFile), requested);
   const scoresRoot = path.join(root, "scores");
   if (
@@ -88,11 +119,13 @@ const museScoreSourceFor = (mdxFile, notation) => {
     !absolute.startsWith(`${scoresRoot}${path.sep}`)
   ) {
     throw new Error(
-      `${mdxFile}: @source must reference a MuseScore file inside scores/.`,
+      `${mdxFile}:${blockLine}:1 - error Carnatic notation: @source must reference a MuseScore file inside scores/.`,
     );
   }
   if (!fs.existsSync(absolute)) {
-    throw new Error(`${mdxFile}: @source file does not exist: ${requested}`);
+    throw new Error(
+      `${mdxFile}:${blockLine}:1 - error Carnatic notation: @source file does not exist: ${requested}`,
+    );
   }
 
   const repositoryPath = path.relative(root, absolute).replaceAll("\\", "/");
@@ -103,22 +136,35 @@ const museScoreSourceFor = (mdxFile, notation) => {
 };
 
 const carnaticBlocksFor = (source) =>
-  [...source.matchAll(/```carnatic\r?\n([\s\S]*?)\r?\n```/g)].map(
-    (match) => match[1],
-  );
+  [...source.matchAll(/```carnatic\r?\n([\s\S]*?)\r?\n```/g)].map((match) => ({
+    notation: match[1],
+    line: source.slice(0, match.index).split(/\r?\n/).length + 1,
+  }));
 
 const museScoreSourcesFor = (file, source) => {
   if (!file.endsWith(".mdx") || !file.startsWith("scores/")) return [];
   return carnaticBlocksFor(source)
-    .map((notation) => museScoreSourceFor(file, notation))
+    .map(({ notation, line }) => museScoreSourceFor(file, notation, line))
     .filter(Boolean);
 };
+
+for (const item of allFiles) {
+  museScoreSourcesFor(item.file, item.source);
+}
 
 const scoreSourceFor = (file, source) =>
   museScoreSourcesFor(file, source)[0]?.publicUrl ?? null;
 
 const withoutSourceDirective = (notation) =>
-  notation.replace(sourceDirectivePattern, "").replace(/^\s+/, "");
+  notation
+    .split(/\r?\n/)
+    .filter(
+      (line) =>
+        parseNotationDirective(line)?.keyword !==
+        NotationDirectiveKeyword.Source,
+    )
+    .join("\n")
+    .replace(/^\s+/, "");
 
 const idByAbsolutePath = new Map(
   allFiles.map((item) => [path.resolve(root, item.file), item.id]),
@@ -460,13 +506,22 @@ const stripTitleAndMetadata = (source) => {
   const metadata = {};
   const yaml = body.match(/^```yaml\n([\s\S]*?)\n```\n*/);
   if (yaml) {
-    for (const line of yaml[1].split("\n")) {
-      const match = line.match(/^([a-z_]+):\s*(.+)$/);
-      if (match) metadata[match[1]] = match[2];
+    const parsed = parseYaml(yaml[1]);
+    if (!parsed || Array.isArray(parsed) || typeof parsed !== "object") {
+      throw new Error("Score metadata must be a YAML mapping.");
     }
+    Object.assign(metadata, parsed);
     body = body.slice(yaml[0].length);
   }
   return { body, metadata };
+};
+
+const searchableValue = (value) => {
+  if (Array.isArray(value)) return value.map(searchableValue).join(" ");
+  if (value && typeof value === "object") {
+    return Object.values(value).map(searchableValue).join(" ");
+  }
+  return String(value ?? "");
 };
 
 const documents = await Promise.all(
@@ -483,6 +538,16 @@ const documents = await Promise.all(
       .trim();
     const excerpt =
       plain.length > 170 ? `${plain.slice(0, 167).trim()}…` : plain;
+    const contentUrl = `/generated-content/${item.id}.json`;
+    const metadataSearchText = Object.entries(metadata)
+      .map(
+        ([key, value]) =>
+          `${key.replaceAll("_", " ")} ${searchableValue(value)}`,
+      )
+      .join(" ");
+    const searchText = item.file.endsWith(".mdx")
+      ? `${item.title} ${metadataSearchText}`
+      : `${item.title} ${plain}`;
     return {
       id: item.id,
       title: item.title,
@@ -490,7 +555,8 @@ const documents = await Promise.all(
       order: item.order,
       excerpt,
       html,
-      searchText: `${item.title} ${plain}`.toLowerCase(),
+      contentUrl,
+      searchText: searchText.toLowerCase(),
       headings,
       metadata,
       sourcePath: item.file,
@@ -499,11 +565,31 @@ const documents = await Promise.all(
   }),
 );
 
+fs.rmSync(generatedContentDir, {
+  recursive: true,
+  force: true,
+  maxRetries: 3,
+  retryDelay: 50,
+});
+for (const document of documents) {
+  const destination = path.join(root, "public", document.contentUrl);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, JSON.stringify({ html: document.html }));
+}
+
+const manifest = documents.map((document) => {
+  const manifestDocument = { ...document };
+  delete manifestDocument.html;
+  return manifestDocument;
+});
+const homeHtml =
+  documents.find((document) => document.id === "home")?.html ?? "";
 fs.mkdirSync(path.dirname(outputFile), { recursive: true });
 fs.writeFileSync(
   outputFile,
   `// Generated by scripts/generate-content.mjs. Do not edit directly.\n` +
-    `export const documents = ${JSON.stringify(documents, null, 2)} as const;\n`,
+    `export const documents = ${JSON.stringify(manifest, null, 2)} as const;\n` +
+    `export const homeHtml = ${JSON.stringify(homeHtml)};\n`,
 );
 
 // MuseScore source files belong in the repository, not in the static website.

@@ -9,7 +9,7 @@ Before creating or editing a score:
 
 1. Read this document and the relevant curriculum page linked by `README.md`.
 2. Establish the source, raga, tala, tonic, and composition structure.
-3. Complete the fields in `score_metadata_template.md`.
+3. Complete the fields in `score-notation.md`.
 4. Apply the notation rules below.
 5. Run the validation checklist and update the repository index.
 

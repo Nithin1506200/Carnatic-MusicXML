@@ -14,4 +14,6 @@ source used by the score.
 
 ## Index
 
-No scores added yet.
+| Composition               | Raga          | Tala | Composer       | Files                                                                                                                                                |
+| ------------------------- | ------------- | ---- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Bhagyada Lakshmi Baaramma | Madhyamavathi | Aadi | Purandara Dasa | [Swaras, lyrics, and meaning](../scores/06_bhajans/bhagyada_lakshmi_baaramma.mdx) · [MuseScore](../scores/06_bhajans/bhagyada_lakshmi_baaramma.mscz) |

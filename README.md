@@ -24,24 +24,30 @@ original title and language should always be preserved.
 
 ## Available scores
 
-| Section            | Composition                                                     | Raga            | Tala                        | Composer             | Files                                                                                                                              |
-| ------------------ | --------------------------------------------------------------- | --------------- | --------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Basics / Exercises | Swara Adhyaaya — Sarale Varase to Saptasulaadi Taala Alankaaras | Mayamalavagowla | Aadi and Saptasulaadi talas | Traditional          | [Swaras](scores/02_basics/sarale_varase_to_alankaaras.mdx) · [MuseScore](scores/02_basics/sarale_varase_to_alankaaras.mscz)        |
-| Basics / Geetham   | Sri Gananatha (Lambodara Geetham)                               | Malahari        | Rupaka, `2 + 4`             | Purandara Dasa       | [Swaras, lyrics, and meaning](scores/02_basics/sri_gananatha_geethe.mdx) · [MuseScore](scores/02_basics/sri_gananatha_geethe.mscz) |
-| Varnam             | Ninnu Kori Yunnara                                              | Vasantha        | Aadi, `4 + 2 + 2`           | Tacchur Singarachari | [MDX transcription](scores/05_varnams/ninnu_kori_vasantha_varnam.mdx) · MuseScore not created by user request                      |
+| Section            | Composition                                                     | Raga            | Tala                        | Composer             | Files                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------- | --------------- | --------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Basics / Exercises | Swara Adhyaaya — Sarale Varase to Saptasulaadi Taala Alankaaras | Mayamalavagowla | Aadi and Saptasulaadi talas | Traditional          | [Swaras](scores/02_basics/sarale_varase_to_alankaaras.mdx) · [MuseScore](scores/02_basics/sarale_varase_to_alankaaras.mscz)                    |
+| Basics / Geetham   | Sri Gananatha (Lambodara Geetham)                               | Malahari        | Rupaka, `2 + 4`             | Purandara Dasa       | [Swaras, lyrics, and meaning](scores/02_basics/sri_gananatha_geethe.mdx) · [MuseScore](scores/02_basics/sri_gananatha_geethe.mscz)             |
+| Varnam             | Ninnu Kori Yunnara                                              | Vasantha        | Aadi, `4 + 2 + 2`           | Tacchur Singarachari | [MDX transcription](scores/05_varnams/ninnu_kori_vasantha_varnam.mdx) · MuseScore not created by user request                                  |
+| Bhajan             | Bhagyada Lakshmi Baaramma                                       | Madhyamavathi   | Aadi, `4 + 2 + 2`           | Purandara Dasa       | [Swaras, lyrics, and meaning](scores/06_bhajans/bhagyada_lakshmi_baaramma.mdx) · [MuseScore](scores/06_bhajans/bhagyada_lakshmi_baaramma.mscz) |
 
 ## Static website
 
-The Node.js website reads this README and the repository Markdown and MDX during
-its build, then generates a fully static site with client-side global search.
-Score pages render the repository's MuseScore `.mscz` files directly in the
-browser as paginated SVG notation. The build copies the source archives and
-self-hosted WebAssembly renderer into ignored, generated static assets; it does
-not create or commit MusicXML, PDF, or image exports.
+The Vite and React website discovers this README, repository documentation, and
+score MDX during its build, then generates a fully static site. MDX is compiled
+to the existing React notation components at build time. Individual documents
+are loaded on demand, while global search uses a small manifest built from score
+YAML metadata (including `keywords`) and documentation text. Score pages render
+the repository's MuseScore `.mscz` files directly in the browser as paginated
+SVG notation. The build copies the source archives and self-hosted WebAssembly
+renderer into ignored, generated static assets; it does not create or commit
+MusicXML, PDF, image, or audio exports.
 
 ```sh
 npm ci
 npm run dev
+npm test
+npm run validate:notation
 npm run build
 ```
 
@@ -53,7 +59,7 @@ Node.js server after deployment and can be hosted by any static-site provider.
 - Read [AGENTS.md](AGENTS.md) and
   [docs/carnatic_saxophone.md](docs/carnatic_saxophone.md) before writing or
   editing music.
-- Use [the score metadata template](docs/score_metadata_template.md) for every
+- Use [the score notation and metadata guide](docs/score-notation.md) for every
   new item.
 - Keep only a same-stem `.mscz` and `.mdx` pair for every score.
 - The `.mdx` companion must contain metadata, complete swaras, complete lyrics,
