@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { notationBlocksFor } from "../scripts/validate-notation";
 import {
   classifyOctave,
+  normalizeSwaraToken,
   NotationDirectiveKeyword,
   NotationParseError,
   NotationRowKind,
@@ -17,7 +18,11 @@ import {
   parseNotationLine,
   parseNotationText,
   parseScoreNotation,
+  parseSwaraDurations,
+  parseTimeSignature,
+  splitSwaraSlots,
   SwaraTable,
+  swaraSlotCount,
   TalaDivider,
 } from "./score-notation";
 
@@ -79,6 +84,102 @@ describe("octave classification", () => {
     expect(classifyOctave("S")).toBe(OctavePosition.Middle);
     expect(classifyOctave("Ṡ")).toBe(OctavePosition.Upper);
   });
+
+  it("keeps octave styling when marks are attached to the swara", () => {
+    expect(classifyOctave("Ṡ,")).toBe(OctavePosition.Upper);
+    expect(classifyOctave("Ṇ,")).toBe(OctavePosition.Lower);
+  });
+});
+
+describe("octave aliases", () => {
+  it("rewrites apostrophe and lowercase aliases to dotted swaras", () => {
+    expect(normalizeSwaraToken("S'")).toBe("Ṡ");
+    expect(normalizeSwaraToken("n")).toBe("Ṇ");
+    expect(normalizeSwaraToken("S'R'")).toBe("ṠṘ");
+    expect(normalizeSwaraToken("nn,")).toBe("ṆṆ,");
+    expect(normalizeSwaraToken("Ṡ")).toBe("Ṡ"); // canonical form passes through
+    expect(normalizeSwaraToken("Ṇ")).toBe("Ṇ");
+    expect(normalizeSwaraToken("|")).toBe("|");
+  });
+
+  it("rejects contradictory alias forms as unparseable swaras", () => {
+    // A lowercase letter already names mandra; adding a tāra apostrophe is
+    // garbage and must not silently normalize — the token stays opaque and
+    // pitch resolution in the .mscz generator rejects it.
+    expect(normalizeSwaraToken("n'")).toBe("n'");
+    expect(
+      parseScoreNotation("# A [swaras]\nn' S ||").sections[0].content,
+    ).toEqual(["n' S ||"]);
+    expect(
+      parseScoreNotation("# A [swaras]\nṠ' S ||").sections[0].content,
+    ).toEqual(["Ṡ' S ||"]);
+  });
+
+  it("stores canonical dotted text for aliased swara rows", () => {
+    const parsed = parseScoreNotation("# A [swaras]\nS' n ||");
+    expect(parsed.sections[0].content).toEqual(["Ṡ Ṇ ||"]);
+  });
+
+  it("keeps a trailing tāra alias at the end of a row", () => {
+    expect(
+      parseScoreNotation("# A [swaras]\nD S' ||").sections[0].content[0],
+    ).toBe("D Ṡ ||");
+  });
+
+  it("keeps apostrophes in lyric rows verbatim", () => {
+    const parsed = parseScoreNotation("# P\nS R ||\ndon't stop ||");
+    const [section] = parsed.sections;
+    if (section.kind !== NotationSectionKind.Lyrics) {
+      throw new Error("expected a lyrical section");
+    }
+    expect(section.content[0].lyrics).toBe("don't stop ||");
+  });
+
+  it("pairs compact aliased tokens with lyric cells", () => {
+    const parsed = parseScoreNotation("# P\ns, | S' ||\nla | ta ||");
+    const [section] = parsed.sections;
+    if (section.kind !== NotationSectionKind.Lyrics) {
+      throw new Error("expected a lyrical section");
+    }
+    expect(section.content[0].swaras).toBe("Ṣ, | Ṡ ||");
+  });
+
+  it("renders aliased props with the usual octave styling", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(SwaraTable, {
+        swaras: "S' n ||",
+        lyrics: "- sa ||",
+        number: 1,
+      }),
+    );
+    expect(markup).toContain("<strong>Ṡ</strong>");
+    expect(markup).toContain("<em>Ṇ</em>");
+  });
+});
+
+describe("slot splitting", () => {
+  it("splits letters and attached marks into ordered slots", () => {
+    expect(splitSwaraSlots("G,")).toEqual([
+      { kind: "sound", text: "G" },
+      { kind: "mark", text: "," },
+    ]);
+    expect(splitSwaraSlots(",N")).toEqual([
+      { kind: "mark", text: "," },
+      { kind: "sound", text: "N" },
+    ]);
+  });
+
+  it("counts slots for lyric alignment", () => {
+    expect(swaraSlotCount("S")).toBe(1);
+    expect(swaraSlotCount("G,")).toBe(2);
+    expect(swaraSlotCount("SRGM")).toBe(4);
+    expect(swaraSlotCount(",,")).toBe(2);
+  });
+
+  it("rejects tokens that are not swara cells", () => {
+    expect(splitSwaraSlots("G%")).toBeNull();
+    expect(splitSwaraSlots("%")).toBeNull();
+  });
 });
 
 describe("directive parsing", () => {
@@ -90,7 +191,7 @@ describe("directive parsing", () => {
     });
   });
 
-  it("recognizes source, repeat, return, and custom keywords", () => {
+  it("recognizes source, repeat, return, time, and custom keywords", () => {
     expect(parseNotationDirective("@source: score.mscz")?.keyword).toBe(
       NotationDirectiveKeyword.Source,
     );
@@ -99,6 +200,9 @@ describe("directive parsing", () => {
     );
     expect(parseNotationDirective("@Return: Charanam")?.keyword).toBe(
       NotationDirectiveKeyword.Return,
+    );
+    expect(parseNotationDirective("@Time: (4+2+2)/4")?.keyword).toBe(
+      NotationDirectiveKeyword.Time,
     );
     expect(parseNotationDirective("@Tempo: Slowly")?.keyword).toBe(
       NotationDirectiveKeyword.Custom,
@@ -109,6 +213,217 @@ describe("directive parsing", () => {
     expect(() => parseNotationDirective("@Repeat the pallavi")).toThrow(
       "@Keyword: value",
     );
+  });
+});
+
+describe("swara durations", () => {
+  it("treats one space-separated token as one unit", () => {
+    expect(parseSwaraDurations("S")).toEqual([
+      { text: "S", sounds: ["S"], units: 1 },
+    ]);
+  });
+
+  it("splits swaras joined without a space into one shared unit", () => {
+    expect(parseSwaraDurations("SR")).toEqual([
+      { text: "SR", sounds: ["S", "R"], units: 1 },
+    ]);
+    expect(parseSwaraDurations("ṠṘGM")).toEqual([
+      { text: "ṠṘGM", sounds: ["Ṡ", "Ṙ", "G", "M"], units: 1 },
+    ]);
+  });
+
+  it.each([
+    ["S .", 2], // a minim
+    ["S . .", 3], // a dotted minim
+    ["S -", 2],
+    ["S ,", 2],
+  ])("folds the duration marks in %j into units", (value, expected) => {
+    expect(parseSwaraDurations(value)).toEqual([
+      { text: "S", sounds: ["S"], units: expected },
+    ]);
+  });
+
+  it("extends only the swara cell that precedes a mark", () => {
+    expect(parseSwaraDurations("S R . .")).toEqual([
+      { text: "S", sounds: ["S"], units: 1 },
+      { text: "R", sounds: ["R"], units: 3 },
+    ]);
+  });
+
+  it("folds marks across tala dividers", () => {
+    expect(parseSwaraDurations("S . | R ||").map((beat) => beat.units)).toEqual(
+      [2, 1],
+    );
+  });
+
+  it("keeps every base cell audible at one unit", () => {
+    const beats = parseSwaraDurations("S R G M | P D | N Ṡ ||");
+    expect(beats.map((beat) => beat.units)).toEqual([1, 1, 1, 1, 1, 1, 1, 1]);
+    expect(beats.reduce((total, beat) => total + beat.units, 0)).toBe(8);
+  });
+
+  it("folds a line-opening mark run into one continuation beat", () => {
+    // The line continues the previous line's last cell for four units.
+    expect(parseSwaraDurations("- - - - ||")).toEqual([
+      { text: "-", sounds: [], units: 4 },
+    ]);
+  });
+
+  it("reads * as a rest that duration marks lengthen", () => {
+    expect(parseSwaraDurations("S * - | R * - -")).toEqual([
+      { text: "S", sounds: ["S"], units: 1 },
+      { text: "*", sounds: [], units: 2, rest: true },
+      { text: "R", sounds: ["R"], units: 1 },
+      { text: "*", sounds: [], units: 3, rest: true },
+    ]);
+  });
+
+  it("rejects the retired dhirga mark in a section", () => {
+    expect(() => parseScoreNotation("# A [swaras]\nS ; ||")).toThrow(
+      'The dhirga mark ";" is not supported',
+    );
+  });
+
+  it("accepts token arrays", () => {
+    expect(parseSwaraDurations(["S", "."])).toEqual([
+      { text: "S", sounds: ["S"], units: 2 },
+    ]);
+  });
+
+  it("keeps a compact swara token as a one-unit beat", () => {
+    expect(parseSwaraDurations("G,")).toEqual([
+      { text: "G,", sounds: ["G"], units: 1 },
+    ]);
+    expect(parseSwaraDurations("S ,,")).toEqual([
+      { text: "S", sounds: ["S"], units: 2 },
+    ]);
+  });
+});
+
+describe("cell-aligned swara and lyric pairing", () => {
+  const compactPair = [
+    "# Pallavi",
+    "G, M, D, ,, | NN DN | S, ,, ||",
+    "Ni nnu ko - | - - | ri - ||",
+  ].join("\n");
+
+  it("pairs lyric cells with compact swara cells", () => {
+    const parsed = parseScoreNotation(compactPair);
+    expect(parsed.sections[0]).toMatchObject({
+      kind: NotationSectionKind.Lyrics,
+    });
+  });
+
+  it("rejects a lyric row with extra cells for slot subdivisions", () => {
+    expect(() => parseScoreNotation("# A\nG, M, ||\nla - ta bo ||")).toThrow(
+      "same number of cells (2 swara cells !== 4 lyric cells)",
+    );
+  });
+
+  it("rejects lyric dividers that the swara row does not have", () => {
+    expect(() => parseScoreNotation("# A\nG, M ||\nla | ta ||")).toThrow(
+      "same positions",
+    );
+  });
+
+  it("spans a compact token and its lyric cell across its slots", () => {
+    const markup = renderToStaticMarkup(
+      React.createElement(SwaraTable, {
+        swaras: "G, M | ND SN ||",
+        lyrics: "la ti | ka ra ||",
+        number: 1,
+      }),
+    );
+    expect(markup).toContain('colSpan="2"');
+    expect(markup).toContain("tala-solid-before");
+  });
+});
+
+describe("time signature directive", () => {
+  const timedPair = [
+    "# Pallavi",
+    "@Time: (4+2+2)/4",
+    "G, M, D, ,, | NN DN | S, ,, ||",
+    "Ni nnu ko - | - - | ri - ||",
+  ].join("\n");
+
+  it("parses grouping and denominator forms", () => {
+    expect(parseTimeSignature("(4+2+2)/4")).toEqual({
+      grouping: [4, 2, 2],
+      denominator: 4,
+    });
+    expect(parseTimeSignature("4+2+2 / 4")).toEqual({
+      grouping: [4, 2, 2],
+      denominator: 4,
+    });
+    expect(parseTimeSignature("8/4")).toEqual({
+      grouping: [8],
+      denominator: 4,
+    });
+    expect(parseTimeSignature("(3)/8")).toEqual({
+      grouping: [3],
+      denominator: 8,
+    });
+  });
+
+  it.each(["8/4 — prose", "4/3", "abc", "/", "(8/4", "(4+2+2))/4"])(
+    "rejects the malformed signature %j",
+    (value) => {
+      expect(() => parseTimeSignature(value)).toThrow("@Time must name");
+    },
+  );
+
+  it("attaches the parsed signature to its section", () => {
+    const parsed = parseScoreNotation(timedPair);
+    expect(parsed.sections[0].time).toEqual({
+      grouping: [4, 2, 2],
+      denominator: 4,
+    });
+  });
+
+  it("rejects an anga that breaks the declared grouping", () => {
+    expect(() =>
+      parseScoreNotation(
+        "# P\n@Time: (4+2+2)/4\nS R G | M P | D N ||\nla ta bo | ga ma | ni dha ||",
+      ),
+    ).toThrow("Anga 1 has 3 cells; @Time (4+2+2)/4 expects 4.");
+  });
+
+  it("rejects a row that stops mid-measure", () => {
+    expect(() =>
+      parseScoreNotation(
+        "# P\n@Time: (4+2+2)/4\nS R G M | P D ||\nla ta bo ga | ma ni ||",
+      ),
+    ).toThrow("stops after anga 2 of 3");
+  });
+
+  it("rejects a row without a closing measure divider", () => {
+    expect(() =>
+      parseScoreNotation("# A [swaras]\n@Time: (2+2)/4\nS R | G M"),
+    ).toThrow("must end with ||");
+  });
+
+  it("rejects a duplicate or late @Time", () => {
+    expect(() =>
+      parseScoreNotation(
+        "# A [swaras]\n@Time: (2+2)/4\n@Time: 4/4\nS R | G M ||",
+      ),
+    ).toThrow("may declare @Time only once");
+    expect(() =>
+      parseScoreNotation("# A [swaras]\nS R | G M ||\n@Time: (2+2)/4"),
+    ).toThrow("@Time must appear before");
+  });
+
+  it("reports the line of a malformed @Time value", () => {
+    try {
+      parseScoreNotation(
+        "# A [swaras]\nS R | G M ||\n# B [swaras]\n@Time: soon\nS S | S S ||",
+      );
+      expect.unreachable("a malformed @Time should fail");
+    } catch (error) {
+      expect(error).toBeInstanceOf(NotationParseError);
+      expect(error).toMatchObject({ line: 4, column: 1 });
+    }
   });
 });
 
@@ -129,10 +444,14 @@ describe("documented score notation contract", () => {
       key: "pallavi",
       title: "Pallavi",
       kind: NotationSectionKind.Lyrics,
+      time: { grouping: [4, 2, 2], denominator: 4 },
     });
-    expect(parsed.sections[0].before[0].keyword).toBe(
+    expect(
+      parsed.sections[0].before.map((directive) => directive.keyword),
+    ).toEqual([
+      NotationDirectiveKeyword.Time,
       NotationDirectiveKeyword.Sahitya,
-    );
+    ]);
     expect(parsed.sections[0].after[0].keyword).toBe(
       NotationDirectiveKeyword.Repeat,
     );

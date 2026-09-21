@@ -1,0 +1,1 @@
+Error: Metadata "arohana" is now derived from data/ragas.toml; remove it. For a documented source variant, use arohana_override with a source note.

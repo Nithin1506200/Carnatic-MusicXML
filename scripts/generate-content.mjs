@@ -14,6 +14,7 @@ import {
   parseNotationDirective,
   parseScoreNotation,
 } from "../components/score-notation.ts";
+import { getRaga } from "../components/ragas.generated.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outputFile = path.join(root, "app", "generated-content.ts");
@@ -501,6 +502,35 @@ const renderMdx = async (mdx, sourceFile) => {
   return { html, headings };
 };
 
+/**
+ * Score metadata declares only the raga name; the raga_type, janya_of,
+ * melakarta_number, arohana, and avarohana shown in search and the app are
+ * derived from data/ragas.toml (see scripts/generate-ragas.ts).
+ */
+const enrichRagaMetadata = (metadata) => {
+  if (typeof metadata.raga !== "string" || !metadata.raga.trim()) {
+    return metadata;
+  }
+  const raga = getRaga(metadata.raga.trim());
+  if (!raga || raga.name === undefined) {
+    return metadata;
+  }
+  return Object.fromEntries(
+    Object.entries({
+      ...metadata,
+      raga_type: raga.type === "melakarta" ? "Melakarta" : "Janya raga",
+      ...(raga.melakartaNumber !== undefined
+        ? { melakarta_number: raga.melakartaNumber }
+        : {}),
+      ...(raga.janyaOf !== undefined
+        ? { janya_of: `${raga.janyaOf} (Melakarta ${raga.janyaOfNumber})` }
+        : {}),
+      arohana: metadata.arohana_override ?? raga.arohana,
+      avarohana: metadata.avarohana_override ?? raga.avarohana,
+    }).filter(([, value]) => value !== undefined),
+  );
+};
+
 const stripTitleAndMetadata = (source) => {
   let body = source.replace(/^#\s+.+\n+/, "");
   const metadata = {};
@@ -513,7 +543,7 @@ const stripTitleAndMetadata = (source) => {
     Object.assign(metadata, parsed);
     body = body.slice(yaml[0].length);
   }
-  return { body, metadata };
+  return { body, metadata: enrichRagaMetadata(metadata) };
 };
 
 const searchableValue = (value) => {

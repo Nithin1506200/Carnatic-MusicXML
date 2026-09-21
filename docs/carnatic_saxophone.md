@@ -82,6 +82,14 @@ For Malahari:
 
 ## Raga Representation
 
+Raga facts (arohana, avarohana, type, janya parentage, and melakarta number)
+come from `data/ragas.toml`, the canonical raga registry. Score metadata
+declares only the raga name; `scripts/generate-ragas.ts` emits the typed
+`RagaName` union and lookup data used by the notation validator, the MDX→MSCZ
+converter, and the site. Add an unregistered raga to that file first — with
+its arohana, avarohana, janya parent, and a `reference` source — per the
+verification rules in `AGENTS.md`.
+
 At the top of a composition or lesson, include a heading text frame with:
 
 - Composition or lesson name.
@@ -161,7 +169,8 @@ MuseScore `.mscx` representation:
 
 - Current user preference: add system break after every 2 measures.
 - Add page break after each lesson to separate lessons.
-- Add a section break after each varase or major lesson section when needed.
+- Add a section break after each varase or major lesson section. The MDX→`.mscz`
+  converter adds one automatically in the last measure of every notation section.
 - Do not change Alankaara unless the user explicitly asks.
 - Avoid text overlap by using enough frame height and short wrapped lines.
 - Prefer one clear text frame for heading and details instead of many stacked text items that can collide.
@@ -181,6 +190,9 @@ For geethe/compositions:
 - Lower-octave swaras should have a dot below and be italic, for example
   `<i>Ṇ</i>`, `<i>Ḍ</i>`, `<i>P̣</i>`, `<i>Ṃ</i>`.
 - Middle-octave swaras stay plain.
+- Typing aid for MDX notation rows: `S'` enters Ṡ (tāra) and lowercase `s`
+  enters Ṣ (mandra); `npm run format:mdx` and the parser both rewrite the
+  aliases to the dotted Unicode. Lyric rows are never rewritten.
 
 For the same-stem MDX companion:
 
@@ -199,9 +211,20 @@ For the same-stem MDX companion:
 - Put sahitya, repeat, return, or other section text on an `@Label:` line, such
   as `@Repeat:`. Its position before or after the notation controls where it
   renders.
+- A section may declare `@Time: (4+2+2)/4` before its notation rows. The
+  parser then enforces the cyclical anga cell counts (lyric rows follow the
+  same division via cell alignment), and the `.mscz` converter uses the
+  declared denominator for that section's printed time signature.
 - Write each line horizontally. One or more spaces separate cells and are
   collapsed by the parser; use `|` for an internal tala anga and `||` for a
   measure boundary.
+- Marks attach inside a token: `G,` is a quaver swara tied to a quaver hold
+  (one crotchet), `,,` is one held crotchet split into its two quaver slots,
+  and letters share a cell the same way (`NN` is two quavers). Three letters
+  in one token engrave as a triplet (`SRR` is a crotchet triplet; sound
+  letters only, no held marks). The printed time signature follows the
+  tokens per measure: e.g. 4 + 2 + 2 crotchet cells produce an 8/4
+  signature.
 - Pad the source cells with spaces so each swara is visibly above its lyric;
   `npm run format:mdx` performs this alignment automatically.
 - The component parser keeps every swara vertically aligned with its lyric
@@ -217,7 +240,10 @@ For the same-stem MDX companion:
 - For swara-only exercises, put each measure on its own table row and use one
   fixed cell per rhythmic subdivision. This keeps successive swara patterns
   vertically aligned without adding an empty lyric row.
-- Use `-` and `,` consistently to show continuation or held duration.
+- A `.` cell extends a swara by one unit: `S .` is a minim. Use `-` and `,`
+  as continuation or held-duration marks only when the score's metadata
+  declares that convention, and keep one convention per score. See
+  "Rhythm and Duration" in `score-notation.md`.
 - Add an overdot to tara-sthayi swaras, for example `Ṡ`; the notation
   component emphasizes the token automatically.
   Add a dot below and italics to mandra-sthayi swaras, for example `Ṇ Ḍ P̣`.

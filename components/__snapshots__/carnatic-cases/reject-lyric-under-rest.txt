@@ -1,0 +1,1 @@
+Error: Lyric "bo" falls under a rest cell ("*") and has no note to attach to.

@@ -1,0 +1,1 @@
+Error: Section "B" opens with the duration mark "-" but has no swara to extend; write a rest as "*".

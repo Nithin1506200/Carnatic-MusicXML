@@ -1,0 +1,1 @@
+Error: Arohana/avarohana overrides must cite their source (add a "source" or "notation_exception" metadata key).

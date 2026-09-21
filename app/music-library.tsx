@@ -2,6 +2,11 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { documents, homeHtml } from "./generated-content";
 
 const MuseScoreViewer = lazy(() => import("../components/musescore-viewer"));
+const NotationPlayground = lazy(() => import("./notation-playground"));
+const ConverterCases = lazy(() => import("./converter-cases"));
+
+/** Tool pages that live outside the generated document list. */
+const TOOL_IDS = new Set(["playground", "cases"]);
 
 type DocumentSummary = (typeof documents)[number];
 type DocumentItem = DocumentSummary & { html: string };
@@ -80,7 +85,7 @@ export default function MusicLibrary() {
   useEffect(() => {
     const syncFromLocation = () => {
       const id = new URLSearchParams(window.location.search).get("doc");
-      if (id && documents.some((document) => document.id === id)) {
+      if (id && (TOOL_IDS.has(id) || documents.some((document) => document.id === id))) {
         setActiveId(id);
         setNotationView("both");
       } else if (!id) {
@@ -371,6 +376,23 @@ export default function MusicLibrary() {
               ))}
             </section>
           ))}
+          <section className="nav-group">
+            <h2>Tools</h2>
+            <button
+              className={activeId === "playground" ? "active" : ""}
+              onClick={() => navigate("playground")}
+            >
+              <span>Notation playground</span>
+              {activeId === "playground" && <i aria-hidden="true" />}
+            </button>
+            <button
+              className={activeId === "cases" ? "active" : ""}
+              onClick={() => navigate("cases")}
+            >
+              <span>Converter test cases</span>
+              {activeId === "cases" && <i aria-hidden="true" />}
+            </button>
+          </section>
         </nav>
         <div className="sidebar-foot">
           <span className="octave-example"><em>Ṇ</em> S <strong>Ṡ</strong></span>
@@ -381,7 +403,7 @@ export default function MusicLibrary() {
       {mobileOpen && <button className="scrim nav-scrim" onClick={() => setMobileOpen(false)} aria-label="Close menu" />}
 
       <main className="main">
-        {active.id === "home" && (
+        {activeId === "home" && (
           <section className="hero">
             <div>
               <span className="eyebrow">A living notation library</span>
@@ -411,6 +433,35 @@ export default function MusicLibrary() {
           </section>
         )}
 
+        {activeId === "playground" && (
+          <div className="content-layout">
+            <Suspense
+              fallback={
+                <div className="document-state" aria-live="polite">
+                  Loading playground…
+                </div>
+              }
+            >
+              <NotationPlayground />
+            </Suspense>
+          </div>
+        )}
+
+        {activeId === "cases" && (
+          <div className="content-layout">
+            <Suspense
+              fallback={
+                <div className="document-state" aria-live="polite">
+                  Loading test cases…
+                </div>
+              }
+            >
+              <ConverterCases />
+            </Suspense>
+          </div>
+        )}
+
+        {!TOOL_IDS.has(activeId) && (
         <div className="content-layout">
           <article className="document">
             {active.id !== "home" && (
@@ -460,6 +511,7 @@ export default function MusicLibrary() {
             </aside>
           )}
         </div>
+        )}
       </main>
 
       {searchOpen && (

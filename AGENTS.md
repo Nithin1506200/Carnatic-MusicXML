@@ -20,6 +20,13 @@ swara, sahitya, raga, tala, composer, or octave information.
 ## Score-writing rules
 
 - Treat `docs/carnatic_saxophone.md` as the source of truth.
+- Treat `data/ragas.toml` as the canonical raga registry. Score metadata
+  declares only `raga: <name>`; the arohana, avarohana, raga type, janya
+  parentage, and melakarta number are derived from the registry (the generated
+  `RagaName` union in `components/ragas.generated.ts`). Before using an
+  unregistered raga, add it to the registry with arohana, avarohana, janya
+  parent, and a `reference` source. Per-score source variants use
+  `arohana_override`/`avarohana_override` plus a `source` note.
 - Default to alto saxophone with written `Sa = G` only when the user or source
   does not specify another tonic.
 - Store each score as exactly two repository files: one MuseScore `.mscz` file
@@ -46,6 +53,13 @@ swara, sahitya, raga, tala, composer, or octave information.
   invalid.
 - Run `npm test` after changing parser rules. Keep the practical example in
   `docs/score-notation.md` and real repository notation covered by Vitest.
+- Converter cases live in `components/carnatic-cases.ts` and are shared by
+  `scripts/carnatic-to-mscz.test.ts` and the in-app **Converter test cases**
+  tool (`?doc=cases`). Each case's output is snapshotted under
+  `components/__snapshots__/carnatic-cases/`; after an intended converter
+  change, review the diffs in the tool and accept them with
+  `npx vitest run -u`. Add new notation behaviour as a case there rather than
+  as a page-only example.
 - Do not bypass parser failures. `npm run build` runs notation validation before
   content generation and must remain a hard failure for malformed notation.
 - The VS Code workspace automatically runs `npm run validate:notation:watch`.

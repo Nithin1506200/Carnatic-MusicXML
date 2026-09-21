@@ -28,7 +28,7 @@ original title and language should always be preserved.
 | ------------------ | --------------------------------------------------------------- | --------------- | --------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | Basics / Exercises | Swara Adhyaaya — Sarale Varase to Saptasulaadi Taala Alankaaras | Mayamalavagowla | Aadi and Saptasulaadi talas | Traditional          | [Swaras](scores/02_basics/sarale_varase_to_alankaaras.mdx) · [MuseScore](scores/02_basics/sarale_varase_to_alankaaras.mscz)                    |
 | Basics / Geetham   | Sri Gananatha (Lambodara Geetham)                               | Malahari        | Rupaka, `2 + 4`             | Purandara Dasa       | [Swaras, lyrics, and meaning](scores/02_basics/sri_gananatha_geethe.mdx) · [MuseScore](scores/02_basics/sri_gananatha_geethe.mscz)             |
-| Varnam             | Ninnu Kori Yunnara                                              | Vasantha        | Aadi, `4 + 2 + 2`           | Tacchur Singarachari | [MDX transcription](scores/05_varnams/ninnu_kori_vasantha_varnam.mdx) · MuseScore not created by user request                                  |
+| Varnam             | Ninnu Kori Yunnara                                              | Vasantha        | Aadi, `4 + 2 + 2`           | Tacchur Singarachari | [MDX transcription](scores/05_varnams/ninnu_kori_vasantha_varnam.mdx) · [MuseScore](scores/05_varnams/ninnu_kori_vasantha_varnam.mscz)         |
 | Bhajan             | Bhagyada Lakshmi Baaramma                                       | Madhyamavathi   | Aadi, `4 + 2 + 2`           | Purandara Dasa       | [Swaras, lyrics, and meaning](scores/06_bhajans/bhagyada_lakshmi_baaramma.mdx) · [MuseScore](scores/06_bhajans/bhagyada_lakshmi_baaramma.mscz) |
 
 ## Static website
@@ -50,6 +50,24 @@ npm test
 npm run validate:notation
 npm run build
 ```
+
+### Generating MuseScore files and PDFs from MDX
+
+One companion MDX converts into a MuseScore `.mscz`, and by default also a
+same-stem PDF:
+
+```sh
+# pick scores from a list, or pass paths; writes .mscz + .pdf per score
+npm run mscz:generate
+npm run mscz:generate -- scores/05_varnams/ninnu_kori_vasantha_varnam.mdx --force
+```
+
+Options: `--no-pdf` skips the PDF, `--out <file.mscz>` writes a single score
+to a chosen path, and `--unit crotchet|quaver` overrides the metadata's
+notation unit. PDF export uses the MuseScore command line (on PATH, in
+`/Applications`, or on a mounted DMG) and falls back to the bundled webmscore
+renderer. Generated `.mscz` and `.pdf` files stay local: `.mscz` files are
+committed with their MDX companions, PDFs are git-ignored exports.
 
 The static site is written to `dist/client/`. It does not require a database or
 Node.js server after deployment and can be hosted by any static-site provider.

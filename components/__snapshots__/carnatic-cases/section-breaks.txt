@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<museScore version="4.50">
+  <Score>
+    <Division>480</Division>
+    <Style>
+      <lyricsOddColor r="0" g="0" b="0" a="255"/>
+      <lyricsEvenColor r="176" g="0" b="32" a="255"/>
+    </Style>
+    <showInvisible>1</showInvisible>
+    <showUnprintable>1</showUnprintable>
+    <showFrames>1</showFrames>
+    <showMargins>0</showMargins>
+    <metaTag name="workTitle">Example</metaTag>
+    <metaTag name="composer">Purandara Dasa</metaTag>
+    <Part>
+      <Staff>
+        <StaffType group="pitched">
+          <name>stdNormal</name>
+        </StaffType>
+      </Staff>
+      <trackName>Alto Saxophone</trackName>
+      <Instrument id="alto-saxophone">
+        <longName>Alto Saxophone</longName>
+        <shortName>A. Sax.</shortName>
+        <description>Alto Saxophone</description>
+        <musicXMLid>wind.reed.saxophone.alto</musicXMLid>
+        <minPitchP>49</minPitchP>
+        <maxPitchP>92</maxPitchP>
+        <minPitchA>49</minPitchA>
+        <maxPitchA>80</maxPitchA>
+        <transposeDiatonic>-5</transposeDiatonic>
+        <transposeChromatic>-9</transposeChromatic>
+        <instrumentId>wind.reed.saxophone.alto</instrumentId>
+        <Channel>
+          <program value="65"/>
+          <synti>Fluid</synti>
+        </Channel>
+      </Instrument>
+    </Part>
+    <Staff id="1">
+      <VBox>
+        <height>10</height>
+        <Text>
+          <style>frame</style>
+          <text><font size="20"/><b>Example</b><br/><font size="11"/>Raga: Mayamalavagowla<br/>Composer: Purandara Dasa | Alto Saxophone in G scale<br/>Arohana: S R1 G3 M1 P D1 N3 S | Avarohana: S N3 D1 P M1 G3 R1 S<br/>Written Sa = G on alto sax; sounds concert Bb.</text>
+          </Text>
+        </VBox>
+      <Measure>
+        <voice>
+          <Clef>
+            <concertClefType>G</concertClefType>
+            <transposingClefType>G</transposingClefType>
+            <isHeader>1</isHeader>
+          </Clef>
+          <KeySig>
+            <concertKey>-2</concertKey>
+            <actualKey>1</actualKey>
+            <mode>major</mode>
+          </KeySig>
+          <TimeSig>
+            <sigN>2</sigN>
+            <sigD>4</sigD>
+          </TimeSig>
+          <RehearsalMark>
+            <text>A</text>
+          </RehearsalMark>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>S</text>
+          </Lyrics>
+            <Note>
+              <pitch>58</pitch>
+              <tpc>12</tpc>
+              <tpc2>15</tpc2>
+            </Note>
+          </Chord>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>R</text>
+          </Lyrics>
+            <Note>
+              <Accidental>
+                <subtype>accidentalFlat</subtype>
+              </Accidental>
+              <pitch>59</pitch>
+              <tpc>7</tpc>
+              <tpc2>10</tpc2>
+            </Note>
+          </Chord>
+        </voice>
+      </Measure>
+      <Measure>
+        <LayoutBreak>
+          <subtype>section</subtype>
+        </LayoutBreak>
+        <voice>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>G</text>
+          </Lyrics>
+            <Note>
+              <pitch>62</pitch>
+              <tpc>16</tpc>
+              <tpc2>19</tpc2>
+            </Note>
+          </Chord>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>M</text>
+          </Lyrics>
+            <Note>
+              <pitch>63</pitch>
+              <tpc>11</tpc>
+              <tpc2>14</tpc2>
+            </Note>
+          </Chord>
+        </voice>
+      </Measure>
+      <Measure>
+        <LayoutBreak>
+          <subtype>section</subtype>
+        </LayoutBreak>
+        <voice>
+          <RehearsalMark>
+            <text>B</text>
+          </RehearsalMark>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>P</text>
+          </Lyrics>
+            <Note>
+              <pitch>65</pitch>
+              <tpc>13</tpc>
+              <tpc2>16</tpc2>
+            </Note>
+          </Chord>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>D</text>
+          </Lyrics>
+            <Note>
+              <Accidental>
+                <subtype>accidentalFlat</subtype>
+              </Accidental>
+              <pitch>66</pitch>
+              <tpc>8</tpc>
+              <tpc2>11</tpc2>
+            </Note>
+          </Chord>
+          <BarLine>
+            <subtype>end</subtype>
+          </BarLine>
+        </voice>
+      </Measure>
+    </Staff>
+  </Score>
+</museScore>

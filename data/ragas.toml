@@ -1,0 +1,951 @@
+# Carnatic raga registry — the single source of truth for raga facts.
+#
+# Score MDX metadata declares only `raga: <name>`; the arohana, avarohana,
+# raga type, janya parentage, and melakarta number are derived from this file
+# (see scripts/generate-ragas.ts and docs/score-notation.md).
+#
+# Rules (per AGENTS.md):
+# - Only add a raga after verifying its arohana and avarohana from an
+#   authoritative source, and record that source in `reference`.
+# - Vakra phrases, anya swaras, and characteristic prayogas belong in `notes`;
+#   do not reduce a raga to an oversimplified scale.
+# - `alternate_names` carries common spelling variants used for lookup; every
+#   name and alias must be unique across the whole file.
+#
+# Schema:
+#   [[melakarta]]  number, name, arohana, avarohana, reference,
+#                  alternate_names? (array), notes?
+#   [[janya]]      name, janya_of (parent melakarta name), arohana, avarohana,
+#                  reference, alternate_names? (array), notes?
+#
+# The 72 melakartas follow the standard Kanakangi-Rasikapriya scheme; their
+# avarohana is always the exact reverse of the arohana (the generator enforces
+# this).
+
+# ---------------------------------------------------------------------------
+# Chakra 1 — Indu (S R1 G1 M1 P …, melakartas 1–6)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 1
+name = "Kanakangi"
+arohana = "S R1 G1 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 2
+name = "Ratnangi"
+arohana = "S R1 G1 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 3
+name = "Ganamurti"
+arohana = "S R1 G1 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 4
+name = "Vanaspati"
+arohana = "S R1 G1 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 5
+name = "Manavati"
+arohana = "S R1 G1 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 6
+name = "Tanarupi"
+arohana = "S R1 G1 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 2 — Netra (S R1 G2 M1 P …, melakartas 7–12)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 7
+name = "Senavati"
+arohana = "S R1 G2 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 8
+name = "Hanumatodi"
+alternate_names = ["Todi", "Janatodi"]
+arohana = "S R1 G2 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 9
+name = "Dhenuka"
+arohana = "S R1 G2 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 10
+name = "Natakapriya"
+arohana = "S R1 G2 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 11
+name = "Kokilapriya"
+arohana = "S R1 G2 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 12
+name = "Rupavati"
+arohana = "S R1 G2 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 3 — Agni (S R1 G3 M1 P …, melakartas 13–18)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 13
+name = "Gayakapriya"
+arohana = "S R1 G3 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 14
+name = "Vakulabharanam"
+alternate_names = ["Vakulabharana", "Vati Vasanthabhairavi"]
+arohana = "S R1 G3 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 15
+name = "Mayamalavagowla"
+alternate_names = ["Mayamalavagaula", "Mayaamalavagowla", "Maya Malava Gaula"]
+arohana = "S R1 G3 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+notes = "Traditional raga for foundational lessons (Sarali varisai)."
+
+[[melakarta]]
+number = 16
+name = "Chakravakam"
+alternate_names = ["Chakravaka", "Ahir Bhairav"]
+arohana = "S R1 G3 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 17
+name = "Suryakanta"
+alternate_names = ["Suryakantam", "Sowrashtram"]
+arohana = "S R1 G3 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 18
+name = "Hatakambari"
+alternate_names = ["Jayashuddhamalavi"]
+arohana = "S R1 G3 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 4 — Veda (S R2 G1 M1 P …, melakartas 19–24)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 19
+name = "Jhankaradhwani"
+alternate_names = ["Jhankarabhramari"]
+arohana = "S R2 G1 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G1 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 20
+name = "Natabhairavi"
+alternate_names = ["Nata Bhairavi", "Naatabhairavi"]
+arohana = "S R2 G1 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G1 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 21
+name = "Kiravani"
+alternate_names = ["Kirwani", "Keeravani"]
+arohana = "S R2 G1 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G1 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 22
+name = "Kharaharapriya"
+alternate_names = ["Khara Harapriya"]
+arohana = "S R2 G1 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G1 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 23
+name = "Gourimanohari"
+alternate_names = ["Gauri Manohari", "Gowri Manohari"]
+arohana = "S R2 G1 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G1 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 24
+name = "Varunapriya"
+arohana = "S R2 G1 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G1 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 5 — Bana (S R2 G2 M1 P …, melakartas 25–30)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 25
+name = "Mararanjani"
+alternate_names = ["Sharadaharana"]
+arohana = "S R2 G2 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G2 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 26
+name = "Charukesi"
+alternate_names = ["Charukeshi"]
+arohana = "S R2 G2 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G2 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 27
+name = "Sarasangi"
+arohana = "S R2 G2 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G2 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 28
+name = "Harikambhoji"
+alternate_names = ["Hari Kambhoji", "Harikamboji", "Khamas Thaat"]
+arohana = "S R2 G2 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G2 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 29
+name = "Dheerasankarabharanam"
+alternate_names = ["Sankarabharanam", "Shankarabharanam", "Bilaval"]
+arohana = "S R2 G2 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G2 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 30
+name = "Naganandini"
+alternate_names = ["Naganandhini"]
+arohana = "S R2 G2 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G2 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 6 — Ritu (S R2 G3 M1 P …, melakartas 31–36)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 31
+name = "Yagapriya"
+alternate_names = ["Kalavathi"]
+arohana = "S R2 G3 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G3 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 32
+name = "Ragavardhini"
+alternate_names = ["Ragachudamani"]
+arohana = "S R2 G3 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G3 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 33
+name = "Gangeyabhushani"
+arohana = "S R2 G3 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G3 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 34
+name = "Vagadheeswari"
+alternate_names = ["Vagadhiswari", "Bhogachayanata"]
+arohana = "S R2 G3 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 35
+name = "Shulini"
+alternate_names = ["Shoolini", "Sulini", "Shailadeshakshi"]
+arohana = "S R2 G3 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G3 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 36
+name = "Chalanata"
+alternate_names = ["Chalanattai", "Nata"]
+arohana = "S R2 G3 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G3 R2 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 7 — Rishi (S R3 G1 M1 P …, melakartas 37–42)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 37
+name = "Salagam"
+arohana = "S R3 G1 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G1 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 38
+name = "Jalarnavam"
+arohana = "S R3 G1 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G1 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 39
+name = "Jhalavarali"
+alternate_names = ["Varali"]
+arohana = "S R3 G1 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G1 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 40
+name = "Navaneetam"
+arohana = "S R3 G1 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G1 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 41
+name = "Pavani"
+arohana = "S R3 G1 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G1 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 42
+name = "Raghupriya"
+alternate_names = ["Ravikriya"]
+arohana = "S R3 G1 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G1 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 8 — Vasu (S R3 G2 M1 P …, melakartas 43–48)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 43
+name = "Gavambhodi"
+arohana = "S R3 G2 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G2 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 44
+name = "Bhavapriya"
+alternate_names = ["Bhavani"]
+arohana = "S R3 G2 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G2 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 45
+name = "Shubhapantuvarali"
+alternate_names = ["Subhapantuvarali", "Pantuvarali", "Todi (Hindustani)"]
+arohana = "S R3 G2 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G2 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 46
+name = "Shadvidamargini"
+alternate_names = ["Shadvidhamargini", "Stavarajam"]
+arohana = "S R3 G2 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G2 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 47
+name = "Suvarnangi"
+alternate_names = ["Souveeram"]
+arohana = "S R3 G2 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G2 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 48
+name = "Divyamani"
+alternate_names = ["Jeevantika"]
+arohana = "S R3 G2 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G2 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 9 — Brahma (S R3 G3 M1 P …, melakartas 49–54)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 49
+name = "Dhavalambari"
+arohana = "S R3 G3 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G3 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 50
+name = "Namanarayani"
+alternate_names = ["Namadeshi"]
+arohana = "S R3 G3 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G3 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 51
+name = "Kamavardhini"
+alternate_names = ["Pantuvarali (51)", "Kasiramakriya", "Purvi", "Puriya Dhanashree"]
+arohana = "S R3 G3 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G3 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 52
+name = "Ramapriya"
+alternate_names = ["Vachaspathi (52)", "Ramamanohari"]
+arohana = "S R3 G3 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 53
+name = "Gamanashrama"
+alternate_names = ["Gamanasrama", "Purvikalyani", "Poorvi Kalyani", "Purvikalyan"]
+arohana = "S R3 G3 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G3 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 54
+name = "Vishwambhari"
+alternate_names = ["Vishwambari"]
+arohana = "S R3 G3 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G3 R3 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 10 — Disi (S R1 G1 M2 P …, melakartas 55–60)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 55
+name = "Shamalangi"
+alternate_names = ["Shyamalangi"]
+arohana = "S R1 G1 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 56
+name = "Shanmukhapriya"
+alternate_names = ["Chamaram", "Shanmuka Priya"]
+arohana = "S R1 G1 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 57
+name = "Simhendramadhyamam"
+alternate_names = ["Simmendramadhyamam", "Swadhedhamadyamam", "Sumadyuti"]
+arohana = "S R1 G1 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 58
+name = "Hemaavati"
+alternate_names = ["Deshisimharavam"]
+arohana = "S R1 G1 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 59
+name = "Dharmavati"
+alternate_names = ["Dharmavathi", "Madhuvanti"]
+arohana = "S R1 G1 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 60
+name = "Neetimati"
+alternate_names = ["Neetimathi", "Hamsa Kalyani"]
+arohana = "S R1 G1 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G1 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 11 — Rudra (S R1 G2 M2 P …, melakartas 61–66)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 61
+name = "Kantamani"
+alternate_names = ["Kuntalam"]
+arohana = "S R1 G2 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 62
+name = "Rishabhapriya"
+alternate_names = ["Ratipatipriya"]
+arohana = "S R1 G2 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 63
+name = "Latangi"
+alternate_names = ["Gitapriya"]
+arohana = "S R1 G2 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 64
+name = "Vachaspati"
+alternate_names = ["Bhushavati"]
+arohana = "S R1 G2 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 65
+name = "Mechakalyani"
+alternate_names = ["Kalyani", "Mecha Kalyani", "Yaman", "Santakalyani"]
+arohana = "S R1 G2 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 66
+name = "Chitrambari"
+arohana = "S R1 G2 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G2 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Chakra 12 — Aditya (S R1 G3 M2 P …, melakartas 67–72)
+# ---------------------------------------------------------------------------
+
+[[melakarta]]
+number = 67
+name = "Sucharitra"
+alternate_names = ["Sucharita", "Santanamanjari"]
+arohana = "S R1 G3 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 68
+name = "Jyotiswarupini"
+alternate_names = ["Jyotiswaroopini"]
+arohana = "S R1 G3 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 69
+name = "Dhathuvardhini"
+alternate_names = ["Dhatuvardhani", "Dhouta Panchamam"]
+arohana = "S R1 G3 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 70
+name = "Nasikabhushani"
+alternate_names = ["Nasamani"]
+arohana = "S R1 G3 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 71
+name = "Kosalam"
+arohana = "S R1 G3 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+[[melakarta]]
+number = 72
+name = "Rasikapriya"
+alternate_names = ["Rasamanjari"]
+arohana = "S R1 G3 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G3 R1 S"
+reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+
+# ---------------------------------------------------------------------------
+# Janya ragas
+#
+# Every entry records its parent melakarta (janya_of) and the source of the
+# scale. The first three entries back repository scores; the rest are widely
+# documented common ragas — verify against each composition's own source
+# before engraving, especially where `notes` flags vakra or anya swaras.
+# ---------------------------------------------------------------------------
+
+[[janya]]
+name = "Malahari"
+janya_of = "Mayamalavagowla"
+arohana = "S R1 M1 P D1 S"
+avarohana = "S D1 P M1 G3 R1 S"
+notes = "Avarohana is vakra; G3 appears only in the descent."
+reference = "Repository score 'Sri Gananatha (Lambodara Geetham)'; standard geetham literature (e.g., S. Bhagyalekshmy, 'Ragas in Carnatic Music')"
+
+[[janya]]
+name = "Vasantha"
+janya_of = "Suryakanta"
+arohana = "S M1 G3 M1 D2 N3 S"
+avarohana = "S N3 D2 M1 G3 R1 S"
+notes = "Vakra in both directions; characteristic of varnam and krithi repertoire."
+reference = "Repository score 'Ninnu Kori Yunnara' manuscript transcription; S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Madhyamavathi"
+janya_of = "Kharaharapriya"
+alternate_names = ["Madhyamavati", "Madhyamavadi"]
+arohana = "S R2 M1 P N2 S"
+avarohana = "S N2 P M1 R2 S"
+reference = "Repository score 'Bhagyada Lakshmi Baaramma' (user-supplied notation); S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Mohanam"
+janya_of = "Harikambhoji"
+alternate_names = ["Mohana", "Bhoop", "Bhoopali"]
+arohana = "S R2 G3 P D2 S"
+avarohana = "S D2 P G3 R2 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Hamsadhwani"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Hamsadhvani"]
+arohana = "S R2 G3 P N3 S"
+avarohana = "S N3 P G3 R2 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+notes = "Audava raga composed by Ramaswami Dikshitar; omits M1 and D2."
+
+[[janya]]
+name = "Bilahari"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Belahari"]
+arohana = "S R2 G3 P D2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+notes = "Avarohana is vakra; M1 appears only in the descent."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Arabhi"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Aarabhi"]
+arohana = "S R2 M1 P D2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+notes = "Vakra; characteristic prayoga S R2 M1 P S D2 S in the ascent. Omits G3 in the plain ascent."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Devagandhari"
+janya_of = "Dheerasankarabharanam"
+arohana = "S R2 M1 P D2 N2 S"
+avarohana = "S N2 P M1 G3 R2 S"
+notes = "Vakra gamaka-heavy raga; do not confuse with Abheri (Karnataka Devagandhari)."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Kedaram"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Kedara", "Kedaragowla"]
+arohana = "S M1 G3 M1 P D2 S"
+avarohana = "S N3 D2 P M1 G3 R2 S"
+notes = "Vakra in the ascent (S does not move straight up; R2 appears mainly in descent and prayogas such as P M1 G3 R2 S)."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Begada"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Begaada"]
+arohana = "S G3 R2 G3 M1 P D2 N2 P S"
+avarohana = "S N3 P M1 G3 R2 S"
+notes = "Heavily vakra; D2 and N2/N3 shadja-varjya passages and skipped swaras are characteristic."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Brindavana Saranga"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Brindavansaranga", "Brindavana Saranga (Carnatic)"]
+arohana = "S R2 M1 P D2 N3 S"
+avarohana = "S N3 P M1 R2 S"
+notes = "Omits G3, which distinguishes it from Suddha Saveri; N3 touches S in the ascent."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Suddha Saveri"
+janya_of = "Harikambhoji"
+alternate_names = ["Karnataka Suddha Saveri", "Durga (Karnataka)"]
+arohana = "S R2 M1 P D2 S"
+avarohana = "S D2 P M1 R2 S"
+notes = "Audava; some texts also list it under Dheerasankarabharanam. Confirm parentage with the score's source."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Sahana"
+janya_of = "Harikambhoji"
+alternate_names = ["Shaana"]
+arohana = "S R2 G3 M1 P M1 D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 G3 R2 S"
+notes = "Deeply vakra with kampita gamaka on G3 and M1; do not flatten into a straight scale."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Kambhoji"
+janya_of = "Harikambhoji"
+alternate_names = ["Khambhoji", "Kambodi"]
+arohana = "S R2 G3 M1 P D2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+notes = "N3 occurs as anya swara in characteristic prayogas; treat as note-abhava raga, not a plain scale."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Surutti"
+janya_of = "Harikambhoji"
+alternate_names = ["Surati"]
+arohana = "S R2 M1 P N2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+notes = "Vakra; G3 appears only in the descent."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Khamas"
+janya_of = "Harikambhoji"
+alternate_names = ["Kamas", "Khamaas"]
+arohana = "S M1 G3 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+notes = "Vakra in the ascent (S begins directly on M1)."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Kuntalavarali"
+janya_of = "Harikambhoji"
+arohana = "S M1 P D2 S"
+avarohana = "S N2 D2 P M1 S"
+notes = "Vakra; R2 and G3 are varjya in the ascent and appear only through N2 D2 in the descent."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Suddha Dhanyasi"
+janya_of = "Natabhairavi"
+alternate_names = ["Shuddha Dhanyasi"]
+arohana = "S G2 M1 P N2 S"
+avarohana = "S N2 P M1 G2 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Hindolam"
+janya_of = "Natabhairavi"
+alternate_names = ["Hindola", "Malkauns"]
+arohana = "S G2 M1 D1 N2 S"
+avarohana = "S N2 D1 M1 G2 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Abheri"
+janya_of = "Natabhairavi"
+alternate_names = ["Karnataka Devagandhari", "Bheema Plasika", "Bhimpalas"]
+arohana = "S G2 M1 P N2 S"
+avarohana = "S N2 D1 P M1 G2 R2 S"
+notes = "D1 and R2 appear only in the descent."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Bhairavi"
+janya_of = "Natabhairavi"
+alternate_names = ["Sindhu Bhairavi (distinct)", "Karnataka Bhairavi"]
+arohana = "S G2 R2 G2 M1 P D2 N2 S"
+avarohana = "S N2 D1 P M1 G2 R2 S"
+notes = "Vakra; characteristic G2 R2 G2 curves. D2 is an anya swara relative to the parent Natabhairavi."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Kapi"
+janya_of = "Kharaharapriya"
+alternate_names = ["Kaapi"]
+arohana = "S R2 G2 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G2 R2 S"
+notes = "Deshya raga; anya swaras (D3, N3) occur in characteristic prayogas. Record the version used per score."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Abhogi"
+janya_of = "Kharaharapriya"
+alternate_names = ["Aabhogi"]
+arohana = "S R2 M1 D2 N2 S"
+avarohana = "S N2 D2 M1 R2 S"
+notes = "Vakra; G2 and P are varjya. Audava counterpart of Sriranjani."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Sriranjani"
+janya_of = "Kharaharapriya"
+alternate_names = ["Shree Ranjani", "Shriranjani"]
+arohana = "S R2 G2 M1 D2 N2 S"
+avarohana = "S N2 D2 M1 G2 R2 S"
+notes = "P is varjya; vakra."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Bhupalam"
+janya_of = "Hanumatodi"
+alternate_names = ["Bhoopaalam"]
+arohana = "S R1 G2 P D1 S"
+avarohana = "S D1 P G2 R1 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Revagupti"
+janya_of = "Mayamalavagowla"
+arohana = "S R1 G3 P D1 S"
+avarohana = "S D1 P G3 R1 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Saveri"
+janya_of = "Mayamalavagowla"
+arohana = "S R1 M1 P D1 S"
+avarohana = "S N3 S D1 P M1 G3 R1 S"
+notes = "Vakra in the descent (S N3 S dip); R2 occurs in some prayogas as anya swara."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Lalitha"
+janya_of = "Mayamalavagowla"
+alternate_names = ["Lalitha Panchamam"]
+arohana = "S R1 G3 M1 D1 N3 S"
+avarohana = "S N3 D1 M1 G3 R1 S"
+notes = "Vakra in the descent; P is varjya."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Malayamarutam"
+janya_of = "Dhavalambari"
+alternate_names = ["Malaya Marutam"]
+arohana = "S R1 G3 P D2 S"
+avarohana = "S D2 P G3 R1 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Gambhira Nata"
+janya_of = "Chalanata"
+alternate_names = ["Gambhira Nattai", "Gambheeranaattai"]
+arohana = "S G3 M1 P N3 S"
+avarohana = "S N3 P M1 G3 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Amritavarshini"
+janya_of = "Mechakalyani"
+alternate_names = ["Amruthavarshini"]
+arohana = "S G3 M2 P N3 S"
+avarohana = "S N3 P M2 G3 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Mohanakalyani"
+janya_of = "Mechakalyani"
+alternate_names = ["Mohana Kalyani"]
+arohana = "S R2 G3 P D2 S"
+avarohana = "S D2 P G3 R2 S"
+notes = "Kalyani-family counterpart of Mohanam; same swara set, M2 parentage."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Yamuna Kalyani"
+janya_of = "Mechakalyani"
+alternate_names = ["Yamunakalyani", "Yaman Kalyan"]
+arohana = "S G3 P M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G3 R2 S"
+notes = "Vakra; M1 may appear in characteristic prayogas as anya swara."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Kalyana Vasantham"
+janya_of = "Mechakalyani"
+alternate_names = ["Kalyana Vasantha"]
+arohana = "S R2 G2 M2 D2 N2 S"
+avarohana = "S N2 D2 M2 G2 R2 S"
+notes = "P is varjya."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Hamsanandhi"
+janya_of = "Dharmavati"
+alternate_names = ["Hamsanandi"]
+arohana = "S R1 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 R1 S"
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Hamsanadam"
+janya_of = "Neetimati"
+alternate_names = ["Hamsanaadam"]
+arohana = "S M2 R2 M2 P D2 N2 S"
+avarohana = "S N2 D2 M2 R2 S"
+notes = "Vakra; the M2 R2 M2 oscillation is characteristic."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"
+
+[[janya]]
+name = "Behag"
+janya_of = "Dheerasankarabharanam"
+alternate_names = ["Bihag"]
+arohana = "S G3 M1 P N3 S"
+avarohana = "S N2 P M1 G3 R2 S"
+notes = "Carnaticized Hindustani raga; N2 in the descent, and M2 appears as anya swara in characteristic prayogas."
+reference = "S. Bhagyalekshmy, 'Ragas in Carnatic Music'"

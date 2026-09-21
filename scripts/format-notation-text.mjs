@@ -19,21 +19,50 @@ collect(scoreRoot);
 const visualWidth = (token) =>
   Array.from(token.normalize("NFD").replace(/\p{Mark}/gu, "")).length;
 
-const alignLines = (lines) => {
-  const tokens = lines.map((line) => line.trim().split(/\s+/));
-  const length = tokens[0]?.length ?? 0;
-  if (!length || tokens.some((row) => row.length !== length)) return lines;
+// ASCII octave aliases, mirroring normalizeSwaraToken in
+// components/score-notation.ts: `S'` is Ṡ (tāra), `s` is Ṣ (mandra).
+const aliasTokenGate = /^(?:\p{Lu}\p{M}*'?|\p{Ll}\p{M}*|[.,-])+$/u;
+const normalizeSwaraToken = (token) =>
+  !aliasTokenGate.test(token)
+    ? token
+    : token
+        .replace(/(\p{Lu})'/gu, "$1\u0307")
+        .replace(
+          /(\p{Ll})(?!\u0323)/gu,
+          (letter) => `${letter.toUpperCase()}\u0323`,
+        )
+        .replace(/\p{Ll}/gu, (letter) => letter.toUpperCase());
+const normalizeSwaraRow = (line) => line.replace(/\S+/gu, normalizeSwaraToken);
 
+const padTo = (token, cells) =>
+  token.padEnd(token.length + cells - visualWidth(token));
+
+/** Pads equal-token-count rows column by column. */
+const alignColumns = (rows) => {
+  const length = rows[0]?.length ?? 0;
+  if (!length || rows.some((row) => row.length !== length)) return null;
   const widths = Array.from({ length }, (_, column) =>
-    Math.max(...tokens.map((row) => visualWidth(row[column]))),
+    Math.max(...rows.map((row) => visualWidth(row[column]))),
   );
-  return tokens.map((row) =>
+  return rows.map((row) =>
     row
-      .map((token, column) => token.padEnd(token.length + widths[column] - visualWidth(token)))
+      .map((token, column) => padTo(token, widths[column]))
       .join(" ")
       .trimEnd(),
   );
 };
+
+const alignLines = (lines) => {
+  const tokens = lines.map((line) => line.trim().split(/\s+/));
+  return alignColumns(tokens) ?? lines;
+};
+
+/**
+ * Pads swara/lyric pairs column by column; lyric cells pair 1:1 with swara
+ * cells, so both rows share the same token columns, dividers included.
+ */
+const alignSwaraLyricPairs = (pairs) =>
+  alignColumns(pairs.flatMap((pair) => [pair.swaras, pair.lyrics])) ?? [];
 
 const alignNotationBlock = (block) => {
   const lines = block.split("\n");
@@ -51,20 +80,29 @@ const alignNotationBlock = (block) => {
     }
 
     if (swarasOnly) {
-      const aligned = alignLines(notationIndexes.map((index) => lines[index]));
+      const aligned = alignLines(
+        notationIndexes.map((index) => normalizeSwaraRow(lines[index])),
+      );
       notationIndexes.forEach((index, row) => {
         lines[index] = aligned[row];
       });
       return;
     }
 
-    for (let row = 0; row < notationIndexes.length; row += 2) {
-      const pairIndexes = notationIndexes.slice(row, row + 2);
-      if (pairIndexes.length !== 2) continue;
-      const aligned = alignLines(pairIndexes.map((index) => lines[index]));
-      pairIndexes.forEach((index, pairRow) => {
-        lines[index] = aligned[pairRow];
+    const pairs = [];
+    for (let row = 0; row + 1 < notationIndexes.length; row += 2) {
+      pairs.push({
+        swaras: normalizeSwaraRow(lines[notationIndexes[row]])
+          .trim()
+          .split(/\s+/),
+        lyrics: lines[notationIndexes[row + 1]].trim().split(/\s+/),
       });
+    }
+    const alignedPairs = alignSwaraLyricPairs(pairs);
+    for (let row = 0; row < notationIndexes.length; row += 1) {
+      if (alignedPairs[row] !== undefined) {
+        lines[notationIndexes[row]] = alignedPairs[row];
+      }
     }
   };
 

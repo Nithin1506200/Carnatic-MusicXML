@@ -1,0 +1,1 @@
+Error: Token "S,R" mixes a triplet with a held mark; triplets hold three full sounds (for example SRR).

@@ -28,14 +28,22 @@ their raga-specific swara names.
 
 ## Raga list
 
-Only add a raga after verifying its arohana and avarohana from an authoritative
-source. Vakra phrases, anya swaras, characteristic prayogas, and source
-variants must not be reduced to an oversimplified scale.
+The arohanas, avarohanas, classifications, and references of every raga used
+here live in [`data/ragas.toml`](../data/ragas.toml), the canonical raga
+registry (all 72 melakartas plus the janya ragas used by repository scores and
+other common ragas). Score metadata declares only the raga name; the rest is
+derived from the registry.
 
-| Raga            | Classification                | Arohana                | Avarohana              | Current use            |
-| --------------- | ----------------------------- | ---------------------- | ---------------------- | ---------------------- |
-| Mayamalavagowla | Melakarta 15                  | `S R1 G3 M1 P D1 N3 S` | `S N3 D1 P M1 G3 R1 S` | Foundational exercises |
-| Malahari        | Janya raga of Mayamalavagowla | `S R1 M1 P D1 S`       | `S D1 P M1 G3 R1 S`    | Sri Gananatha          |
+Only add a raga after verifying its arohana and avarohana from an authoritative
+source, and record that source in the registry's `reference` field. Vakra
+phrases, anya swaras, characteristic prayogas, and source variants must not be
+reduced to an oversimplified scale — record them in the registry's `notes`
+field and in the score's metadata.
+
+Ragas in current use:
+
+- **Mayamalavagowla** (Melakarta 15) — foundational exercises.
+- **Malahari** (janya of Mayamalavagowla) — Sri Gananatha.
 
 ## Available beginner repertoire
 

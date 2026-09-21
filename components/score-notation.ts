@@ -32,6 +32,7 @@ export enum NotationDirectiveKeyword {
   Sahitya = "sahitya",
   Repeat = "repeat",
   Return = "return",
+  Time = "time",
   Custom = "custom",
 }
 
@@ -53,7 +54,44 @@ export interface ParsedNotationDirective {
   keyword: NotationDirectiveKeyword;
   label: string;
   value: string;
+  /** One-based source line, set when parsed from a full score block. */
+  line?: number;
 }
+
+export interface ParsedTimeSignature {
+  /** Anga lengths in cells (units), repeated cyclically across measures. */
+  grouping: number[];
+  /** Time-signature denominator: 4 for crotchet cells, 8 for quaver cells. */
+  denominator: 4 | 8;
+}
+
+/**
+ * Parses an `@Time` directive value: a cyclical anga grouping over a crotchet
+ * or quaver denominator, for example `(4+2+2)/4`, `4+2+2 / 4`, or `8/4`.
+ */
+export function parseTimeSignature(value: string): ParsedTimeSignature {
+  let body = value.trim();
+  if (body.startsWith("(")) {
+    const closing = body.indexOf(")");
+    if (closing > 0) {
+      body = `${body.slice(1, closing)}${body.slice(closing + 1)}`;
+    }
+  }
+  const match = body.match(/^(\d+(?:\s*\+\s*\d+)*)\s*\/\s*([48])$/u);
+  if (!match) {
+    throw new Error(
+      `@Time must name an anga grouping over 4 or 8, for example "(4+2+2)/4" or "8/4"; got "${value}".`,
+    );
+  }
+  const grouping = match[1].split("+").map((part) => Number(part.trim()));
+  if (grouping.some((count) => !Number.isInteger(count) || count < 1)) {
+    throw new Error(`@Time anga lengths must be positive: "${value}".`);
+  }
+  return { grouping, denominator: Number(match[2]) as 4 | 8 };
+}
+
+const timeLabel = (time: ParsedTimeSignature) =>
+  `(${time.grouping.join("+")})/${time.denominator}`;
 
 export interface SwaraLyricPair {
   swaras: string;
@@ -65,6 +103,8 @@ interface ParsedNotationSectionBase {
   title: string;
   before: ParsedNotationDirective[];
   after: ParsedNotationDirective[];
+  /** Declared `@Time` anga grouping and denominator, when the section has one. */
+  time?: ParsedTimeSignature;
 }
 
 export interface ParsedSwaraSection extends ParsedNotationSectionBase {
@@ -144,6 +184,7 @@ const directiveKeywords = new Map<string, NotationDirectiveKeyword>([
   [NotationDirectiveKeyword.Sahitya, NotationDirectiveKeyword.Sahitya],
   [NotationDirectiveKeyword.Repeat, NotationDirectiveKeyword.Repeat],
   [NotationDirectiveKeyword.Return, NotationDirectiveKeyword.Return],
+  [NotationDirectiveKeyword.Time, NotationDirectiveKeyword.Time],
 ]);
 
 const isDivider = (token: string): token is TalaDivider =>
@@ -171,21 +212,63 @@ const sectionKey = (title: string) => {
     .join("");
 };
 
-const cleanTextLine = (line: string) =>
-  line
-    .trim()
-    .replace(/^["'`]\s*/, "")
-    .replace(/\s*["'`]\s*,?\s*$/, "")
-    .trim();
+// Unwraps a line that is quoted on BOTH ends (pasted quoted rows such as
+// `"S R G",`); a lone trailing quote stays, since it can be a tāra alias.
+const cleanTextLine = (line: string) => {
+  const trimmed = line.trim();
+  const quoted = trimmed.match(/^(["'`])([\s\S]*)\1\s*,?\s*$/u);
+  return quoted ? quoted[2].trim() : trimmed;
+};
 
 const unwrapQuotedValue = (value: string) =>
   value.replace(/^(["'])([\s\S]*)\1$/, "$2").trim();
 
 export function classifyOctave(token: string): OctavePosition {
-  if (/\u0307$/u.test(token)) return OctavePosition.Upper;
-  if (/\u0323$/u.test(token)) return OctavePosition.Lower;
+  // Strip trailing continuation marks so compact tokens such as "Ṡ," keep
+  // their octave styling.
+  const base = token.replace(/[.,-]+$/u, "");
+  if (/\u0307$/u.test(base)) return OctavePosition.Upper;
+  if (/\u0323$/u.test(base)) return OctavePosition.Lower;
   return OctavePosition.Middle;
 }
+
+/**
+ * Token gate for ASCII octave aliases: uppercase letters with an optional
+ * trailing apostrophe (tāra sthāyi), lowercase letters (mandra sthāyi), and
+ * duration marks. Anything else — lyric words, stray quotes after combining
+ * marks, mixed garbage — stays untouched so existing validation can reject it.
+ */
+const SWARA_ALIAS_TOKEN = /^(?:\p{Lu}\p{M}*'?|\p{Ll}\p{M}*|[.,-])+$/u;
+
+/**
+ * Rewrites keyboard-friendly octave aliases in one swara token to their
+ * canonical Unicode form: a trailing apostrophe marks tāra sthāyi (`S'` is
+ * Ṡ) and a lowercase letter marks mandra sthāyi (`s` is Ṣ). Aliases combine
+ * with compact tokens (`S'R'` is ṠṘ; `nn,` holds two mandra quavers). Only
+ * apply this to rows known to carry swaras; lyric text is never rewritten.
+ */
+export const normalizeSwaraToken = (token: string): string => {
+  if (!SWARA_ALIAS_TOKEN.test(token)) return token;
+  return token
+    .replace(/(\p{Lu})'/gu, "$1\u0307")
+    .replace(
+      /(\p{Ll})(?!\u0323)/gu,
+      (letter) => `${letter.toUpperCase()}\u0323`,
+    )
+    .replace(/\p{Ll}/gu, (letter) => letter.toUpperCase());
+};
+
+/** Applies swara octave aliases to every token of a swara row. */
+export const normalizeSwaraRow = (value: string): string =>
+  value.replace(/\S+/gu, normalizeSwaraToken);
+
+/** Parses a row that is known to carry swaras, honoring octave aliases. */
+const parseSwaraLine = (value: NotationInput): ParsedNotationLine =>
+  parseNotationLine(
+    typeof value === "string"
+      ? normalizeSwaraRow(value)
+      : value.map(normalizeSwaraToken),
+  );
 
 export function parseNotationLine(value: NotationInput): ParsedNotationLine {
   if (Array.isArray(value)) {
@@ -252,6 +335,56 @@ export function parseNotationLine(value: NotationInput): ParsedNotationLine {
   return { tokens, solidBefore, doubleBefore, doubleEnd };
 }
 
+export interface SwaraSlot {
+  /** A swara sound ("S", "Ṡ") or an attached continuation mark. */
+  kind: "sound" | "mark";
+  text: string;
+}
+
+/**
+ * Splits one swara token into its ordered slots: every letter and every
+ * continuation mark in a token shares the token's one unit equally. `G,` is a
+ * quaver swara tied to a quaver hold; `NN` is two quavers; `,,` is two hold
+ * slots. Returns null when the token is not a swara token at all.
+ */
+export function splitSwaraSlots(token: string): SwaraSlot[] | null {
+  const slots: SwaraSlot[] = [];
+  for (const unitMatch of token.matchAll(/(\p{L}\p{M}*)|([.,-])/gu)) {
+    slots.push(
+      unitMatch[1]
+        ? { kind: "sound", text: unitMatch[1] }
+        : { kind: "mark", text: unitMatch[2] },
+    );
+  }
+  const consumed = slots.reduce((total, slot) => total + slot.text.length, 0);
+  if (slots.length === 0 || consumed !== token.length) return null;
+  return slots;
+}
+
+/**
+ * The number of slots in a swara token: the slot count sets the token's
+ * column span in the notation table (a compact token such as `NN` spans two
+ * columns, as does its paired lyric cell). Unparseable tokens count as one
+ * cell, matching their single-table-cell rendering.
+ */
+export function swaraSlotCount(token: string): number {
+  return splitSwaraSlots(token)?.length ?? 1;
+}
+
+/** Maps token-index dividers of a swara line into slot offsets. */
+const swaraSlotOffsets = (
+  tokens: string[],
+  boundaries: readonly number[],
+): number[] => {
+  const offsets: number[] = [];
+  let position = 0;
+  for (const token of tokens) {
+    offsets.push(position);
+    position += swaraSlotCount(token);
+  }
+  return boundaries.map((index) => offsets[index] ?? position);
+};
+
 export function validateAlignedLyrics(
   swaras: ParsedNotationLine,
   lyrics: ParsedNotationLine | null,
@@ -259,7 +392,7 @@ export function validateAlignedLyrics(
   if (!lyrics) return;
   if (swaras.tokens.length !== lyrics.tokens.length) {
     throw new Error(
-      `Swara and lyric lines must have the same number of cells (${swaras.tokens.length} !== ${lyrics.tokens.length}).`,
+      `Swara and lyric lines must have the same number of cells (${swaras.tokens.length} swara cells !== ${lyrics.tokens.length} lyric cells).`,
     );
   }
   if (
@@ -271,6 +404,130 @@ export function validateAlignedLyrics(
       "Swara and lyric lines must use tala dividers in the same positions.",
     );
   }
+}
+
+/**
+ * Validates one parsed swara row against a declared `@Time` signature: the
+ * cells between any two tala dividers must match the cyclical anga lengths
+ * and every row must span whole measures (a double divider at its end). The
+ * paired lyric row follows the same division through swara–sahitya slot
+ * alignment: one lyric cell per slot, so its per-anga cell count equals the
+ * swara row's slot count for that anga.
+ */
+const validateRowTime = (
+  row: ParsedNotationLine,
+  time: ParsedTimeSignature,
+) => {
+  if (!row.doubleEnd) {
+    throw new Error(
+      `Rows under @Time ${timeLabel(time)} must end with || so each row spans whole measures.`,
+    );
+  }
+  const starts = [0, ...row.solidBefore, ...row.doubleBefore].sort(
+    (a, b) => a - b,
+  );
+  if (starts.length % time.grouping.length !== 0) {
+    throw new Error(
+      `Rows under @Time ${timeLabel(time)} must span whole ${time.grouping.join("+")} measures; this row stops after anga ${starts.length % time.grouping.length} of ${time.grouping.length}.`,
+    );
+  }
+  starts.forEach((start, angaIndex) => {
+    const end =
+      angaIndex + 1 < starts.length ? starts[angaIndex + 1] : row.tokens.length;
+    const expected = time.grouping[angaIndex % time.grouping.length];
+    const count = end - start;
+    if (count !== expected) {
+      throw new Error(
+        `Anga ${angaIndex + 1} has ${count} cells; @Time ${timeLabel(time)} expects ${expected}.`,
+      );
+    }
+  });
+};
+
+export interface ParsedSwaraBeat {
+  /** Source text of the cell, for example "S" or the joined token "SR". */
+  text: string;
+  /**
+   * Individual sounds in the cell; more than one for joined subdivisions
+   * ("SR" -> ["S", "R"]), empty for a standalone duration mark.
+   */
+  sounds: string[];
+  /**
+   * Total duration in units; duration marks fold into the previous cell.
+   * One unit is the score's base duration, a crotchet by default.
+   */
+  units: number;
+  /** True for a `*` rest cell (plus the marks folded into it). */
+  rest?: boolean;
+}
+
+/** Duration weight of each standalone duration mark, in base units. */
+export const durationMarkUnits: Readonly<Record<string, number>> = {
+  ".": 1,
+  "-": 1,
+  ",": 1,
+};
+
+/** The retired dhirga mark: rejected with a pointer to `,` / `-`. */
+export const RETIRED_DHIRGA_MARK = ";";
+
+/** Error text for a `;` cell, shared by the parser and the converter. */
+export const retiredDhirgaMessage = () =>
+  `The dhirga mark "${RETIRED_DHIRGA_MARK}" is not supported; hold a swara with one "," or "-" cell per beat.`;
+
+/** The only way to write silence: a one-unit rest cell. Marks extend it. */
+export const REST_TOKEN = "*";
+
+/** True for a cell that only holds duration: `-`, `,`, `,,`, and the like. */
+export const isDurationMarkToken = (token: string): boolean =>
+  durationMarkUnits[token] !== undefined ||
+  (splitSwaraSlots(token)?.every((slot) => slot.kind === "mark") ?? false);
+
+export function parseSwaraDurations(value: NotationInput): ParsedSwaraBeat[] {
+  const { tokens } = parseSwaraLine(value);
+  const beats: ParsedSwaraBeat[] = [];
+
+  const extend = (token: string, units: number) => {
+    const previous = beats.at(-1);
+    if (previous) {
+      previous.units += units;
+      return;
+    }
+    // A mark opening the line continues the previous line's last cell; the
+    // section-level parser rejects one with nothing before it.
+    beats.push({ text: token, sounds: [], units });
+  };
+
+  tokens.forEach((token) => {
+    if (token === REST_TOKEN) {
+      beats.push({ text: token, sounds: [], units: 1, rest: true });
+      return;
+    }
+    const markUnits = durationMarkUnits[token];
+    if (markUnits !== undefined) {
+      extend(token, markUnits);
+      return;
+    }
+    const slots = splitSwaraSlots(token);
+    if (!slots) {
+      beats.push({ text: token, sounds: [token], units: 1 });
+      return;
+    }
+    const sounds = slots
+      .filter((slot) => slot.kind === "sound")
+      .map((slot) => slot.text);
+    if (sounds.length === 0) {
+      // A mark-only token such as ",," still spans one unit, shared by its
+      // mark slots, and extends the previous beat.
+      extend(token, 1);
+      return;
+    }
+    // Sounds and attached marks share the token's one unit: `G,` is a
+    // one-unit beat whose sound spans its two quaver slots.
+    beats.push({ text: token, sounds, units: 1 });
+  });
+
+  return beats;
 }
 
 export function parseNotationDirective(
@@ -436,7 +693,7 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
         );
       }
       const target = current.rows.length === 0 ? current.before : current.after;
-      target.push(directive);
+      target.push({ ...directive, line: lineNumber });
       continue;
     }
 
@@ -465,10 +722,56 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
       );
     }
 
+    const timeDirectives = before.filter(
+      (directive) => directive.keyword === NotationDirectiveKeyword.Time,
+    );
+    if (timeDirectives.length > 1) {
+      throw new NotationParseError(
+        `${title} may declare @Time only once.`,
+        timeDirectives[1].line ?? headingLine,
+      );
+    }
+    const lateTime = after.find(
+      (directive) => directive.keyword === NotationDirectiveKeyword.Time,
+    );
+    if (lateTime) {
+      throw new NotationParseError(
+        "@Time must appear before the section's notation rows.",
+        lateTime.line ?? headingLine,
+      );
+    }
+    let time: ParsedTimeSignature | undefined;
+    if (timeDirectives[0]) {
+      try {
+        time = parseTimeSignature(timeDirectives[0].value);
+      } catch (error) {
+        throw atNotationLine(error, timeDirectives[0].line ?? headingLine);
+      }
+    }
+
+    // A duration mark can only extend something: the section's first cell
+    // must be a swara or a `*` rest, never `-`, `;`, or `,,`.
+    const rejectOpeningMark = (row: { value: string; line: number }) => {
+      const first = parseNotationLine(normalizeSwaraRow(row.value)).tokens[0];
+      if (first !== undefined && isDurationMarkToken(first)) {
+        throw new NotationParseError(
+          `Section "${title}" opens with the duration mark "${first}" but has no swara to extend; write a rest as "${REST_TOKEN}".`,
+          row.line,
+        );
+      }
+    };
+    rejectOpeningMark(rows[0]);
+    rows.forEach((row) => {
+      if (row.value.split(" ").includes(RETIRED_DHIRGA_MARK)) {
+        throw new NotationParseError(retiredDhirgaMessage(), row.line);
+      }
+    });
+
     if (kind === NotationSectionKind.Swaras) {
       rows.forEach((row) => {
         try {
-          parseNotationLine(row.value);
+          const parsed = parseSwaraLine(row.value);
+          if (time) validateRowTime(parsed, time);
         } catch (error) {
           throw atNotationLine(error, row.line);
         }
@@ -477,9 +780,10 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
         key,
         title,
         kind,
-        content: rows.map((row) => row.value),
+        content: rows.map((row) => normalizeSwaraRow(row.value)),
         before,
         after,
+        time,
       };
     }
 
@@ -493,9 +797,11 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
     for (let index = 0; index < rows.length; index += 2) {
       const swaras = rows[index];
       const lyrics = rows[index + 1];
+      const normalizedSwaras = normalizeSwaraRow(swaras.value);
       let parsedSwaras: ParsedNotationLine;
       try {
-        parsedSwaras = parseNotationLine(swaras.value);
+        parsedSwaras = parseNotationLine(normalizedSwaras);
+        if (time) validateRowTime(parsedSwaras, time);
       } catch (error) {
         throw atNotationLine(error, swaras.line);
       }
@@ -504,9 +810,9 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
       } catch (error) {
         throw atNotationLine(error, lyrics.line);
       }
-      content.push({ swaras: swaras.value, lyrics: lyrics.value });
+      content.push({ swaras: normalizedSwaras, lyrics: lyrics.value });
     }
-    return { key, title, kind, content, before, after };
+    return { key, title, kind, content, before, after, time };
   });
 
   return { museScoreSource, sections };
@@ -532,30 +838,64 @@ function SwaraToken({ token }: { token: string }) {
 }
 
 const cellClassName = (
-  index: number,
+  start: number,
   solidBefore: readonly number[],
   doubleBefore: readonly number[],
   doubleEnd: boolean,
-  length: number,
+  isLastCell: boolean,
 ) =>
   [
     "swara-cell",
-    solidBefore.includes(index) ? "tala-solid-before" : "",
-    doubleBefore.includes(index) ? "tala-double-before" : "",
-    doubleEnd && index === length - 1 ? "tala-double-end" : "",
+    solidBefore.includes(start) ? "tala-solid-before" : "",
+    doubleBefore.includes(start) ? "tala-double-before" : "",
+    doubleEnd && isLastCell ? "tala-double-end" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
+interface NotationCell {
+  text: string;
+  /** Column span: a compact token such as `N,` takes its full slot width. */
+  span: number;
+  /** Slot offset where the cell begins. */
+  start: number;
+}
+
+const swaraCells = (tokens: string[]): NotationCell[] => {
+  const cells: NotationCell[] = [];
+  let start = 0;
+  for (const token of tokens) {
+    const span = swaraSlotCount(token);
+    cells.push({ text: token, span, start });
+    start += span;
+  }
+  return cells;
+};
+
+/**
+ * Lyric cells pair 1:1 with swara cells; each takes the column span of its
+ * swara token so both rows occupy the same table columns.
+ */
+const lyricCells = (tokens: string[], swaraTokens: string[]): NotationCell[] => {
+  const cells: NotationCell[] = [];
+  let start = 0;
+  tokens.forEach((token, index) => {
+    const span = swaraSlotCount(swaraTokens[index] ?? "");
+    cells.push({ text: token, span, start });
+    start += span;
+  });
+  return cells;
+};
+
 interface NotationRowProps extends Required<TalaBoundaryProps> {
-  tokens: string[];
+  cells: NotationCell[];
   kind?: NotationRowKind;
   number?: number;
   rowSpan?: number;
 }
 
 function NotationRow({
-  tokens,
+  cells,
   kind = NotationRowKind.Swara,
   number,
   rowSpan,
@@ -580,22 +920,23 @@ function NotationRow({
           React.createElement("span", null, number),
         )
       : null,
-    tokens.map((token, index) =>
+    cells.map((cell, index) =>
       React.createElement(
         "td",
         {
           className: cellClassName(
-            index,
+            cell.start,
             solidBefore,
             doubleBefore,
             doubleEnd,
-            tokens.length,
+            index === cells.length - 1,
           ),
+          ...(cell.span > 1 ? { colSpan: cell.span } : {}),
           key: index,
         },
         kind === NotationRowKind.Swara
-          ? React.createElement(SwaraToken, { token })
-          : token,
+          ? React.createElement(SwaraToken, { token: cell.text })
+          : cell.text,
       ),
     ),
   );
@@ -621,11 +962,19 @@ export function SwaraTable({
   doubleBefore,
   doubleEnd,
 }: SwaraTableProps): ReactElement {
-  const parsedSwaras = parseNotationLine(swaras);
+  const parsedSwaras = parseSwaraLine(swaras);
   const parsedLyrics = lyrics ? parseNotationLine(lyrics) : null;
   validateAlignedLyrics(parsedSwaras, parsedLyrics);
-  const resolvedSolidBefore = solidBefore ?? parsedSwaras.solidBefore;
-  const resolvedDoubleBefore = doubleBefore ?? parsedSwaras.doubleBefore;
+  const swaraSolidBefore = swaraSlotOffsets(
+    parsedSwaras.tokens,
+    parsedSwaras.solidBefore,
+  );
+  const swaraDoubleBefore = swaraSlotOffsets(
+    parsedSwaras.tokens,
+    parsedSwaras.doubleBefore,
+  );
+  const resolvedSolidBefore = solidBefore ?? swaraSolidBefore;
+  const resolvedDoubleBefore = doubleBefore ?? swaraDoubleBefore;
   const resolvedDoubleEnd = doubleEnd ?? parsedSwaras.doubleEnd;
 
   return React.createElement(
@@ -635,7 +984,7 @@ export function SwaraTable({
       "tbody",
       null,
       React.createElement(NotationRow, {
-        tokens: parsedSwaras.tokens,
+        cells: swaraCells(parsedSwaras.tokens),
         number,
         rowSpan: lyrics ? 2 : 1,
         solidBefore: resolvedSolidBefore,
@@ -644,7 +993,7 @@ export function SwaraTable({
       }),
       parsedLyrics
         ? React.createElement(NotationRow, {
-            tokens: parsedLyrics.tokens,
+            cells: lyricCells(parsedLyrics.tokens, parsedSwaras.tokens),
             kind: NotationRowKind.Lyrics,
             solidBefore: resolvedSolidBefore,
             doubleBefore: resolvedDoubleBefore,
@@ -668,12 +1017,15 @@ export function SwaraGrid({
       "tbody",
       null,
       rows.map((row, index) => {
-        const parsed = parseNotationLine(row);
+        const parsed = parseSwaraLine(row);
         return React.createElement(NotationRow, {
-          tokens: parsed.tokens,
+          cells: swaraCells(parsed.tokens),
           number: index + 1,
-          solidBefore: solidBefore ?? parsed.solidBefore,
-          doubleBefore: doubleBefore ?? parsed.doubleBefore,
+          solidBefore:
+            solidBefore ?? swaraSlotOffsets(parsed.tokens, parsed.solidBefore),
+          doubleBefore:
+            doubleBefore ??
+            swaraSlotOffsets(parsed.tokens, parsed.doubleBefore),
           doubleEnd: doubleEnd ?? parsed.doubleEnd,
           key: index,
         });

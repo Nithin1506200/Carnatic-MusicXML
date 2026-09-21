@@ -1,0 +1,1 @@
+Error: Lyric "bo" falls under a held swara cell (",") and has no note to attach to.

@@ -10,6 +10,7 @@ export default tseslint.config(
       "dist/**",
       "node_modules/**",
       "app/generated-content.ts",
+      "components/ragas.generated.ts",
       "public/generated-content/**",
       "public/generated-scores/**",
       "public/vendor/**",
@@ -29,7 +30,10 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.flat.recommended.rules,
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
     },
   },
   {

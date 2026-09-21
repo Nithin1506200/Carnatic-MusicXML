@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<museScore version="4.50">
+  <Score>
+    <Division>480</Division>
+    <Style>
+      <lyricsOddColor r="0" g="0" b="0" a="255"/>
+      <lyricsEvenColor r="176" g="0" b="32" a="255"/>
+    </Style>
+    <showInvisible>1</showInvisible>
+    <showUnprintable>1</showUnprintable>
+    <showFrames>1</showFrames>
+    <showMargins>0</showMargins>
+    <metaTag name="workTitle">Example</metaTag>
+    <metaTag name="composer">Purandara Dasa</metaTag>
+    <Part>
+      <Staff>
+        <StaffType group="pitched">
+          <name>stdNormal</name>
+        </StaffType>
+      </Staff>
+      <trackName>Alto Saxophone</trackName>
+      <Instrument id="alto-saxophone">
+        <longName>Alto Saxophone</longName>
+        <shortName>A. Sax.</shortName>
+        <description>Alto Saxophone</description>
+        <musicXMLid>wind.reed.saxophone.alto</musicXMLid>
+        <minPitchP>49</minPitchP>
+        <maxPitchP>92</maxPitchP>
+        <minPitchA>49</minPitchA>
+        <maxPitchA>80</maxPitchA>
+        <transposeDiatonic>-5</transposeDiatonic>
+        <transposeChromatic>-9</transposeChromatic>
+        <instrumentId>wind.reed.saxophone.alto</instrumentId>
+        <Channel>
+          <program value="65"/>
+          <synti>Fluid</synti>
+        </Channel>
+      </Instrument>
+    </Part>
+    <Staff id="1">
+      <VBox>
+        <height>10</height>
+        <Text>
+          <style>frame</style>
+          <text><font size="20"/><b>Example</b><br/><font size="11"/>Raga: Mayamalavagowla | Tala: Aadi (4 + 2 + 2)<br/>Composer: Purandara Dasa | Alto Saxophone in G scale<br/>Arohana: S R1 G3 M1 P D1 N3 S | Avarohana: S N3 D1 P M1 G3 R1 S<br/>Written Sa = G on alto sax; sounds concert Bb. Swaras are black; English lyrics are deep crimson.</text>
+          </Text>
+        </VBox>
+      <Measure>
+        <LayoutBreak>
+          <subtype>section</subtype>
+        </LayoutBreak>
+        <voice>
+          <Clef>
+            <concertClefType>G</concertClefType>
+            <transposingClefType>G</transposingClefType>
+            <isHeader>1</isHeader>
+          </Clef>
+          <KeySig>
+            <concertKey>-2</concertKey>
+            <actualKey>1</actualKey>
+            <mode>major</mode>
+          </KeySig>
+          <TimeSig>
+            <sigN>6</sigN>
+            <sigD>4</sigD>
+          </TimeSig>
+          <RehearsalMark>
+            <text>Pallavi</text>
+          </RehearsalMark>
+          <StaffText>
+            <text>Sahitya: Example text</text>
+          </StaffText>
+          <Chord>
+            <durationType>half</durationType>
+          <Lyrics>
+            <text>S</text>
+          </Lyrics>
+          <Lyrics>
+            <no>1</no>
+            <text>La</text>
+          </Lyrics>
+            <Note>
+              <pitch>58</pitch>
+              <tpc>12</tpc>
+              <tpc2>15</tpc2>
+            </Note>
+          </Chord>
+          <Chord>
+            <durationType>quarter</durationType>
+          <Lyrics>
+            <text>R</text>
+          </Lyrics>
+          <Lyrics>
+            <no>1</no>
+            <text>m</text>
+          </Lyrics>
+            <Note>
+              <Accidental>
+                <subtype>accidentalFlat</subtype>
+              </Accidental>
+              <pitch>59</pitch>
+              <tpc>7</tpc>
+              <tpc2>10</tpc2>
+            </Note>
+          </Chord>
+          <BarLine>
+            <subtype>dashed</subtype>
+          </BarLine>
+          <Chord>
+            <dots>1</dots>
+            <durationType>half</durationType>
+          <Lyrics>
+            <text><b>Ṡ</b></text>
+          </Lyrics>
+          <Lyrics>
+            <no>1</no>
+            <text>bha</text>
+          </Lyrics>
+            <Note>
+              <pitch>70</pitch>
+              <tpc>12</tpc>
+              <tpc2>15</tpc2>
+            </Note>
+          </Chord>
+          <StaffText>
+            <text>Repeat: Example text…</text>
+          </StaffText>
+          <BarLine>
+            <subtype>end</subtype>
+          </BarLine>
+        </voice>
+      </Measure>
+    </Staff>
+  </Score>
+</museScore>

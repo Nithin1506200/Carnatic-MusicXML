@@ -15,6 +15,12 @@ public/generated-content/
 public/generated-scores/
 public/vendor/webmscore/
 
+# Generated from data/ragas.toml
+components/ragas.generated.ts
+
+# Local PDF exports from the mscz:generate --pdf command
+*.pdf
+
 # Local runtime configuration
 .env
 .env.*

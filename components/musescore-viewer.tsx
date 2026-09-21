@@ -170,10 +170,14 @@ const normalizeMultilineFrameText = (archive: Uint8Array) => {
 
 export default function MuseScoreViewer({
   source,
+  data,
   title,
   compact = false,
 }: {
-  source: string;
+  /** URL the .mscz archive is fetched from; used when `data` is not given. */
+  source?: string;
+  /** Raw .mscz archive bytes; takes precedence over `source`. */
+  data?: Uint8Array;
   title: string;
   compact?: boolean;
 }) {
@@ -189,21 +193,28 @@ export default function MuseScoreViewer({
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      loadRuntime(),
-      loadMuseScoreFonts(),
-      fetch(source).then((response) => {
-        if (!response.ok) {
-          throw new Error(`Score request failed (${response.status})`);
-        }
-        return response.arrayBuffer();
-      }),
-    ])
+    const bytesPromise = data
+      ? Promise.resolve(data)
+      : fetch(source!).then((response) => {
+          if (!response.ok) {
+            throw new Error(`Score request failed (${response.status})`);
+          }
+          return response.arrayBuffer();
+        });
+
+    Promise.all([loadRuntime(), loadMuseScoreFonts(), bytesPromise])
       .then(async ([WebMscore, fonts, buffer]) => {
         if (cancelled) return;
         setStatus("Opening MuseScore file…");
         const scoreData = normalizeMultilineFrameText(new Uint8Array(buffer));
-        const score = await WebMscore.load("mscz", scoreData, fonts);
+        // webMscore transfers the font buffers to its worker via postMessage,
+        // which detaches them. Hand it copies so repeated loads (for example
+        // the playground's live preview after every edit) keep working.
+        const score = await WebMscore.load(
+          "mscz",
+          scoreData,
+          fonts.map((font) => new Uint8Array(font)),
+        );
         if (cancelled) {
           score.destroy(false);
           return;
@@ -227,7 +238,7 @@ export default function MuseScoreViewer({
       scoreRef.current?.destroy(false);
       scoreRef.current = null;
     };
-  }, [source]);
+  }, [source, data]);
 
   useEffect(() => {
     const score = scoreRef.current;

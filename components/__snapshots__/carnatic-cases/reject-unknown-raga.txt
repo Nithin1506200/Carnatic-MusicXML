@@ -1,0 +1,1 @@
+Error: Unknown raga "Madeupragam" — add it to data/ragas.toml (with arohana, avarohana, and a reference) before using it.
