@@ -11,9 +11,13 @@ dist/
 
 # Generated from repository Markdown
 app/generated-content.ts
+app/generated/
 public/generated-content/
 public/generated-scores/
 public/vendor/webmscore/
+
+# Content render cache (scripts/generate-content.mjs)
+.cache/
 
 # Generated from data/ragas.toml
 components/ragas.generated.ts

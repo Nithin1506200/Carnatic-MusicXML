@@ -32,10 +32,27 @@ const snapshotLoaders = import.meta.glob<string>(
   { query: "?raw", import: "default" },
 );
 
-const scoreLoaders = import.meta.glob<string>("../scores/**/*.mdx", {
-  query: "?raw",
-  import: "default",
-});
+/**
+ * Only the repository scores the shared cases name are bundled. Vite needs
+ * literal patterns here, so the list is duplicated from `CARNATIC_CASES`;
+ * `components/carnatic-cases.test.ts` keeps the two in step.
+ */
+export const BUNDLED_CASE_SCORES = [
+  "scores/02_basics/sarale_varase_to_alankaaras.mdx",
+  "scores/02_basics/sri_gananatha_geethe.mdx",
+  "scores/05_varnams/ninnu_kori_vasantha_varnam.mdx",
+  "scores/06_bhajans/bhagyada_lakshmi_baaramma.mdx",
+] as const;
+
+const scoreLoaders = import.meta.glob<string>(
+  [
+    "../scores/02_basics/sarale_varase_to_alankaaras.mdx",
+    "../scores/02_basics/sri_gananatha_geethe.mdx",
+    "../scores/05_varnams/ninnu_kori_vasantha_varnam.mdx",
+    "../scores/06_bhajans/bhagyada_lakshmi_baaramma.mdx",
+  ],
+  { query: "?raw", import: "default" },
+);
 
 const loadSnapshot = async (testCase: CarnaticCase): Promise<string | null> => {
   const loader = snapshotLoaders[`../${snapshotPathFor(testCase)}`];

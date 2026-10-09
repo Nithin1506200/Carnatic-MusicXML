@@ -1,5 +1,32 @@
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { documents, homeHtml } from "./generated-content";
+import {
+  lazy,
+  Suspense,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { documents, homeHtml, scoreCount, scoreGroups } from "./generated-content";
+import {
+  entrySubtitle,
+  humanizeSlug,
+  isScoreId,
+  loadCatalog,
+  scoreContentUrl,
+  scoreGroupLabel,
+  scoreGroupOf,
+  type Catalog,
+  type CatalogEntry,
+} from "./catalog";
+import {
+  highlightSegments,
+  loadSearch,
+  MATCH_FIELD_LABELS,
+  warmSearch,
+  type SearchEngine,
+  type SearchHit,
+} from "./search";
 
 const MuseScoreViewer = lazy(() => import("../components/musescore-viewer"));
 const NotationPlayground = lazy(() => import("./notation-playground"));
@@ -8,42 +35,134 @@ const ConverterCases = lazy(() => import("./converter-cases"));
 /** Tool pages that live outside the generated document list. */
 const TOOL_IDS = new Set(["playground", "cases"]);
 
+/**
+ * The library shell. Only the handful of non-score documents are known at
+ * load time (`documents`); scores are listed from the lazily fetched catalog
+ * and found through the lazily built search index, and every document's
+ * page content is fetched when it opens. Nothing here scales with the
+ * number of scores except the catalog request itself.
+ */
+
 type DocumentSummary = (typeof documents)[number];
-type DocumentItem = DocumentSummary & { html: string };
 type NotationView = "both" | "swaras" | "sahitya";
 
-const categoryOrder = ["Start here", "Learn", "Scores", "Reference", "Project"];
-const documentHtmlCache = new Map<string, Promise<string>>([
-  ["home", Promise.resolve(homeHtml)],
-]);
+/** One generated page: `public/generated-content/<id>.json`. */
+interface DocumentContent {
+  id: string;
+  title: string;
+  category: string;
+  sourcePath: string;
+  html: string;
+  headings: { id: string; text: string; level: number }[];
+  metadata: Record<string, unknown>;
+  scoreSource: string | null;
+}
 
-const loadDocumentHtml = (document: DocumentSummary) => {
-  const cached = documentHtmlCache.get(document.id);
+/** What the page header needs before (or without) the page content. */
+interface DocumentHeader {
+  id: string;
+  title: string;
+  category: string;
+  excerpt: string;
+}
+
+const documentCategoryOrder = ["Start here", "Learn", "Reference", "Project"];
+const documentsById = new Map<string, DocumentSummary>(
+  documents.map((document) => [document.id, document]),
+);
+const homeSummary = documentsById.get("home") ?? documents[0];
+
+const initialHome: DocumentContent = {
+  id: "home",
+  title: homeSummary.title,
+  category: homeSummary.category,
+  sourcePath: homeSummary.sourcePath,
+  html: homeHtml,
+  headings: [],
+  metadata: {},
+  scoreSource: null,
+};
+
+/** Page-content cache, bounded so a long browsing session stays small. */
+const CONTENT_CACHE_LIMIT = 40;
+const contentCache = new Map<string, Promise<DocumentContent>>();
+
+const contentUrlFor = (id: string) =>
+  documentsById.get(id)?.contentUrl ?? scoreContentUrl(id);
+
+const loadDocumentContent = (id: string) => {
+  const cached = contentCache.get(id);
   if (cached) return cached;
 
-  const request = fetch(document.contentUrl)
+  const request = fetch(contentUrlFor(id))
     .then((response) => {
       if (!response.ok) {
         throw new Error(`Document request failed (${response.status})`);
       }
-      return response.json() as Promise<{ html?: unknown }>;
+      return response.json() as Promise<Partial<DocumentContent>>;
     })
     .then((content) => {
       if (typeof content.html !== "string") {
         throw new Error("Generated document has no HTML content");
       }
-      return content.html;
+      return {
+        id,
+        title: content.title ?? humanizeSlug(id),
+        category: content.category ?? (isScoreId(id) ? "Scores" : "Learn"),
+        sourcePath: content.sourcePath ?? "",
+        html: content.html,
+        headings: content.headings ?? [],
+        metadata: content.metadata ?? {},
+        scoreSource: content.scoreSource ?? null,
+      } satisfies DocumentContent;
     })
-    .catch((error) => {
-      documentHtmlCache.delete(document.id);
+    .catch((error: unknown) => {
+      contentCache.delete(id);
       throw error;
     });
-  documentHtmlCache.set(document.id, request);
+  contentCache.set(id, request);
+  if (contentCache.size > CONTENT_CACHE_LIMIT) {
+    const oldest = contentCache.keys().next().value;
+    if (oldest !== undefined) contentCache.delete(oldest);
+  }
   return request;
+};
+
+/** The document id the URL names, when it is one this app can show. */
+const documentIdFromLocation = () => {
+  const id = new URLSearchParams(window.location.search).get("doc");
+  if (id && (TOOL_IDS.has(id) || documentsById.has(id) || isScoreId(id))) {
+    return id;
+  }
+  return "home";
 };
 
 const displayMetadataValue = (value: unknown) =>
   Array.isArray(value) ? value.join(" · ") : String(value);
+
+/** Quick-access entries shown in the palette before anything is typed. */
+const quickAccess: SearchHit[] = documents.slice(0, 8).map((document) => ({
+  id: document.id,
+  title: document.title,
+  category: document.category,
+  subtitle: document.excerpt,
+  contentUrl: document.contentUrl,
+  score: 0,
+  terms: [],
+  fields: [],
+}));
+
+/** Text with the matched search terms wrapped in <mark>. */
+function Highlight({ text, terms }: { text: string; terms: string[] }) {
+  if (!text) return null;
+  return (
+    <>
+      {highlightSegments(text, terms).map((segment, index) =>
+        segment.hit ? <mark key={index}>{segment.text}</mark> : segment.text,
+      )}
+    </>
+  );
+}
 
 const SearchIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -57,8 +176,115 @@ const MenuIcon = () => (
   </svg>
 );
 
+const GROUP_PAGE_INITIAL = 30;
+const GROUP_PAGE_STEP = 50;
+
+interface ScoreGroupNavProps {
+  group: (typeof scoreGroups)[number];
+  expanded: boolean;
+  entries: CatalogEntry[] | null;
+  catalogError: string | null;
+  activeId: string;
+  onToggle: () => void;
+  onOpen: (id: string) => void;
+}
+
+/** One collapsible score group in the sidebar: filter, page, open. */
+function ScoreGroupNav({
+  group,
+  expanded,
+  entries,
+  catalogError,
+  activeId,
+  onToggle,
+  onOpen,
+}: ScoreGroupNavProps) {
+  const [filter, setFilter] = useState("");
+  const [limit, setLimit] = useState(GROUP_PAGE_INITIAL);
+  const deferredFilter = useDeferredValue(filter);
+
+  const visible = useMemo(() => {
+    if (!entries) return [];
+    const needle = deferredFilter.trim().toLowerCase();
+    if (!needle) return entries;
+    return entries.filter((entry) =>
+      `${entry.title} ${entry.raga} ${entry.composer} ${entry.tala}`
+        .toLowerCase()
+        .includes(needle),
+    );
+  }, [entries, deferredFilter]);
+
+  const shown = visible.slice(0, limit);
+  const remaining = visible.length - shown.length;
+  const panelId = `score-group-${group.key}`;
+
+  return (
+    <div className={`score-group ${expanded ? "is-open" : ""}`}>
+      <button
+        type="button"
+        className="score-group-toggle"
+        aria-expanded={expanded}
+        aria-controls={panelId}
+        onClick={onToggle}
+      >
+        <i aria-hidden="true" />
+        <span>{group.label}</span>
+        <small>{group.count}</small>
+      </button>
+      {expanded && (
+        <div id={panelId} className="score-group-body">
+          {group.count > GROUP_PAGE_INITIAL && (
+            <input
+              type="search"
+              value={filter}
+              onChange={(event) => {
+                setFilter(event.target.value);
+                setLimit(GROUP_PAGE_INITIAL);
+              }}
+              placeholder={`Filter ${group.count} scores…`}
+              aria-label={`Filter ${group.label}`}
+            />
+          )}
+          {catalogError ? (
+            <p className="score-group-state" role="alert">{catalogError}</p>
+          ) : !entries ? (
+            <p className="score-group-state" aria-live="polite">Loading scores…</p>
+          ) : visible.length === 0 ? (
+            <p className="score-group-state">
+              {entries.length === 0 ? "No scores yet." : "No scores match."}
+            </p>
+          ) : (
+            shown.map((entry) => (
+              <button
+                key={entry.id}
+                type="button"
+                className={entry.id === activeId ? "active" : ""}
+                onClick={() => onOpen(entry.id)}
+                title={entrySubtitle(entry) || undefined}
+              >
+                <span>{entry.title}</span>
+                {entry.id === activeId && <i aria-hidden="true" />}
+              </button>
+            ))
+          )}
+          {remaining > 0 && (
+            <button
+              type="button"
+              className="score-group-more"
+              onClick={() => setLimit((value) => value + GROUP_PAGE_STEP)}
+            >
+              Show {Math.min(remaining, GROUP_PAGE_STEP)} more
+              <small>{remaining} left</small>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function MusicLibrary() {
-  const [activeId, setActiveId] = useState<string>("home");
+  const [activeId, setActiveId] = useState<string>(documentIdFromLocation);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
@@ -68,6 +294,7 @@ export default function MusicLibrary() {
     label: string;
   } | null>(null);
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
   const [notationView, setNotationView] = useState<NotationView>("both");
   const [notationOverviewOpen, setNotationOverviewOpen] = useState(false);
   const [engravedScore, setEngravedScore] = useState<{
@@ -77,25 +304,85 @@ export default function MusicLibrary() {
   const [notationSectionIndex, setNotationSectionIndex] = useState(0);
   const searchInput = useRef<HTMLInputElement>(null);
   const notationScroll = useRef<HTMLDivElement>(null);
-  const [loadedHtml, setLoadedHtml] = useState<Record<string, string>>({
-    home: homeHtml,
-  });
+  const [activeDoc, setActiveDoc] = useState<DocumentContent | null>(initialHome);
+  const [previewDoc, setPreviewDoc] = useState<DocumentContent | null>(null);
   const [loadErrors, setLoadErrors] = useState<Record<string, string>>({});
+  const [catalog, setCatalog] = useState<Catalog | null>(null);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+  // The active score's group starts open; the user can collapse it later.
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    () => new Set(isScoreId(activeId) ? [scoreGroupOf(activeId)] : []),
+  );
+  const [engine, setEngine] = useState<SearchEngine | null>(null);
+  const [searchState, setSearchState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+
+  // The catalog and search index each load once, on first demand.
+  const catalogRequested = useRef(false);
+  const ensureCatalog = () => {
+    if (catalogRequested.current) return;
+    catalogRequested.current = true;
+    loadCatalog()
+      .then((loaded) => {
+        setCatalog(loaded);
+        setCatalogError(null);
+      })
+      .catch((error: unknown) => {
+        console.error("Catalog failed to load:", error);
+        catalogRequested.current = false;
+        setCatalogError("The score list could not be loaded.");
+      });
+  };
+
+  const searchRequested = useRef(false);
+  const ensureSearch = () => {
+    if (searchRequested.current) return;
+    searchRequested.current = true;
+    setSearchState("loading");
+    loadSearch()
+      .then((loaded) => {
+        setEngine(loaded);
+        setSearchState("ready");
+      })
+      .catch((error: unknown) => {
+        console.error("Search index failed to load:", error);
+        searchRequested.current = false;
+        setSearchState("error");
+      });
+  };
+
+  const openSearch = () => {
+    setSearchOpen(true);
+    ensureSearch();
+  };
+
+  /** Shows a document and opens its score group when it is a score. */
+  const showDocument = (id: string) => {
+    setActiveId(id);
+    setNotationView("both");
+    if (isScoreId(id)) {
+      const group = scoreGroupOf(id);
+      setExpandedGroups((current) =>
+        current.has(group) ? current : new Set(current).add(group),
+      );
+      ensureCatalog();
+    }
+  };
+  // Latest-callback refs for the window listeners registered once below.
+  const showDocumentRef = useRef(showDocument);
+  useEffect(() => {
+    showDocumentRef.current = showDocument;
+  });
 
   useEffect(() => {
-    const syncFromLocation = () => {
-      const id = new URLSearchParams(window.location.search).get("doc");
-      if (id && (TOOL_IDS.has(id) || documents.some((document) => document.id === id))) {
-        setActiveId(id);
-        setNotationView("both");
-      } else if (!id) {
-        setActiveId("home");
-      }
-    };
-    syncFromLocation();
+    const syncFromLocation = () => showDocumentRef.current(documentIdFromLocation());
     window.addEventListener("popstate", syncFromLocation);
     return () => window.removeEventListener("popstate", syncFromLocation);
   }, []);
+
+  const openSearchRef = useRef(openSearch);
+  useEffect(() => {
+    openSearchRef.current = openSearch;
+  });
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -106,7 +393,7 @@ export default function MusicLibrary() {
         target?.isContentEditable;
       if ((event.key === "/" && !typing) || ((event.metaKey || event.ctrlKey) && event.key === "k")) {
         event.preventDefault();
-        setSearchOpen(true);
+        openSearchRef.current();
       }
       if (event.key === "Escape") {
         setSearchOpen(false);
@@ -124,43 +411,76 @@ export default function MusicLibrary() {
     if (searchOpen) window.setTimeout(() => searchInput.current?.focus(), 60);
   }, [searchOpen]);
 
-  const activeSummary = documents.find((document) => document.id === activeId) ?? documents[0];
-  const active: DocumentItem = {
-    ...activeSummary,
-    html: loadedHtml[activeSummary.id] ?? "",
+  // The search index builds in the background so the palette answers at
+  // once; opening it early just waits for the same promise.
+  useEffect(() => {
+    warmSearch();
+  }, []);
+
+  // A deep link straight to a score needs the catalog for its group list.
+  useEffect(() => {
+    if (isScoreId(activeId)) ensureCatalog();
+    // ensureCatalog is a ref-guarded loader, not reactive state.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggleGroup = (key: string) => {
+    setExpandedGroups((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+    ensureCatalog();
   };
-  const previewSummary = previewId
-    ? documents.find((document) => document.id === previewId)
-    : undefined;
-  const preview: DocumentItem | undefined = previewSummary
-    ? { ...previewSummary, html: loadedHtml[previewSummary.id] ?? "" }
-    : undefined;
+
+  // Page content for the active document and the preview, fetched on demand.
+  useEffect(() => {
+    if (TOOL_IDS.has(activeId)) return;
+    let cancelled = false;
+    void loadDocumentContent(activeId)
+      .then((content) => {
+        if (cancelled) return;
+        setActiveDoc(content);
+        setLoadErrors((current) => {
+          if (!(activeId in current)) return current;
+          const next = { ...current };
+          delete next[activeId];
+          return next;
+        });
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        console.error(`Failed to load ${activeId}:`, error);
+        setLoadErrors((current) => ({
+          ...current,
+          [activeId]: "This document could not be loaded.",
+        }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeId]);
 
   useEffect(() => {
-    const requestedIds = [activeId, previewId].filter(
-      (id): id is string => Boolean(id && loadedHtml[id] === undefined),
-    );
-    requestedIds.forEach((id) => {
-      const document = documents.find((item) => item.id === id);
-      if (!document) return;
-      void loadDocumentHtml(document)
-        .then((html) => {
-          setLoadedHtml((current) => ({ ...current, [id]: html }));
-          setLoadErrors((current) => {
-            const next = { ...current };
-            delete next[id];
-            return next;
-          });
-        })
-        .catch((error: unknown) => {
-          console.error(`Failed to load ${document.sourcePath}:`, error);
-          setLoadErrors((current) => ({
-            ...current,
-            [id]: "This document could not be loaded.",
-          }));
-        });
-    });
-  }, [activeId, previewId, loadedHtml]);
+    if (!previewId) return;
+    let cancelled = false;
+    void loadDocumentContent(previewId)
+      .then((content) => {
+        if (!cancelled) setPreviewDoc(content);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        console.error(`Failed to load ${previewId}:`, error);
+        setLoadErrors((current) => ({
+          ...current,
+          [previewId]: "This document could not be loaded.",
+        }));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [previewId]);
 
   useEffect(() => {
     if (!previewId && !tablePreview && !notationOverviewOpen && !engravedScore) return;
@@ -171,9 +491,9 @@ export default function MusicLibrary() {
     };
   }, [previewId, tablePreview, notationOverviewOpen, engravedScore]);
 
-  const grouped = useMemo(
+  const documentGroups = useMemo(
     () =>
-      categoryOrder
+      documentCategoryOrder
         .map((category) => ({
           category,
           items: documents.filter((document) => document.category === category),
@@ -182,40 +502,40 @@ export default function MusicLibrary() {
     [],
   );
 
-  const results = useMemo(() => {
-    const normalizedQuery = query.toLowerCase().trim();
-    const terms = normalizedQuery.split(/\s+/).filter(Boolean);
-    if (!terms.length) return documents.slice(0, 8);
-    return documents
-      .map((document) => {
-        const title = document.title.toLowerCase();
-        const metadataSearch = document.category === "Scores";
-        const phraseScore = title.includes(normalizedQuery)
-          ? 30
-          : document.searchText.includes(normalizedQuery)
-            ? metadataSearch
-              ? 20
-              : 8
-            : 0;
-        const score = phraseScore + terms.reduce(
-          (total, term) =>
-            total +
-            (title.includes(term) ? 12 : 0) +
-            (document.headings.some((heading) => heading.text.toLowerCase().includes(term)) ? 4 : 0) +
-            (document.searchText.includes(term) ? (metadataSearch ? 8 : 3) : 0),
-          0,
-        );
-        return { document, score };
-      })
-      .filter((result) => result.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 10)
-      .map((result) => result.document);
-  }, [query]);
+  const headerFor = (id: string, content: DocumentContent | null): DocumentHeader => {
+    const summary = documentsById.get(id);
+    if (summary) return summary;
+    const entry = catalog?.byId.get(id);
+    return {
+      id,
+      title: content?.title ?? entry?.title ?? humanizeSlug(id),
+      category: content?.category ?? (isScoreId(id) ? "Scores" : "Learn"),
+      excerpt: entry ? entrySubtitle(entry) : "",
+    };
+  };
+
+  const activeHtml = activeDoc?.id === activeId ? activeDoc.html : "";
+  const active = {
+    ...headerFor(activeId, activeDoc),
+    html: activeHtml,
+    headings: activeDoc?.id === activeId ? activeDoc.headings : [],
+    metadata: activeDoc?.id === activeId ? activeDoc.metadata : {},
+  };
+  const preview = previewId
+    ? {
+        ...headerFor(previewId, previewDoc),
+        html: previewDoc?.id === previewId ? previewDoc.html : "",
+      }
+    : undefined;
+
+  const results = useMemo<SearchHit[]>(() => {
+    if (!deferredQuery.trim()) return quickAccess;
+    if (!engine) return [];
+    return engine.search(deferredQuery, 10);
+  }, [engine, deferredQuery]);
 
   const navigate = (id: string, heading?: string) => {
-    setActiveId(id);
-    setNotationView("both");
+    showDocument(id);
     setMobileOpen(false);
     setSearchOpen(false);
     setNotationOverviewOpen(false);
@@ -278,8 +598,7 @@ export default function MusicLibrary() {
       event.preventDefault();
       const url = new URL(href, window.location.href);
       const targetId = url.searchParams.get("doc") ?? "home";
-      const target = documents.find((document) => document.id === targetId);
-      if (target?.category === "Scores") {
+      if (isScoreId(targetId)) {
         setPreviewId(targetId);
       } else {
         navigate(targetId, url.hash.slice(1) || undefined);
@@ -290,9 +609,11 @@ export default function MusicLibrary() {
   const metadata = Object.entries(active.metadata).filter(
     ([key]) => !["title", "alternate_titles", "keywords"].includes(key),
   );
-  const notationOverviewHtml = (
-    active.html.match(/<div class="music-section"[\s\S]*?<\/div>/g) ?? []
-  ).join("");
+  const notationOverviewHtml = useMemo(
+    () =>
+      (activeHtml.match(/<div class="music-section"[\s\S]*?<\/div>/g) ?? []).join(""),
+    [activeHtml],
+  );
   const notationSectionKinds = [
     ...notationOverviewHtml.matchAll(/data-notation-kind="([^"]+)"/g),
   ].map((match) => match[1]);
@@ -326,6 +647,14 @@ export default function MusicLibrary() {
     });
   };
 
+  const resultLabel = !query
+    ? "Quick access"
+    : searchState === "error"
+      ? "Search unavailable"
+      : !engine
+        ? "Preparing search…"
+        : `${results.length} match${results.length === 1 ? "" : "es"}`;
+
   return (
     <div className="site-shell">
       <header className="topbar">
@@ -343,7 +672,7 @@ export default function MusicLibrary() {
             <small>Carnatic saxophone library</small>
           </span>
         </button>
-        <button className="search-trigger" onClick={() => setSearchOpen(true)}>
+        <button className="search-trigger" onClick={openSearch}>
           <SearchIcon />
           <span>Search every lesson, raga, tala…</span>
           <kbd>⌘ K</kbd>
@@ -361,7 +690,7 @@ export default function MusicLibrary() {
           <p>From first swaras to complete compositions, arranged for E-flat alto saxophone.</p>
         </div>
         <nav aria-label="Library">
-          {grouped.map((group) => (
+          {documentGroups.map((group) => (
             <section key={group.category} className="nav-group">
               <h2>{group.category}</h2>
               {group.items.map((item) => (
@@ -376,6 +705,23 @@ export default function MusicLibrary() {
               ))}
             </section>
           ))}
+          <section className="nav-group nav-scores">
+            <h2>
+              Scores <small>{scoreCount}</small>
+            </h2>
+            {scoreGroups.map((group) => (
+              <ScoreGroupNav
+                key={group.key}
+                group={group}
+                expanded={expandedGroups.has(group.key)}
+                entries={catalog?.byGroup.get(group.key) ?? null}
+                catalogError={catalogError}
+                activeId={activeId}
+                onToggle={() => toggleGroup(group.key)}
+                onOpen={navigate}
+              />
+            ))}
+          </section>
           <section className="nav-group">
             <h2>Tools</h2>
             <button
@@ -395,7 +741,7 @@ export default function MusicLibrary() {
           </section>
         </nav>
         <div className="sidebar-foot">
-          <span className="octave-example"><em>Ṇ</em> S <strong>Ṡ</strong></span>
+          <span className="octave-example"><em>Ṇ</em> S <strong>Ṡ</strong></span>
           <span>Mandra · Madhya · Tara</span>
         </div>
       </aside>
@@ -416,7 +762,7 @@ export default function MusicLibrary() {
                 <button onClick={() => navigate("scores/02_basics/sarale_varase_to_alankaaras")}>
                   Begin Swara Adhyaaya <span>→</span>
                 </button>
-                <button className="quiet" onClick={() => setSearchOpen(true)}>
+                <button className="quiet" onClick={openSearch}>
                   Explore the library
                 </button>
               </div>
@@ -425,7 +771,7 @@ export default function MusicLibrary() {
               <span className="raga-label">Mayamalavagowla</span>
               <div className="swara-line">
                 <span>S</span><span>R₁</span><span>G₃</span><span>M₁</span>
-                <span>P</span><span>D₁</span><span>N₃</span><strong>Ṡ</strong>
+                <span>P</span><span>D₁</span><span>N₃</span><strong>Ṡ</strong>
               </div>
               <div className="tala-line"><i /><i /><i /><i className="break" /><i /><i className="break" /><i /><i /></div>
               <p>Arohana · written Sa = G</p>
@@ -466,7 +812,11 @@ export default function MusicLibrary() {
           <article className="document">
             {active.id !== "home" && (
               <header className="document-head">
-                <span className="eyebrow">{active.category}</span>
+                <span className="eyebrow">
+                  {isScoreId(active.id)
+                    ? scoreGroupLabel(scoreGroupOf(active.id))
+                    : active.category}
+                </span>
                 <h1>{active.title}</h1>
                 {active.category !== "Scores" && <p>{active.excerpt}</p>}
                 {metadata.length > 0 && (
@@ -524,30 +874,58 @@ export default function MusicLibrary() {
                 ref={searchInput}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search swaras, lessons, ragas, talas, composers…"
+                placeholder="Search lessons, scores, ragas, talas, composers…"
                 aria-label="Search the library"
               />
               <kbd>Esc</kbd>
             </div>
             <div className="search-results">
-              <span className="result-label">{query ? `${results.length} matches` : "Quick access"}</span>
+              <span className="result-label" aria-live="polite">{resultLabel}</span>
               {results.map((item) => (
                 <button key={item.id} onClick={() => navigate(item.id)}>
                   <span className="result-icon">{item.category.slice(0, 1)}</span>
                   <span>
-                    <strong>{item.title}</strong>
+                    <strong>
+                      <Highlight text={item.title} terms={item.terms} />
+                    </strong>
                     <small>
-                      {item.category}
-                      {item.category !== "Scores" && ` · ${item.excerpt}`}
+                      {item.category === "Scores"
+                        ? scoreGroupLabel(scoreGroupOf(item.id))
+                        : item.category}
+                      {item.subtitle && (
+                        <>
+                          {" · "}
+                          <Highlight text={item.subtitle} terms={item.terms} />
+                        </>
+                      )}
                     </small>
+                    {item.context && (
+                      <small className="result-context">
+                        <em>{MATCH_FIELD_LABELS[item.context.field]}</em>
+                        <Highlight text={item.context.text} terms={item.terms} />
+                      </small>
+                    )}
+                    {item.fields.length > 0 && (
+                      <span className="result-fields" aria-label="Matched in">
+                        {item.fields.map((field) => (
+                          <em key={field}>{MATCH_FIELD_LABELS[field]}</em>
+                        ))}
+                      </span>
+                    )}
                   </span>
                   <b>↵</b>
                 </button>
               ))}
-              {results.length === 0 && (
+              {results.length === 0 && query && engine && (
                 <div className="empty-search">
                   <strong>No matching lesson yet.</strong>
-                  <span>Try a raga, tala, composer, or swara pattern.</span>
+                  <span>Try a raga, tala, composer, or score title.</span>
+                </div>
+              )}
+              {searchState === "error" && (
+                <div className="empty-search" role="alert">
+                  <strong>Search could not load.</strong>
+                  <span>Reload the page to try again.</span>
                 </div>
               )}
             </div>

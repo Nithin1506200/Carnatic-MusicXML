@@ -35,13 +35,22 @@ original title and language should always be preserved.
 
 The Vite and React website discovers this README, repository documentation, and
 score MDX during its build, then generates a fully static site. MDX is compiled
-to the existing React notation components at build time. Individual documents
-are loaded on demand, while global search uses a small manifest built from score
-YAML metadata (including `keywords`) and documentation text. Score pages render
-the repository's MuseScore `.mscz` files directly in the browser as paginated
-SVG notation. The build copies the source archives and self-hosted WebAssembly
-renderer into ignored, generated static assets; it does not create or commit
-MusicXML, PDF, image, or audio exports.
+to the existing React notation components at build time. Every document is
+loaded on demand; the entry bundle knows only the documentation pages and the
+score group counts. Scores are listed from a lazily fetched catalog and found
+through a lazily built in-browser search index (title, alternate titles, raga,
+tala, composer, and `keywords`; documentation pages also match on their text),
+both emitted by `scripts/build-index.mjs` as compact, hashed, immutable assets.
+Score pages render the repository's MuseScore `.mscz` files directly in the
+browser as paginated SVG notation. The build copies the source archives and
+self-hosted WebAssembly renderer into ignored, generated static assets; it does
+not create or commit MusicXML, PDF, image, or audio exports.
+
+The content build (`npm run content`) renders each document once and caches
+the result under `.cache/content/` by source hash, rendering changes in worker
+threads, so rebuilds re-render only what changed and every notation or
+metadata error is reported together. `npm run bench:content -- --count 15000`
+measures the build and artifact sizes against a synthetic library of that size.
 
 ```sh
 npm ci
@@ -70,7 +79,10 @@ renderer. Generated `.mscz` and `.pdf` files stay local: `.mscz` files are
 committed with their MDX companions, PDFs are git-ignored exports.
 
 The static site is written to `dist/client/`. It does not require a database or
-Node.js server after deployment and can be hosted by any static-site provider.
+Node.js server after deployment and can be hosted by any static-site provider;
+`.github/workflows/build.yml` tests, lints, and builds it on every push with the
+render cache restored between runs. The MuseScore engraving fonts the renderer
+embeds are vendored under `vendor/musescore-fonts/`.
 
 ## Rules for contributors and LLMs
 

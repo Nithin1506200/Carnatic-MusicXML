@@ -5,8 +5,8 @@
   --ink: #202846;
   --ink-soft: #566078;
   --line: #ded3bf;
-  --saffron: #d9783f;
-  --saffron-soft: #f3dcc7;
+  --saffron: #c1272d;
+  --saffron-soft: #f4d6d3;
   --crimson: #9f2444;
   --teal: #2d6e68;
   --shadow: 0 24px 70px rgba(38, 35, 45, 0.12);
@@ -26,7 +26,7 @@ body {
   background:
     radial-gradient(
       circle at 77% 8%,
-      rgba(217, 120, 63, 0.09),
+      rgba(193, 39, 45, 0.09),
       transparent 22rem
     ),
     linear-gradient(90deg, rgba(87, 56, 26, 0.025) 1px, transparent 1px),
@@ -2906,4 +2906,152 @@ kbd {
 
 .case-preview .musescore-viewer {
   margin-bottom: 0;
+}
+
+/* Sidebar: score groups (lazy catalog, paginated) */
+
+.nav-scores h2 small {
+  margin-left: 6px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #aaa293;
+}
+
+.score-group {
+  margin-bottom: 2px;
+}
+
+.score-group-toggle {
+  gap: 8px;
+}
+
+.score-group-toggle > i {
+  position: static;
+  flex: none;
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  border-left: 5px solid #aaa293;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  background: transparent;
+  transition: transform 0.15s ease;
+}
+
+.score-group.is-open .score-group-toggle > i {
+  transform: rotate(90deg);
+}
+
+.score-group-toggle > span {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-group-toggle > small {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  color: #8c8171;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-group-body {
+  display: grid;
+  gap: 2px;
+  margin: 2px 0 8px 12px;
+  padding-left: 6px;
+  border-left: 1px solid rgba(140, 129, 113, 0.25);
+}
+
+.score-group-body input[type="search"] {
+  width: 100%;
+  margin: 4px 0 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+}
+
+.score-group-body > button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-group-state {
+  margin: 0;
+  padding: 8px 12px;
+  color: #948b7d;
+  font-size: 11px;
+}
+
+.score-group-more {
+  justify-content: space-between;
+  color: var(--saffron) !important;
+  font-weight: 700;
+}
+
+.score-group-more small {
+  color: #aaa293;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Search: matched terms and the fields they matched in */
+
+.search-results mark {
+  padding: 0 1px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--saffron) 28%, transparent);
+  color: inherit;
+  font-weight: 700;
+}
+
+.search-results strong mark {
+  background: color-mix(in srgb, var(--saffron) 36%, transparent);
+}
+
+.search-results .result-context {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  white-space: normal;
+  color: #5f6373;
+}
+
+.search-results .result-context em {
+  flex: none;
+  font-style: normal;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #948b7d;
+}
+
+.result-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.result-fields em {
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent);
+  background: color-mix(in srgb, var(--teal) 8%, transparent);
+  color: var(--teal);
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }

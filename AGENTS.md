@@ -68,6 +68,20 @@ swara, sahitya, raga, tala, composer, or octave information.
   editing. After task configuration changes, reload VS Code or start **Watch
   Carnatic notation** once from **Tasks: Run Task**.
 
+## Site build
+
+- `npm run content` renders documents through `scripts/content-render.mjs`,
+  one file at a time, and caches each result under `.cache/content/` by source
+  hash. Rendering must stay per-file: never make one document's output depend
+  on another document, or the cache becomes stale silently.
+- Nothing per score may be added to the eager manifest
+  (`app/generated-content.ts`). Score lists come from the lazily fetched
+  catalog and search index built by `scripts/build-index.mjs`; extend those
+  (and their tests in `scripts/build-index.test.ts`) instead.
+- After changing the build or the index shape, run
+  `npm run bench:content -- --count 15000` and keep the catalog and search
+  index under about one megabyte gzipped.
+
 ## Safe editing
 
 - Do not create or commit `.musicxml`, `.mscx`, PDF, image, or audio exports.

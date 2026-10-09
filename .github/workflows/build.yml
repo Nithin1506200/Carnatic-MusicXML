@@ -1,0 +1,56 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Rendered documents are cached by source hash, so a push that touches a
+      # few scores re-renders only those. The restore key lets a partial hit
+      # after a generator change still reuse untouched entries' siblings.
+      - name: Restore the content render cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/content
+          key: content-${{ hashFiles('package-lock.json', 'scripts/generate-content.mjs', 'scripts/content-render.mjs', 'scripts/content-worker.mjs', 'scripts/build-index.mjs', 'components/score-notation.ts', 'data/ragas.toml') }}-${{ github.sha }}
+          restore-keys: |
+            content-${{ hashFiles('package-lock.json', 'scripts/generate-content.mjs', 'scripts/content-render.mjs', 'scripts/content-worker.mjs', 'scripts/build-index.mjs', 'components/score-notation.ts', 'data/ragas.toml') }}-
+
+      - run: npm test
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      # prebuild validates every notation block and regenerates the content;
+      # the vendored fonts under vendor/musescore-fonts make this self-contained.
+      - run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/client
+          retention-days: 7
+
+      # Deployment: point your static host at dist/client. For Cloudflare
+      # Pages, add a step here such as cloudflare/wrangler-action with
+      # `pages deploy dist/client --project-name <project>` and the account
+      # token in repository secrets.

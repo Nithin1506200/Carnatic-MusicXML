@@ -8,6 +8,7 @@
   "scripts": {
     "ragas:generate": "node --import tsx scripts/generate-ragas.ts",
     "content": "npm run --silent ragas:generate && node --import tsx scripts/generate-content.mjs",
+    "bench:content": "node --import tsx scripts/synthetic-scores.mjs",
     "validate:notation": "npm run --silent ragas:generate && node --import tsx scripts/validate-notation.ts",
     "validate:notation:watch": "npm run --silent ragas:generate && node --import tsx scripts/validate-notation.ts --watch",
     "mscz:generate": "npm run --silent ragas:generate && node --import tsx scripts/carnatic-to-mscz.ts",
@@ -31,6 +32,7 @@
   },
   "dependencies": {
     "fflate": "^0.7.4",
+    "minisearch": "^7.2.0",
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "webmscore": "^1.2.1"

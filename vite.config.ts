@@ -7,5 +7,8 @@ export default defineConfig({
   build: {
     outDir: "dist/client",
     emptyOutDir: true,
+    // The catalog and search index are fetched, never inlined, whatever
+    // their size: keep them as hashed, immutable assets.
+    assetsInlineLimit: (file) => (file.endsWith(".json") ? false : undefined),
   },
 });
