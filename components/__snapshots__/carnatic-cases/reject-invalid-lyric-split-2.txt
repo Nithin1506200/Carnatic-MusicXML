@@ -1,0 +1,1 @@
+Error: Lyric "Ni/nu/ko" must have non-empty syllables fitting the slots of "SR".

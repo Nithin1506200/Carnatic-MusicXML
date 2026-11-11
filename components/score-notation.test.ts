@@ -21,6 +21,7 @@ import {
   parseSwaraDurations,
   parseTimeSignature,
   splitSwaraSlots,
+  splitLyricSlots,
   SwaraTable,
   swaraSlotCount,
   TalaDivider,
@@ -326,7 +327,7 @@ describe("cell-aligned swara and lyric pairing", () => {
     );
   });
 
-  it("spans a compact token and its lyric cell across its slots", () => {
+  it("keeps each compact token and lyric in one beat cell", () => {
     const markup = renderToStaticMarkup(
       React.createElement(SwaraTable, {
         swaras: "G, M | ND SN ||",
@@ -334,7 +335,8 @@ describe("cell-aligned swara and lyric pairing", () => {
         number: 1,
       }),
     );
-    expect(markup).toContain('colSpan="2"');
+    expect(markup).not.toContain("colSpan");
+    expect(markup.match(/class="swara-cell/g)).toHaveLength(8);
     expect(markup).toContain("tala-solid-before");
   });
 });
@@ -577,4 +579,64 @@ describe("complete score validation", () => {
       expect(error).toMatchObject({ line: 4, column: 1 });
     }
   });
+});
+
+describe("split lyrics and explicit variants", () => {
+  it("maps split syllables to slots, allowing a final melisma", () => {
+    expect(splitLyricSlots("Ni/nu", "SR")).toEqual(["Ni", "nu"]);
+    expect(splitLyricSlots("nnu/ko-", "GMM")).toEqual(["nnu", "ko", "-"]);
+    expect(splitLyricSlots("lee/me", "GMM")).toEqual(["lee", "me"]);
+    expect(splitLyricSlots("Ni", "SR")).toBeNull();
+  });
+
+  it("renders syllables below their individual swaras", () => {
+    const html = renderToStaticMarkup(
+      React.createElement(SwaraTable, {
+        swaras: "SR GMM GMM ||",
+        lyrics: "Ni/nu nnu/ko- lee/me ||",
+      }),
+    );
+    expect(html).toContain(">Ni</span>");
+    expect(html).toContain(">nu</span>");
+    expect(html).toContain('grid-column:span 2">me</span>');
+    expect(html.match(/class="swara-cell/g)).toHaveLength(6);
+    expect(html).not.toContain("colSpan");
+    expect(html).toContain("repeat(2, minmax(0, 1fr))");
+    expect(html).toContain("repeat(3, minmax(0, 1fr))");
+    expect(html).not.toContain("Ni/nu");
+    expect(html).toContain("tala-double-end");
+  });
+
+  it("treats variant numbers as part of a sound, including octave aliases", () => {
+    expect(swaraSlotCount("N2N3")).toBe(2);
+    expect(normalizeSwaraToken("n3")).toBe("Ṇ3");
+    expect(normalizeSwaraToken("N3'")).toBe("N3̇");
+    expect(classifyOctave("Ṇ3")).toBe(OctavePosition.Lower);
+    expect(classifyOctave("N3̇")).toBe(OctavePosition.Upper);
+    expect(splitSwaraSlots("N3̇Ṇ2,")?.map((slot) => slot.text)).toEqual([
+      "N3̇",
+      "Ṇ2",
+      ",",
+    ]);
+    expect(parseSwaraDurations("N2N3")[0].sounds).toEqual(["N2", "N3"]);
+  });
+
+  it.each(["N4", "M3", "S1", "P2", "R0"])(
+    "validates %s in lyrical sections too",
+    (swara) => {
+      expect(() => parseScoreNotation(`# P\n${swara} ||\nla ||`)).toThrow(
+        "Invalid explicit swara variant",
+      );
+    },
+  );
+});
+
+it("reports the source line for an invalid opening explicit variant", () => {
+  try {
+    parseScoreNotation("# A [swaras]\n@Time: 1/4\nN4 ||");
+    expect.fail("Invalid variant should fail parsing");
+  } catch (error) {
+    expect(error).toBeInstanceOf(NotationParseError);
+    expect((error as NotationParseError).line).toBe(3);
+  }
 });

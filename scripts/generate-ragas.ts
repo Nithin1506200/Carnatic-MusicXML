@@ -93,6 +93,10 @@ const aliasesOf = (value: unknown, entry: string): string[] => {
   return (value as string[]).map((item) => item.trim());
 };
 
+// Standard Kanakangi–Rasikapriya scheme: https://karnatik.com/melakarta.pdf.
+const MELAKARTA_RG = ["R1 G1", "R1 G2", "R1 G3", "R2 G2", "R2 G3", "R3 G3"];
+const MELAKARTA_DN = ["D1 N1", "D1 N2", "D1 N3", "D2 N2", "D2 N3", "D3 N3"];
+
 /** Parses and validates the TOML registry into normalized raga records. */
 export function parseRagas(tomlSource: string): NormalizedRaga[] {
   let parsed: unknown;
@@ -148,6 +152,14 @@ export function parseRagas(tomlSource: string): NormalizedRaga[] {
     if ([...up].reverse().join(" ") !== down.join(" ")) {
       fail(
         `${tag}: a melakarta avarohana must be the exact reverse of its arohana.`,
+      );
+    }
+    const withinHalf = (entry.number - 1) % 36;
+    const madhyama = entry.number <= 36 ? "M1" : "M2";
+    const expected = `S ${MELAKARTA_RG[Math.floor(withinHalf / 6)]} ${madhyama} P ${MELAKARTA_DN[withinHalf % 6]} S`;
+    if (up.join(" ") !== expected) {
+      fail(
+        `${tag}: arohana does not match melakarta number ${entry.number}; expected "${expected}", got "${arohana}".`,
       );
     }
     records.push({

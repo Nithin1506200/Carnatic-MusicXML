@@ -28,6 +28,27 @@ describe("data/ragas.toml registry", () => {
     }
   });
 
+  it("records Gourimanohari as melakarta 23 with G2 in both directions", () => {
+    expect(getRaga("Gowrimanohari")).toMatchObject({
+      name: "Gourimanohari",
+      melakartaNumber: 23,
+      arohana: "S R2 G2 M1 P D2 N3 S",
+      avarohana: "S N3 D2 P M1 G2 R2 S",
+    });
+    expect(getRaga("Gaurimanohari")?.name).toBe("Gourimanohari");
+  });
+
+  it("keeps all 72 scales distinct and pairs each M1 scale with its M2 counterpart", () => {
+    const melas = ragas.filter((raga) => raga.type === "melakarta");
+    expect(new Set(melas.map((raga) => raga.arohana)).size).toBe(72);
+    for (const raga of melas.filter((raga) => raga.melakartaNumber! <= 36)) {
+      const counterpart = melas.find(
+        (other) => other.melakartaNumber === raga.melakartaNumber! + 36,
+      );
+      expect(counterpart?.arohana).toBe(raga.arohana.replace("M1", "M2"));
+    }
+  });
+
   it("records the ragas used by repository scores with their exact scales", () => {
     const byName = new Map(ragas.map((raga) => [raga.name, raga]));
     expect(byName.get("Mayamalavagowla")).toMatchObject({
@@ -98,20 +119,18 @@ describe("generated raga module", () => {
 });
 
 describe("parseRagas validation", () => {
-  const minimal = (blocks: string) => `
-${Array.from({ length: 72 }, (_, i) => {
-  const number = i + 1;
-  return `
-[[melakarta]]
-number = ${number}
-name = "M${number}"
-arohana = "S R1 G1 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G1 R1 S"
-reference = "test"
-`;
-}).join("\n")}
-${blocks}
-`;
+  // Reuse verified melakarta scales, renaming them to isolate structural tests.
+  const minimal = (blocks: string) => {
+    let number = 0;
+    return (
+      toml
+        .split(/^\[\[janya\]\]/m)[0]
+        .replace(/^name = .*$/gm, () => `name = "M${++number}"`)
+        .replace(/^alternate_names = .*\n/gm, "") +
+      "\n" +
+      blocks
+    );
+  };
 
   it("rejects fewer than 72 melakartas", () => {
     expect(() =>
@@ -128,6 +147,28 @@ ${blocks}
       ),
     ).toThrow('melakarta "X": a melakarta avarohana must be the exact reverse');
   });
+
+  it.each([
+    [23, "S R2 G2 M1 P D2 N3 S", "S R2 G1 M1 P D2 N3 S"],
+    [28, "S R2 G3 M1 P D2 N2 S", "S R2 G2 M1 P D2 N2 S"],
+    [31, "S R3 G3 M1 P D1 N1 S", "S R2 G3 M1 P D1 N1 S"],
+    [37, "S R1 G1 M2 P D1 N1 S", "S R3 G1 M1 P D1 N1 S"],
+    [65, "S R2 G3 M2 P D2 N3 S", "S R1 G2 M2 P D2 N3 S"],
+  ])(
+    "rejects incorrect swaras for melakarta %s even with a matching descent",
+    (number, correct, wrong) => {
+      const reverse = (phrase: string) => phrase.split(" ").reverse().join(" ");
+      const invalid = toml
+        .replace(`arohana = "${correct}"`, `arohana = "${wrong}"`)
+        .replace(
+          `avarohana = "${reverse(correct)}"`,
+          `avarohana = "${reverse(wrong)}"`,
+        );
+      expect(() => parseRagas(invalid)).toThrow(
+        `does not match melakarta number ${number}`,
+      );
+    },
+  );
 
   it("rejects a janya whose parent does not exist", () => {
     expect(() =>

@@ -20,9 +20,7 @@ import type { NoteUnit } from "./carnatic-mscx.ts";
 
 /** One structural expectation on the generated output text. */
 export type CaseCheck =
-  | { contains: string }
-  | { lacks: string }
-  | { count: string; times: number };
+  { contains: string } | { lacks: string } | { count: string; times: number };
 
 export interface CarnaticCase {
   /** Stable identifier; also the snapshot file stem. */
@@ -148,10 +146,7 @@ export const CARNATIC_CASES: CarnaticCase[] = [
     description:
       "`S * || - R ||`: the measure-opening `-` continues the rest that closed the previous measure, so the second measure starts with a crotchet rest and no tie.",
     mdx: exampleMdx("# A [swaras]\nS * ||\n- R ||"),
-    checks: [
-      { count: "<Rest>", times: 2 },
-      { lacks: "<Tie>" },
-    ],
+    checks: [{ count: "<Rest>", times: 2 }, { lacks: "<Tie>" }],
   },
   {
     id: "carry-over-mark-across-barline",
@@ -243,7 +238,10 @@ export const CARNATIC_CASES: CarnaticCase[] = [
     title: "Compact mark slots inside a token",
     description:
       "`G, M, D, ,, | NN DN | S, ,, ||`: `G,` is a quaver G tied to a quaver hold (one crotchet), `D, ,,` four tied quavers (a minim), giving an 8/4 measure.",
-    mdx: exampleMdx("# A [swaras]\nG, M, D, ,, | NN DN | S, ,, ||", talaMetadata),
+    mdx: exampleMdx(
+      "# A [swaras]\nG, M, D, ,, | NN DN | S, ,, ||",
+      talaMetadata,
+    ),
     checks: [
       { contains: "<sigN>8</sigN>" },
       { count: "<durationType>half</durationType>", times: 2 },
@@ -251,6 +249,69 @@ export const CARNATIC_CASES: CarnaticCase[] = [
       { count: "<durationType>eighth</durationType>", times: 4 },
     ],
   },
+  {
+    id: "lyric-unsplit-melisma",
+    group: "Measures and rhythm",
+    title: "Plain lyric syllables extend across joined swaras",
+    description:
+      "SR RG GM ,, over Ni nnu ko - keeps each syllable on the first sound of its cell.",
+    mdx: exampleMdx("# P\nSR RG GM ,, ||\nNi nnu ko - ||"),
+    checks: [{ count: "<no>1</no>", times: 3 }],
+  },
+  {
+    id: "lyric-slash-syllables",
+    group: "Measures and rhythm",
+    title: "Slash-separated syllables align within joined swaras",
+    description:
+      "Ni/nu maps to S/R; nnu/ko- maps to G/M/M; lee/me maps to G/M with me continuing on the final M. The swara preview keeps three equal beat columns, with subdivisions inside each beat.",
+    mdx: exampleMdx("# P\n@Time: 3/4\nSR GMM GMM ||\nNi/nu nnu/ko- lee/me ||"),
+    checks: [
+      { contains: "<sigN>3</sigN>" },
+      { contains: "<sigD>4</sigD>" },
+      { count: "<no>1</no>", times: 7 },
+      { contains: "<text>ko</text>" },
+      { lacks: "<text>Ni/nu</text>" },
+    ],
+  },
+  {
+    id: "explicit-swara-variants",
+    group: "Pitch and octaves",
+    title: "Explicit variants override the raga for individual notes",
+    description:
+      "N2 N3 N preserves both variants and returns to Harikambhoji’s default N2. Numbered swaras also work in compact tokens and octave aliases.",
+    mdx: exampleMdx("# A [swaras]\nN2 N3 N N2N3 n2 N3' ||", [], "Harikambhoji"),
+    checks: [
+      { contains: "<pitch>68</pitch>" },
+      { contains: "<pitch>69</pitch>" },
+      { contains: "<pitch>56</pitch>" },
+      { contains: "<pitch>81</pitch>" },
+    ],
+  },
+  ...["Ni//nu", "Ni/nu/ko", "/Ni", "Ni/"].map((lyric, index) => ({
+    id: `reject-invalid-lyric-split-${index + 1}`,
+    group: "Rejected notation",
+    title: `Reject malformed or overfull lyric split: ${lyric}`,
+    description:
+      "Split syllables must be non-empty and fit within their paired swara cell.",
+    mdx: exampleMdx(`# P\nSR ||\n${lyric} ||`),
+    expectError: "must have non-empty syllables",
+  })),
+  {
+    id: "reject-lyric-on-held-slot",
+    group: "Rejected notation",
+    title: "Reject a split syllable on a held slot",
+    description: "A continuation slot cannot start a new lyric syllable.",
+    mdx: exampleMdx("# P\nG, ||\nla/ti ||"),
+    expectError: "falls under a held swara slot",
+  },
+  ...["N4", "M3", "S1", "P2", "R0"].map((swara) => ({
+    id: `reject-explicit-variant-${swara.toLowerCase()}`,
+    group: "Rejected notation",
+    title: `Reject invalid explicit variant ${swara}`,
+    description: "Only R/G/D/N 1–3 and M 1–2 have numbered variants.",
+    mdx: exampleMdx(`# A [swaras]\n${swara} ||`),
+    expectError: "Invalid explicit swara variant",
+  })),
   {
     id: "lyric-attaches-to-first-sound",
     group: "Measures and rhythm",
@@ -298,10 +359,7 @@ export const CARNATIC_CASES: CarnaticCase[] = [
     mdx: exampleMdx(
       "# A [swaras]\n@Time: (2+2)/8\nG, M, | S, ,, ||\n# B [swaras]\nS R G M ||",
     ),
-    checks: [
-      { contains: "<sigD>8</sigD>" },
-      { contains: "<sigD>4</sigD>" },
-    ],
+    checks: [{ contains: "<sigD>8</sigD>" }, { contains: "<sigD>4</sigD>" }],
   },
   {
     id: "octave-aliases",
@@ -323,10 +381,7 @@ export const CARNATIC_CASES: CarnaticCase[] = [
     description:
       "`s r` under `S R` is a mandra-sthayi swara row rather than sahitya: the score has two measures and no verse-2 lyrics.",
     mdx: exampleMdx("# P\nS R ||\ns r ||"),
-    checks: [
-      { count: "<Measure", times: 2 },
-      { lacks: "<no>1</no>" },
-    ],
+    checks: [{ count: "<Measure", times: 2 }, { lacks: "<no>1</no>" }],
   },
 
   // --- Full score rendering -------------------------------------------------

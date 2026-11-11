@@ -223,7 +223,12 @@ describe("measure building", () => {
     // Two crotchet cells, each splitting into three triplet quavers.
     expect(measures[0].lengthN).toBe(2);
     expect(measures[0].events.map((event) => event.units)).toEqual([
-      1 / 3, 1 / 3, 1 / 3, 1 / 3, 1 / 3, 1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
     ]);
     const mscx = buildMscx(metadata, measures);
     expect(count(mscx, "<Tuplet>")).toBe(2);
@@ -264,6 +269,61 @@ describe("measure building", () => {
       "la",
       "nnu",
       null,
+    ]);
+  });
+
+  it("maps slash syllables and trailing continuation to individual sounds", () => {
+    const events = buildMeasures(
+      "# P\nSR GMM GMM ||\nNi/nu nnu/ko- lee/me ||",
+      metadata,
+      "crotchet",
+    )[0].events;
+    expect(events.map((event) => event.lyricText ?? null)).toEqual([
+      "Ni",
+      "nu",
+      "nnu",
+      "ko",
+      "-",
+      "lee",
+      "me",
+      null,
+    ]);
+    expect(events.map((event) => event.units)).toEqual([
+      0.5,
+      0.5,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+      1 / 3,
+    ]);
+  });
+
+  it("keeps plain lyrics on the first note of each cell", () => {
+    const events = buildMeasures(
+      "# P\nSR RG GM ,, ||\nNi nnu ko - ||",
+      metadata,
+      "crotchet",
+    )[0].events;
+    expect(events.map((event) => event.lyricText ?? null)).toEqual([
+      "Ni",
+      null,
+      "nnu",
+      null,
+      "ko",
+      null,
+    ]);
+  });
+
+  it("uses N3 as a local accidental in an N2 scale without changing subsequent N", () => {
+    const events = buildMeasures(
+      "# A [swaras]\nN N3 N N2N3 n3 N3' ||",
+      { ...metadata, arohana: "S R2 G3 M1 P D2 N2 S", avarohana: undefined },
+      "crotchet",
+    )[0].events;
+    expect(events.map((event) => event.pitch)).toEqual([
+      77, 78, 77, 77, 78, 66, 90,
     ]);
   });
 
@@ -606,11 +666,16 @@ describe("shared converter cases", () => {
 
         if (evaluation.errorExpectation) {
           expect
-            .soft(evaluation.errorExpectation.passed, evaluation.errorExpectation.message)
+            .soft(
+              evaluation.errorExpectation.passed,
+              evaluation.errorExpectation.message,
+            )
             .toBe(true);
         }
         for (const check of evaluation.checks) {
-          expect.soft(check.passed, `${testCase.id}: ${check.label}`).toBe(true);
+          expect
+            .soft(check.passed, `${testCase.id}: ${check.label}`)
+            .toBe(true);
         }
         await expect(evaluation.text).toMatchFileSnapshot(
           path.join(root, snapshotPathFor(testCase)),

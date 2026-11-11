@@ -12,6 +12,7 @@ import {
   parseNotationLine,
   parseScoreNotation,
   splitSwaraSlots,
+  splitLyricSlots,
   type ParsedNotationDirective,
 } from "./score-notation.ts";
 import { getRaga } from "./ragas.generated.ts";
@@ -209,10 +210,15 @@ export const swaraPitch = (
   sound: string,
   degrees: Map<string, number>,
 ): { pitch: number; tpc: number; tpc2: number; accidental?: string } => {
-  const match = sound.match(/^(\p{L})(\p{M}*)$/u);
+  const match = sound.match(/^([SRGMPDNsrgmpdn])\p{M}*(\d*)\p{M}*$/u);
   if (!match) throw new Error(`Cannot read a swara from "${sound}".`);
   const letter = match[1].toUpperCase();
-  const semitone = degrees.get(letter);
+  const semitone = match[2]
+    ? SVARASTHANA[letter]?.[match[2]]
+    : degrees.get(letter);
+  if (match[2] && semitone === undefined) {
+    throw new Error(`Invalid explicit swara variant "${sound}".`);
+  }
   if (semitone === undefined) {
     throw new Error(
       `Swara "${sound}" is not in the declared arohana/avarohana.`,
@@ -503,7 +509,9 @@ function appendLineMeasures(
     // pair with a lyric continuation mark.
     const lyricText = lyricTokens[cellIndex];
     const lyricSyllable =
-      lyricText && lyricText !== "-" && lyricText !== "," ? lyricText : undefined;
+      lyricText && lyricText !== "-" && lyricText !== ","
+        ? lyricText
+        : undefined;
     const heldCellError = () =>
       new Error(
         `Lyric "${lyricText}" falls under a held swara cell ("${token}") and has no note to attach to.`,
@@ -560,8 +568,9 @@ function appendLineMeasures(
       throw heldCellError();
     }
     const slotUnits = unitScale / slots.length;
+    const lyricParts = lyricText ? splitLyricSlots(lyricText, token) : null;
     let lyricAttached = false;
-    for (const slot of slots) {
+    for (const [slotIndex, slot] of slots.entries()) {
       if (slot.kind === "mark") {
         if (
           extend(token, slotUnits, lyricAttached ? undefined : lyricSyllable)
@@ -583,7 +592,11 @@ function appendLineMeasures(
         tpc2: pitchInfo.tpc2,
         accidental: pitchInfo.accidental,
         swaraText: styledSwaraText(slot.text),
-        lyricText: attachLyric ? lyricText : undefined,
+        lyricText: lyricParts
+          ? lyricParts[slotIndex]
+          : attachLyric
+            ? lyricText
+            : undefined,
       });
     }
   }
@@ -900,7 +913,10 @@ export function buildMscx(
     }
     if (event.tieFromPrevious) {
       if (eventIndex > 0) {
-        ties.prev = { measures: 0, quarters: -measure.events[eventIndex - 1].units };
+        ties.prev = {
+          measures: 0,
+          quarters: -measure.events[eventIndex - 1].units,
+        };
       } else {
         const previousStarts = measureStarts[measureIndex - 1] ?? [];
         ties.prev = {

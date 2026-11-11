@@ -226,7 +226,7 @@ const unwrapQuotedValue = (value: string) =>
 export function classifyOctave(token: string): OctavePosition {
   // Strip trailing continuation marks so compact tokens such as "Ṡ," keep
   // their octave styling.
-  const base = token.replace(/[.,-]+$/u, "");
+  const base = token.replace(/[.,-]+$/u, "").replace(/\d/gu, "");
   if (/\u0307$/u.test(base)) return OctavePosition.Upper;
   if (/\u0323$/u.test(base)) return OctavePosition.Lower;
   return OctavePosition.Middle;
@@ -238,7 +238,7 @@ export function classifyOctave(token: string): OctavePosition {
  * duration marks. Anything else — lyric words, stray quotes after combining
  * marks, mixed garbage — stays untouched so existing validation can reject it.
  */
-const SWARA_ALIAS_TOKEN = /^(?:\p{Lu}\p{M}*'?|\p{Ll}\p{M}*|[.,-])+$/u;
+const SWARA_ALIAS_TOKEN = /^(?:\p{Lu}\p{M}*\d*'?|\p{Ll}\p{M}*\d*|[.,-])+$/u;
 
 /**
  * Rewrites keyboard-friendly octave aliases in one swara token to their
@@ -250,7 +250,7 @@ const SWARA_ALIAS_TOKEN = /^(?:\p{Lu}\p{M}*'?|\p{Ll}\p{M}*|[.,-])+$/u;
 export const normalizeSwaraToken = (token: string): string => {
   if (!SWARA_ALIAS_TOKEN.test(token)) return token;
   return token
-    .replace(/(\p{Lu})'/gu, "$1\u0307")
+    .replace(/(\p{Lu}\d*)'/gu, "$1\u0307")
     .replace(
       /(\p{Ll})(?!\u0323)/gu,
       (letter) => `${letter.toUpperCase()}\u0323`,
@@ -263,12 +263,19 @@ export const normalizeSwaraRow = (value: string): string =>
   value.replace(/\S+/gu, normalizeSwaraToken);
 
 /** Parses a row that is known to carry swaras, honoring octave aliases. */
-const parseSwaraLine = (value: NotationInput): ParsedNotationLine =>
-  parseNotationLine(
+const parseSwaraLine = (value: NotationInput): ParsedNotationLine => {
+  const parsed = parseNotationLine(
     typeof value === "string"
       ? normalizeSwaraRow(value)
       : value.map(normalizeSwaraToken),
   );
+  for (const token of parsed.tokens) {
+    if (/\d/u.test(token) && !splitSwaraSlots(token)) {
+      throw new Error(`Invalid explicit swara variant in "${token}".`);
+    }
+  }
+  return parsed;
+};
 
 export function parseNotationLine(value: NotationInput): ParsedNotationLine {
   if (Array.isArray(value)) {
@@ -349,7 +356,13 @@ export interface SwaraSlot {
  */
 export function splitSwaraSlots(token: string): SwaraSlot[] | null {
   const slots: SwaraSlot[] = [];
-  for (const unitMatch of token.matchAll(/(\p{L}\p{M}*)|([.,-])/gu)) {
+  for (const unitMatch of token.matchAll(/(\p{L}\p{M}*\d*\p{M}*)|([.,-])/gu)) {
+    if (unitMatch[1] && /\d/u.test(unitMatch[1])) {
+      const sound = unitMatch[1].replace(/\p{M}/gu, "");
+      if (!/^(?:[RGDN][123]|M[12])$/u.test(sound)) {
+        throw new Error(`Invalid explicit swara variant "${unitMatch[1]}".`);
+      }
+    }
     slots.push(
       unitMatch[1]
         ? { kind: "sound", text: unitMatch[1] }
@@ -361,29 +374,37 @@ export function splitSwaraSlots(token: string): SwaraSlot[] | null {
   return slots;
 }
 
-/**
- * The number of slots in a swara token: the slot count sets the token's
- * column span in the notation table (a compact token such as `NN` spans two
- * columns, as does its paired lyric cell). Unparseable tokens count as one
- * cell, matching their single-table-cell rendering.
- */
+/** Number of equal subdivisions within a token's one beat. */
 export function swaraSlotCount(token: string): number {
   return splitSwaraSlots(token)?.length ?? 1;
 }
 
-/** Maps token-index dividers of a swara line into slot offsets. */
-const swaraSlotOffsets = (
-  tokens: string[],
-  boundaries: readonly number[],
-): number[] => {
-  const offsets: number[] = [];
-  let position = 0;
-  for (const token of tokens) {
-    offsets.push(position);
-    position += swaraSlotCount(token);
+/** Maps slash-separated syllables to slots; the last syllable spans the remainder. */
+export function splitLyricSlots(
+  token: string,
+  swaraToken: string,
+): string[] | null {
+  if (!token.includes("/")) return null;
+  const parts = token.split("/").flatMap((part) => {
+    // `nnu/ko-` is shorthand for `nnu/ko/-`.
+    const match = part.match(/^(.+?)([-,]+)$/u);
+    return match ? [match[1], ...match[2]] : [part];
+  });
+  const slots = splitSwaraSlots(swaraToken);
+  if (parts.some((part) => !part) || !slots || parts.length > slots.length) {
+    throw new Error(
+      `Lyric "${token}" must have non-empty syllables fitting the slots of "${swaraToken}".`,
+    );
   }
-  return boundaries.map((index) => offsets[index] ?? position);
-};
+  parts.forEach((part, index) => {
+    if (slots[index].kind === "mark" && part !== "-" && part !== ",") {
+      throw new Error(
+        `Lyric "${part}" falls under a held swara slot in "${swaraToken}".`,
+      );
+    }
+  });
+  return parts;
+}
 
 export function validateAlignedLyrics(
   swaras: ParsedNotationLine,
@@ -395,6 +416,9 @@ export function validateAlignedLyrics(
       `Swara and lyric lines must have the same number of cells (${swaras.tokens.length} swara cells !== ${lyrics.tokens.length} lyric cells).`,
     );
   }
+  lyrics.tokens.forEach((token, index) =>
+    splitLyricSlots(token, swaras.tokens[index]),
+  );
   if (
     !sameNumbers(swaras.solidBefore, lyrics.solidBefore) ||
     !sameNumbers(swaras.doubleBefore, lyrics.doubleBefore) ||
@@ -760,7 +784,11 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
         );
       }
     };
-    rejectOpeningMark(rows[0]);
+    try {
+      rejectOpeningMark(rows[0]);
+    } catch (error) {
+      throw atNotationLine(error, rows[0].line);
+    }
     rows.forEach((row) => {
       if (row.value.split(" ").includes(RETIRED_DHIRGA_MARK)) {
         throw new NotationParseError(retiredDhirgaMessage(), row.line);
@@ -800,7 +828,7 @@ export function parseScoreNotation(source: string): ParsedScoreNotation {
       const normalizedSwaras = normalizeSwaraRow(swaras.value);
       let parsedSwaras: ParsedNotationLine;
       try {
-        parsedSwaras = parseNotationLine(normalizedSwaras);
+        parsedSwaras = parseSwaraLine(normalizedSwaras);
         if (time) validateRowTime(parsedSwaras, time);
       } catch (error) {
         throw atNotationLine(error, swaras.line);
@@ -855,37 +883,70 @@ const cellClassName = (
 
 interface NotationCell {
   text: string;
-  /** Column span: a compact token such as `N,` takes its full slot width. */
-  span: number;
-  /** Slot offset where the cell begins. */
+  /** Beat index, used for tala boundaries. */
   start: number;
+  content?: ReactNode;
 }
 
-const swaraCells = (tokens: string[]): NotationCell[] => {
-  const cells: NotationCell[] = [];
-  let start = 0;
-  for (const token of tokens) {
-    const span = swaraSlotCount(token);
-    cells.push({ text: token, span, start });
-    start += span;
-  }
-  return cells;
-};
+/** Subdivide inside one beat cell, preserving equal beat widths. */
+const subdividedBeat = (parts: ReactNode[], slots: number): ReactElement =>
+  React.createElement(
+    "span",
+    {
+      className: "swara-beat-subdivisions",
+      style: {
+        display: "grid",
+        // Keep two-note groups close, with the same inset in the lyric row.
+        width: slots === 2 ? "70%" : undefined,
+        marginInline: slots === 2 ? "auto" : undefined,
+        gridTemplateColumns: `repeat(${slots}, minmax(0, 1fr))`,
+      },
+    },
+    parts.map((part, index) =>
+      React.createElement(
+        "span",
+        {
+          key: index,
+          style:
+            index === parts.length - 1
+              ? { gridColumn: `span ${slots - index}` }
+              : undefined,
+        },
+        part,
+      ),
+    ),
+  );
 
-/**
- * Lyric cells pair 1:1 with swara cells; each takes the column span of its
- * swara token so both rows occupy the same table columns.
- */
-const lyricCells = (tokens: string[], swaraTokens: string[]): NotationCell[] => {
-  const cells: NotationCell[] = [];
-  let start = 0;
-  tokens.forEach((token, index) => {
-    const span = swaraSlotCount(swaraTokens[index] ?? "");
-    cells.push({ text: token, span, start });
-    start += span;
+const swaraCells = (tokens: string[], lyrics?: string[]): NotationCell[] =>
+  tokens.map((token, start) => {
+    const slots = lyrics?.[start]?.includes("/")
+      ? splitSwaraSlots(token)
+      : null;
+    return {
+      text: token,
+      start,
+      content: slots
+        ? subdividedBeat(
+            slots.map((slot) =>
+              React.createElement(SwaraToken, { token: slot.text }),
+            ),
+            slots.length,
+          )
+        : undefined,
+    };
   });
-  return cells;
-};
+
+const lyricCells = (tokens: string[], swaraTokens: string[]): NotationCell[] =>
+  tokens.map((token, start) => {
+    const parts = splitLyricSlots(token, swaraTokens[start]);
+    return {
+      text: token,
+      start,
+      content: parts
+        ? subdividedBeat(parts, swaraSlotCount(swaraTokens[start]))
+        : undefined,
+    };
+  });
 
 interface NotationRowProps extends Required<TalaBoundaryProps> {
   cells: NotationCell[];
@@ -931,21 +992,38 @@ function NotationRow({
             doubleEnd,
             index === cells.length - 1,
           ),
-          ...(cell.span > 1 ? { colSpan: cell.span } : {}),
           key: index,
         },
-        kind === NotationRowKind.Swara
-          ? React.createElement(SwaraToken, { token: cell.text })
-          : cell.text,
+        cell.content ??
+          (kind === NotationRowKind.Swara
+            ? React.createElement(SwaraToken, { token: cell.text })
+            : cell.text),
       ),
     ),
   );
 }
 
-function PalmLeafTable({ children }: { children?: ReactNode }) {
+function PalmLeafTable({
+  children,
+  rows,
+}: {
+  children?: ReactNode;
+  rows: string[][];
+}) {
+  const beats = Math.max(...rows.map((row) => row.length));
+  const longestCell = Math.max(
+    ...rows
+      .flat()
+      .map((token) => Array.from(token.replace(/[\p{M}/]/gu, "")).length),
+  );
+  // Reserve room for the larger swara font, split syllables, and tala borders.
+  const beatWidth = Math.max(7, longestCell * 0.85 + 2);
   return React.createElement(
     "div",
-    { className: "palm-leaf-frame" },
+    {
+      className: "palm-leaf-frame",
+      style: { width: `min(100%, ${beats * beatWidth + 2.2}em)` },
+    },
     React.createElement(
       "table",
       { className: "swara-notation-table" },
@@ -965,26 +1043,23 @@ export function SwaraTable({
   const parsedSwaras = parseSwaraLine(swaras);
   const parsedLyrics = lyrics ? parseNotationLine(lyrics) : null;
   validateAlignedLyrics(parsedSwaras, parsedLyrics);
-  const swaraSolidBefore = swaraSlotOffsets(
-    parsedSwaras.tokens,
-    parsedSwaras.solidBefore,
-  );
-  const swaraDoubleBefore = swaraSlotOffsets(
-    parsedSwaras.tokens,
-    parsedSwaras.doubleBefore,
-  );
-  const resolvedSolidBefore = solidBefore ?? swaraSolidBefore;
-  const resolvedDoubleBefore = doubleBefore ?? swaraDoubleBefore;
+  const resolvedSolidBefore = solidBefore ?? parsedSwaras.solidBefore;
+  const resolvedDoubleBefore = doubleBefore ?? parsedSwaras.doubleBefore;
   const resolvedDoubleEnd = doubleEnd ?? parsedSwaras.doubleEnd;
 
   return React.createElement(
     PalmLeafTable,
-    null,
+    {
+      rows: [
+        parsedSwaras.tokens,
+        ...(parsedLyrics ? [parsedLyrics.tokens] : []),
+      ],
+    },
     React.createElement(
       "tbody",
       null,
       React.createElement(NotationRow, {
-        cells: swaraCells(parsedSwaras.tokens),
+        cells: swaraCells(parsedSwaras.tokens, parsedLyrics?.tokens),
         number,
         rowSpan: lyrics ? 2 : 1,
         solidBefore: resolvedSolidBefore,
@@ -1012,7 +1087,7 @@ export function SwaraGrid({
 }: SwaraGridProps): ReactElement {
   return React.createElement(
     PalmLeafTable,
-    null,
+    { rows: rows.map((row) => parseSwaraLine(row).tokens) },
     React.createElement(
       "tbody",
       null,
@@ -1021,11 +1096,8 @@ export function SwaraGrid({
         return React.createElement(NotationRow, {
           cells: swaraCells(parsed.tokens),
           number: index + 1,
-          solidBefore:
-            solidBefore ?? swaraSlotOffsets(parsed.tokens, parsed.solidBefore),
-          doubleBefore:
-            doubleBefore ??
-            swaraSlotOffsets(parsed.tokens, parsed.doubleBefore),
+          solidBefore: solidBefore ?? parsed.solidBefore,
+          doubleBefore: doubleBefore ?? parsed.doubleBefore,
           doubleEnd: doubleEnd ?? parsed.doubleEnd,
           key: index,
         });

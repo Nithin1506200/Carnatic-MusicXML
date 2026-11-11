@@ -2,8 +2,10 @@
 
 import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { useEffect, useRef, useState } from "react";
+import ScoreAudioPlayer from "./score-audio-player";
+import type { AudioScore } from "./score-audio";
 
-type LoadedScore = {
+type LoadedScore = AudioScore & {
   npages(): Promise<number>;
   saveSvg(pageNumber?: number, drawPageBackground?: boolean): Promise<string>;
   destroy(soft?: boolean): void;
@@ -182,6 +184,11 @@ export default function MuseScoreViewer({
   compact?: boolean;
 }) {
   const scoreRef = useRef<LoadedScore | null>(null);
+  const [audioScore, setAudioScore] = useState<{
+    score: LoadedScore;
+    source?: string;
+    data?: Uint8Array;
+  } | null>(null);
   const renderToken = useRef(0);
   const [readyVersion, setReadyVersion] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -221,6 +228,8 @@ export default function MuseScoreViewer({
         }
         scoreRef.current = score;
         const pages = await score.npages();
+        if (cancelled) return;
+        setAudioScore({ score, source, data });
         setPageCount(pages);
         setReadyVersion((version) => version + 1);
       })
@@ -301,6 +310,22 @@ export default function MuseScoreViewer({
           </div>
         </div>
       </header>
+      {audioScore &&
+      audioScore.source === source &&
+      audioScore.data === data ? (
+        <ScoreAudioPlayer
+          score={audioScore.score}
+          title={title}
+          key={readyVersion}
+        />
+      ) : (
+        <div className="musescore-audio">
+          <button type="button" disabled>
+            Load audio
+          </button>
+          <span>Available when the score loads.</span>
+        </div>
+      )}
       <div
         className="musescore-canvas"
         aria-live="polite"

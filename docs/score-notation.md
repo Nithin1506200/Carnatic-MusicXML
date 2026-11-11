@@ -106,6 +106,42 @@ The parser rewrites aliases to the canonical dotted form, and
 cannot mark octaves: they are duration marks. Lyric rows are never rewritten,
 so apostrophes in sahitya words such as `don't` stay verbatim.
 
+### Explicit Swara Variants
+
+Write a numbered swara to override the raga's default for that sound only:
+`N N3 N` uses the registered N, then N3, then the registered N again.
+Allowed variants are `R1`–`R3`, `G1`–`G3`, `M1`–`M2`, `D1`–`D3`, and
+`N1`–`N3`. S and P have no numbered variants. Numbers do not add rhythmic
+slots: `N2N3` is two sounds in one cell. Octave aliases work too: `n3` is
+lower N3, and `N3'` is upper N3. Record source-supported accidental usage
+in the score's source or notation-exception metadata.
+
+### Splitting Lyrics Within a Cell
+
+A plain lyric cell attaches to the first sound and continues across the
+remaining sounds: `SR RG GM ,,` over `Ni nnu ko -` starts Ni on S,
+nnu on the next R, and ko on G.
+
+Use `/` to start successive syllables within one swara cell:
+
+```text
+SR    GMM     GMM    ||
+Ni/nu nnu/ko- lee/me ||
+```
+
+Ni maps to S, nu to R; nnu maps to G, ko to the first M, and `-` to the
+second M. A trailing continuation in a split cell is shorthand:
+`nnu/ko-` equals `nnu/ko/-`. In `lee/me`, lee starts on G and me starts
+on the first M and continues across the second M. The final syllable spans
+any remaining slots. Slash separators are not printed as lyrics.
+
+Each split part needs a slot; empty parts and too many syllables are errors.
+A new syllable cannot start on a held slot, so use `la/-` under `G,`.
+Spaces and tala dividers still align by whole cells. Each cell has equal beat
+width in the swara display; split syllables and their swaras subdivide inside
+that cell. `SR GMM GMM` therefore occupies three equal beats in 3/4, with
+two subdivisions in the first beat and three in each remaining beat.
+
 ### Rhythm and Duration
 
 Rhythm is read from the cells:

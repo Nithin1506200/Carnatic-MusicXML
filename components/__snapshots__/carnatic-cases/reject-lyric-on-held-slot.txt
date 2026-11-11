@@ -1,0 +1,1 @@
+Error: Lyric "ti" falls under a held swara slot in "G,".

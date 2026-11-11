@@ -287,6 +287,22 @@ export default function MusicLibrary() {
   const [activeId, setActiveId] = useState<string>(documentIdFromLocation);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem("sidebar-collapsed") === "true";
+    } catch {
+      return false;
+    }
+  });
+  const toggleSidebar = () => {
+    const collapsed = !sidebarCollapsed;
+    setSidebarCollapsed(collapsed);
+    try {
+      localStorage.setItem("sidebar-collapsed", String(collapsed));
+    } catch {
+      // The menu still works when storage is unavailable.
+    }
+  };
   const [previewId, setPreviewId] = useState<string | null>(null);
   const [tablePreview, setTablePreview] = useState<{
     html: string;
@@ -656,22 +672,35 @@ export default function MusicLibrary() {
         : `${results.length} match${results.length === 1 ? "" : "es"}`;
 
   return (
-    <div className="site-shell">
+    <div className={`site-shell ${sidebarCollapsed ? "is-sidebar-collapsed" : ""}`}>
       <header className="topbar">
-        <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open menu">
+        <button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Open menu" aria-expanded={mobileOpen} aria-controls="library-sidebar">
           <MenuIcon />
         </button>
-        <button className="brand" onClick={() => navigate("home")} aria-label="Swara Adhyaaya home">
-          <span className="brand-mark" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </span>
-          <span>
-            <strong>Swara Adhyaaya</strong>
-            <small>Carnatic saxophone library</small>
-          </span>
-        </button>
+        <div className="brand-area">
+          <button
+            type="button"
+            className="sidebar-toggle"
+            onClick={toggleSidebar}
+            aria-label={sidebarCollapsed ? "Expand menu" : "Collapse menu"}
+            title={sidebarCollapsed ? "Expand menu" : "Collapse menu"}
+            aria-expanded={!sidebarCollapsed}
+            aria-controls="library-sidebar"
+          >
+            <MenuIcon />
+          </button>
+          <button className="brand" onClick={() => navigate("home")} aria-label="Swara Adhyaaya home">
+            <span className="brand-mark" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+            </span>
+            <span>
+              <strong>Swara Adhyaaya</strong>
+              <small>Carnatic saxophone library</small>
+            </span>
+          </button>
+        </div>
         <button className="search-trigger" onClick={openSearch}>
           <SearchIcon />
           <span>Search every lesson, raga, tala…</span>
@@ -680,7 +709,7 @@ export default function MusicLibrary() {
         <span className="written-sa">Written Sa · G</span>
       </header>
 
-      <aside className={`sidebar ${mobileOpen ? "is-open" : ""}`}>
+      <aside id="library-sidebar" className={`sidebar ${mobileOpen ? "is-open" : ""}`}>
         <div className="sidebar-mobile-head">
           <span>Library</span>
           <button onClick={() => setMobileOpen(false)} aria-label="Close menu">×</button>
@@ -780,7 +809,7 @@ export default function MusicLibrary() {
         )}
 
         {activeId === "playground" && (
-          <div className="content-layout">
+          <div className="content-layout playground-layout">
             <Suspense
               fallback={
                 <div className="document-state" aria-live="polite">

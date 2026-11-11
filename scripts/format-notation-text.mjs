@@ -21,12 +21,12 @@ const visualWidth = (token) =>
 
 // ASCII octave aliases, mirroring normalizeSwaraToken in
 // components/score-notation.ts: `S'` is Ṡ (tāra), `s` is Ṣ (mandra).
-const aliasTokenGate = /^(?:\p{Lu}\p{M}*'?|\p{Ll}\p{M}*|[.,-])+$/u;
+const aliasTokenGate = /^(?:\p{Lu}\p{M}*\d*'?|\p{Ll}\p{M}*\d*|[.,-])+$/u;
 const normalizeSwaraToken = (token) =>
   !aliasTokenGate.test(token)
     ? token
     : token
-        .replace(/(\p{Lu})'/gu, "$1\u0307")
+        .replace(/(\p{Lu}\d*)'/gu, "$1\u0307")
         .replace(
           /(\p{Ll})(?!\u0323)/gu,
           (letter) => `${letter.toUpperCase()}\u0323`,

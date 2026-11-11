@@ -8,14 +8,16 @@ import {
   type CaseEvaluation,
 } from "../components/carnatic-cases";
 import { hunkify, lineDiff } from "../components/line-diff";
+import CaseSwaraPreview from "./case-swara-preview";
+import { notationBlocksFor } from "../components/carnatic-mscx";
 
 const MuseScoreViewer = lazy(() => import("../components/musescore-viewer"));
 
 /**
  * Converter test cases: runs the shared case list (`components/carnatic-cases.ts`,
  * the same list `scripts/carnatic-to-mscz.test.ts` executes) one case at a
- * time in the browser. Every case shows its `carnatic` notation block, the
- * generated `.mscx` with its engraved rendering, and — when the output differs from the stored snapshot
+ * time in the browser. Every case shows its `carnatic` notation block, a
+ * rendered swara preview, the generated `.mscx` with its engraved rendering, and — when the output differs from the stored snapshot
  * under `components/__snapshots__/carnatic-cases/` — the snapshot and a
  * line diff. The converter, the snapshots, and the repository scores are
  * async imports that load only when this page is opened.
@@ -89,12 +91,10 @@ const statusFor = (evaluation: CaseEvaluation, snapshot: string | null) => {
   return snapshot === evaluation.text ? "pass" : "changed";
 };
 
-/** Splits a companion MDX into its YAML metadata and `carnatic` blocks. */
+/** Uses the converter's extractor for fenced blocks and inline notation templates. */
 const splitMdx = (mdx: string) => {
   const yaml = /```yaml\n([\s\S]*?)```/u.exec(mdx)?.[1]?.trimEnd() ?? "";
-  const blocks = [...mdx.matchAll(/```carnatic\n([\s\S]*?)```/gu)].map(
-    (match) => match[1].trimEnd(),
-  );
+  const blocks = notationBlocksFor(mdx).map((block) => block.source.trimEnd());
   return { yaml, blocks };
 };
 
@@ -228,7 +228,7 @@ export default function ConverterCases() {
         <p>
           The {total} cases below are the ones <code>npm test</code> runs from{" "}
           <code>components/carnatic-cases.ts</code>. Each one is generated here in
-          the browser, one at a time: the <code>carnatic</code> block, the{" "}
+          the browser, one at a time: the <code>carnatic</code> block, its swara notation, the{" "}
           <code>.mscx</code> it produces, and, when that output no longer matches
           the stored snapshot, the previous snapshot with the differences. Accept
           intended changes with <code>npx vitest run -u</code>.
@@ -409,7 +409,7 @@ function CaseCard({
   return (
     <article
       id={`case-${testCase.id}`}
-      className={`case-card ${status ? `is-${status}` : ""} ${running ? "is-running" : ""}`}
+      className={`case-card ${testCase.expectError ? "is-rejection" : ""} ${status ? `is-${status}` : ""} ${running ? "is-running" : ""}`}
     >
       <header className="case-head">
         <div>
@@ -459,6 +459,19 @@ function CaseCard({
         )}
       </div>
 
+      <div className="case-section">
+        <small>2 · Swara notation</small>
+        {blocks.length > 0 ? (
+          blocks.map((block, blockIndex) => (
+            <CaseSwaraPreview key={blockIndex} source={block} />
+          ))
+        ) : (
+          <p className="playground-output-empty">
+            {source === null ? "Loading the score file…" : "No notation block to preview."}
+          </p>
+        )}
+      </div>
+
       {run && (
         <>
           {(run.evaluation.errorExpectation || run.evaluation.checks.length > 0) && (
@@ -482,7 +495,7 @@ function CaseCard({
           {run.evaluation.output.kind === "mscx" && (
             <div className="case-section case-preview">
               <div className="playground-output-head">
-                <small>2 · Engraved score</small>
+                <small>3 · Engraved score</small>
                 <div>
                   <button
                     type="button"
@@ -518,7 +531,7 @@ function CaseCard({
           <div className="case-section">
             <div className="playground-output-head">
               <small>
-                {run.evaluation.output.kind === "mscx" ? "3 · Generated MuseScore .mscx" : "2 · Error"}
+                {run.evaluation.output.kind === "mscx" ? "4 · Generated MuseScore .mscx" : "3 · Error"}
               </small>
               <div>
                 <em className="is-ok">
@@ -537,7 +550,7 @@ function CaseCard({
 
           {run.status === "new" && (
             <div className="case-section">
-              <small>{run.evaluation.output.kind === "mscx" ? "4" : "3"} · Snapshot</small>
+              <small>{run.evaluation.output.kind === "mscx" ? "5" : "4"} · Snapshot</small>
               <p className="playground-output-empty">
                 No stored snapshot for this case yet. Running{" "}
                 <code>npx vitest run scripts/carnatic-to-mscz.test.ts</code> writes it to{" "}
@@ -548,7 +561,7 @@ function CaseCard({
 
           {run.status === "pass" && (
             <div className="case-section">
-              <small>{run.evaluation.output.kind === "mscx" ? "4" : "3"} · Snapshot</small>
+              <small>{run.evaluation.output.kind === "mscx" ? "5" : "4"} · Snapshot</small>
               <p className="case-same">
                 Output is identical to <code>{snapshotPathFor(testCase)}</code>.
               </p>
@@ -558,7 +571,7 @@ function CaseCard({
           {diff && run.snapshot !== null && (
             <div className="case-section">
               <div className="playground-output-head">
-                <small>{run.evaluation.output.kind === "mscx" ? "4" : "3"} · Differences from the stored snapshot</small>
+                <small>{run.evaluation.output.kind === "mscx" ? "5" : "4"} · Differences from the stored snapshot</small>
                 <div>
                   <em className="is-removed">−{removed}</em>
                   <em className="is-added">+{added}</em>

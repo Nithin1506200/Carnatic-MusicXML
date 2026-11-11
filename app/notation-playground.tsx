@@ -1,4 +1,7 @@
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { MusicScore, parseScoreNotation } from "../components/score-notation";
+import RagaPicker from "./raga-picker";
+import type { RagaInfo } from "../components/ragas.generated";
 
 const MuseScoreViewer = lazy(() => import("../components/musescore-viewer"));
 
@@ -119,7 +122,9 @@ export default function NotationPlayground() {
   const [tala, setTala] = useState(DEFAULT_TALA);
   const [unit, setUnit] = useState<"crotchet" | "quaver">("crotchet");
   const [notation, setNotation] = useState(EXAMPLE_NOTATION);
-  const [ragaNames, setRagaNames] = useState<string[]>([DEFAULT_RAGA]);
+  const [ragas, setRagas] = useState<readonly RagaInfo[]>([]);
+  const ragaNames = useMemo(() => ragas.length ? ragas.map(entry => entry.name) : [DEFAULT_RAGA], [ragas]);
+  const selectedRaga = ragas.find(entry => entry.name === raga);
   const [issues, setIssues] = useState<PlaygroundIssue[]>([]);
   const [result, setResult] = useState<PlaygroundResult | null>(null);
   const [convertedFor, setConvertedFor] = useState("");
@@ -139,7 +144,7 @@ export default function NotationPlayground() {
     let cancelled = false;
     void loadRagas().then((module) => {
       if (!cancelled) {
-        setRagaNames(module.RAGAS.map((entry) => entry.name));
+        setRagas(module.RAGAS);
       }
     });
     return () => {
@@ -149,6 +154,20 @@ export default function NotationPlayground() {
 
   // The MDX the current inputs describe; conversion reacts to every change.
   const currentMdx = synthesizeMdx(title, raga, tala, unit, notation);
+
+  // The site's own notation view re-parses the same block on every edit.
+  // Parsing is cheap, so the representation preview stays instant even
+  // while the MuseScore conversion behind it is throttled.
+  const representation = useMemo((): "empty" | "ok" | "error" => {
+    if (!notation.trim()) return "empty";
+    try {
+      parseScoreNotation(notation);
+      return "ok";
+    } catch {
+      // Conversion reports the same parse failure with line and column.
+      return "error";
+    }
+  }, [notation]);
 
   // Throttled conversion of the current notation into .mscx/.mscz: a run
   // starts immediately after a quiet interval, and the final edit always
@@ -304,8 +323,9 @@ export default function NotationPlayground() {
         <span className="eyebrow">Tool</span>
         <h1>Notation playground</h1>
         <p>
-          Type <code>carnatic</code> notation and see the MuseScore{" "}
-          <code>.mscx</code> it converts into — the same output{" "}
+          Type <code>carnatic</code> notation and preview both renderings —
+          the site's swara-tala representation and the MuseScore{" "}
+          <code>.mscx</code> it converts into, the same output{" "}
           <code>npm run mscz:generate</code> writes. Everything runs in your
           browser; the converter loads only when you open this page.
         </p>
@@ -321,16 +341,7 @@ export default function NotationPlayground() {
             placeholder={DEFAULT_TITLE}
           />
         </label>
-        <label>
-          <small>Raga</small>
-          <select value={raga} onChange={(event) => setRaga(event.target.value)}>
-            {ragaNames.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <RagaPicker value={raga} names={ragaNames} onChange={setRaga} />
         <label>
           <small>Taala</small>
           <select value={tala} onChange={(event) => setTala(event.target.value)}>
@@ -415,6 +426,30 @@ export default function NotationPlayground() {
                 ))}
               </ul>
             </div>
+          )}
+        </div>
+
+        <div className="playground-representation">
+          <small>Notation representation</small>
+          {selectedRaga && (
+            <div className="playground-raga-scale" aria-live="polite" aria-atomic="true">
+              <strong>{selectedRaga.name}</strong>
+              <dl>
+                <div><dt>Arohana</dt><dd>{selectedRaga.arohana}</dd></div>
+                <div><dt>Avarohana</dt><dd>{selectedRaga.avarohana}</dd></div>
+              </dl>
+            </div>
+          )}
+          {representation === "ok" ? (
+            <div className="markdown playground-representation-body">
+              <MusicScore source={notation} />
+            </div>
+          ) : (
+            <p className="playground-output-empty">
+              {representation === "error"
+                ? "Fix the notation to see the notation representation."
+                : "Type Carnatic notation to see the notation representation."}
+            </p>
           )}
         </div>
 

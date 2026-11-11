@@ -20,7 +20,7 @@
 #
 # The 72 melakartas follow the standard Kanakangi-Rasikapriya scheme; their
 # avarohana is always the exact reverse of the arohana (the generator enforces
-# this).
+# this, along with the swaras prescribed by each melakarta number).
 
 # ---------------------------------------------------------------------------
 # Chakra 1 — Indu (S R1 G1 M1 P …, melakartas 1–6)
@@ -168,461 +168,461 @@ avarohana = "S N3 D3 P M1 G3 R1 S"
 reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
 
 # ---------------------------------------------------------------------------
-# Chakra 4 — Veda (S R2 G1 M1 P …, melakartas 19–24)
+# Chakra 4 — Veda (S R2 G2 M1 P …, melakartas 19–24)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 19
 name = "Jhankaradhwani"
 alternate_names = ["Jhankarabhramari"]
-arohana = "S R2 G1 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G1 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 20
 name = "Natabhairavi"
 alternate_names = ["Nata Bhairavi", "Naatabhairavi"]
-arohana = "S R2 G1 M1 P D1 N2 S"
-avarohana = "S N2 D1 P M1 G1 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 21
 name = "Kiravani"
 alternate_names = ["Kirwani", "Keeravani"]
-arohana = "S R2 G1 M1 P D1 N3 S"
-avarohana = "S N3 D1 P M1 G1 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 22
 name = "Kharaharapriya"
 alternate_names = ["Khara Harapriya"]
-arohana = "S R2 G1 M1 P D2 N2 S"
-avarohana = "S N2 D2 P M1 G1 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 23
 name = "Gourimanohari"
-alternate_names = ["Gauri Manohari", "Gowri Manohari"]
-arohana = "S R2 G1 M1 P D2 N3 S"
-avarohana = "S N3 D2 P M1 G1 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+alternate_names = ["Gauri Manohari", "Gowri Manohari", "Gaurimanohari", "Gowrimanohari"]
+arohana = "S R2 G2 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G2 R2 S"
+reference = "https://www.ragasurabhi.com/carnatic-music/raga/raga--gowri-manohari.html; https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 24
 name = "Varunapriya"
-arohana = "S R2 G1 M1 P D3 N3 S"
-avarohana = "S N3 D3 P M1 G1 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 5 — Bana (S R2 G2 M1 P …, melakartas 25–30)
+# Chakra 5 — Bana (S R2 G3 M1 P …, melakartas 25–30)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 25
 name = "Mararanjani"
 alternate_names = ["Sharadaharana"]
-arohana = "S R2 G2 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G2 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 26
 name = "Charukesi"
 alternate_names = ["Charukeshi"]
-arohana = "S R2 G2 M1 P D1 N2 S"
-avarohana = "S N2 D1 P M1 G2 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 27
 name = "Sarasangi"
-arohana = "S R2 G2 M1 P D1 N3 S"
-avarohana = "S N3 D1 P M1 G2 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 28
 name = "Harikambhoji"
 alternate_names = ["Hari Kambhoji", "Harikamboji", "Khamas Thaat"]
-arohana = "S R2 G2 M1 P D2 N2 S"
-avarohana = "S N2 D2 P M1 G2 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 29
 name = "Dheerasankarabharanam"
 alternate_names = ["Sankarabharanam", "Shankarabharanam", "Bilaval"]
-arohana = "S R2 G2 M1 P D2 N3 S"
-avarohana = "S N3 D2 P M1 G2 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 30
 name = "Naganandini"
 alternate_names = ["Naganandhini"]
-arohana = "S R2 G2 M1 P D3 N3 S"
-avarohana = "S N3 D3 P M1 G2 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 6 — Ritu (S R2 G3 M1 P …, melakartas 31–36)
+# Chakra 6 — Ritu (S R3 G3 M1 P …, melakartas 31–36)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 31
 name = "Yagapriya"
 alternate_names = ["Kalavathi"]
-arohana = "S R2 G3 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G3 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M1 P D1 N1 S"
+avarohana = "S N1 D1 P M1 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 32
 name = "Ragavardhini"
 alternate_names = ["Ragachudamani"]
-arohana = "S R2 G3 M1 P D1 N2 S"
-avarohana = "S N2 D1 P M1 G3 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M1 P D1 N2 S"
+avarohana = "S N2 D1 P M1 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 33
 name = "Gangeyabhushani"
-arohana = "S R2 G3 M1 P D1 N3 S"
-avarohana = "S N3 D1 P M1 G3 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M1 P D1 N3 S"
+avarohana = "S N3 D1 P M1 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 34
 name = "Vagadheeswari"
 alternate_names = ["Vagadhiswari", "Bhogachayanata"]
-arohana = "S R2 G3 M1 P D2 N2 S"
-avarohana = "S N2 D2 P M1 G3 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M1 P D2 N2 S"
+avarohana = "S N2 D2 P M1 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 35
 name = "Shulini"
 alternate_names = ["Shoolini", "Sulini", "Shailadeshakshi"]
-arohana = "S R2 G3 M1 P D2 N3 S"
-avarohana = "S N3 D2 P M1 G3 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M1 P D2 N3 S"
+avarohana = "S N3 D2 P M1 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 36
 name = "Chalanata"
 alternate_names = ["Chalanattai", "Nata"]
-arohana = "S R2 G3 M1 P D3 N3 S"
-avarohana = "S N3 D3 P M1 G3 R2 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M1 P D3 N3 S"
+avarohana = "S N3 D3 P M1 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 7 — Rishi (S R3 G1 M1 P …, melakartas 37–42)
+# Chakra 7 — Rishi (S R1 G1 M2 P …, melakartas 37–42)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 37
 name = "Salagam"
-arohana = "S R3 G1 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G1 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G1 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G1 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 38
 name = "Jalarnavam"
-arohana = "S R3 G1 M1 P D1 N2 S"
-avarohana = "S N2 D1 P M1 G1 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G1 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G1 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 39
 name = "Jhalavarali"
 alternate_names = ["Varali"]
-arohana = "S R3 G1 M1 P D1 N3 S"
-avarohana = "S N3 D1 P M1 G1 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G1 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G1 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 40
 name = "Navaneetam"
-arohana = "S R3 G1 M1 P D2 N2 S"
-avarohana = "S N2 D2 P M1 G1 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G1 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G1 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 41
 name = "Pavani"
-arohana = "S R3 G1 M1 P D2 N3 S"
-avarohana = "S N3 D2 P M1 G1 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G1 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G1 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 42
 name = "Raghupriya"
 alternate_names = ["Ravikriya"]
-arohana = "S R3 G1 M1 P D3 N3 S"
-avarohana = "S N3 D3 P M1 G1 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G1 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G1 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 8 — Vasu (S R3 G2 M1 P …, melakartas 43–48)
+# Chakra 8 — Vasu (S R1 G2 M2 P …, melakartas 43–48)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 43
 name = "Gavambhodi"
-arohana = "S R3 G2 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G2 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G2 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G2 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 44
 name = "Bhavapriya"
 alternate_names = ["Bhavani"]
-arohana = "S R3 G2 M1 P D1 N2 S"
-avarohana = "S N2 D1 P M1 G2 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G2 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G2 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 45
 name = "Shubhapantuvarali"
 alternate_names = ["Subhapantuvarali", "Pantuvarali", "Todi (Hindustani)"]
-arohana = "S R3 G2 M1 P D1 N3 S"
-avarohana = "S N3 D1 P M1 G2 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G2 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G2 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 46
 name = "Shadvidamargini"
 alternate_names = ["Shadvidhamargini", "Stavarajam"]
-arohana = "S R3 G2 M1 P D2 N2 S"
-avarohana = "S N2 D2 P M1 G2 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G2 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G2 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 47
 name = "Suvarnangi"
 alternate_names = ["Souveeram"]
-arohana = "S R3 G2 M1 P D2 N3 S"
-avarohana = "S N3 D2 P M1 G2 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G2 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G2 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 48
 name = "Divyamani"
 alternate_names = ["Jeevantika"]
-arohana = "S R3 G2 M1 P D3 N3 S"
-avarohana = "S N3 D3 P M1 G2 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G2 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G2 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 9 — Brahma (S R3 G3 M1 P …, melakartas 49–54)
+# Chakra 9 — Brahma (S R1 G3 M2 P …, melakartas 49–54)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 49
 name = "Dhavalambari"
-arohana = "S R3 G3 M1 P D1 N1 S"
-avarohana = "S N1 D1 P M1 G3 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G3 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G3 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 50
 name = "Namanarayani"
 alternate_names = ["Namadeshi"]
-arohana = "S R3 G3 M1 P D1 N2 S"
-avarohana = "S N2 D1 P M1 G3 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G3 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G3 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 51
 name = "Kamavardhini"
 alternate_names = ["Pantuvarali (51)", "Kasiramakriya", "Purvi", "Puriya Dhanashree"]
-arohana = "S R3 G3 M1 P D1 N3 S"
-avarohana = "S N3 D1 P M1 G3 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G3 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G3 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 52
 name = "Ramapriya"
 alternate_names = ["Vachaspathi (52)", "Ramamanohari"]
-arohana = "S R3 G3 M1 P D2 N2 S"
-avarohana = "S N2 D2 P M1 G3 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G3 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G3 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 53
 name = "Gamanashrama"
 alternate_names = ["Gamanasrama", "Purvikalyani", "Poorvi Kalyani", "Purvikalyan"]
-arohana = "S R3 G3 M1 P D2 N3 S"
-avarohana = "S N3 D2 P M1 G3 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G3 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G3 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 54
 name = "Vishwambhari"
 alternate_names = ["Vishwambari"]
-arohana = "S R3 G3 M1 P D3 N3 S"
-avarohana = "S N3 D3 P M1 G3 R3 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R1 G3 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G3 R1 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 10 — Disi (S R1 G1 M2 P …, melakartas 55–60)
+# Chakra 10 — Disi (S R2 G2 M2 P …, melakartas 55–60)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 55
 name = "Shamalangi"
 alternate_names = ["Shyamalangi"]
-arohana = "S R1 G1 M2 P D1 N1 S"
-avarohana = "S N1 D1 P M2 G1 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 56
 name = "Shanmukhapriya"
 alternate_names = ["Chamaram", "Shanmuka Priya"]
-arohana = "S R1 G1 M2 P D1 N2 S"
-avarohana = "S N2 D1 P M2 G1 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 57
 name = "Simhendramadhyamam"
 alternate_names = ["Simmendramadhyamam", "Swadhedhamadyamam", "Sumadyuti"]
-arohana = "S R1 G1 M2 P D1 N3 S"
-avarohana = "S N3 D1 P M2 G1 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 58
 name = "Hemaavati"
 alternate_names = ["Deshisimharavam"]
-arohana = "S R1 G1 M2 P D2 N2 S"
-avarohana = "S N2 D2 P M2 G1 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 59
 name = "Dharmavati"
 alternate_names = ["Dharmavathi", "Madhuvanti"]
-arohana = "S R1 G1 M2 P D2 N3 S"
-avarohana = "S N3 D2 P M2 G1 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 60
 name = "Neetimati"
 alternate_names = ["Neetimathi", "Hamsa Kalyani"]
-arohana = "S R1 G1 M2 P D3 N3 S"
-avarohana = "S N3 D3 P M2 G1 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G2 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G2 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 11 — Rudra (S R1 G2 M2 P …, melakartas 61–66)
+# Chakra 11 — Rudra (S R2 G3 M2 P …, melakartas 61–66)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 61
 name = "Kantamani"
 alternate_names = ["Kuntalam"]
-arohana = "S R1 G2 M2 P D1 N1 S"
-avarohana = "S N1 D1 P M2 G2 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 62
 name = "Rishabhapriya"
 alternate_names = ["Ratipatipriya"]
-arohana = "S R1 G2 M2 P D1 N2 S"
-avarohana = "S N2 D1 P M2 G2 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 63
 name = "Latangi"
 alternate_names = ["Gitapriya"]
-arohana = "S R1 G2 M2 P D1 N3 S"
-avarohana = "S N3 D1 P M2 G2 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 64
 name = "Vachaspati"
 alternate_names = ["Bhushavati"]
-arohana = "S R1 G2 M2 P D2 N2 S"
-avarohana = "S N2 D2 P M2 G2 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 65
 name = "Mechakalyani"
 alternate_names = ["Kalyani", "Mecha Kalyani", "Yaman", "Santakalyani"]
-arohana = "S R1 G2 M2 P D2 N3 S"
-avarohana = "S N3 D2 P M2 G2 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 66
 name = "Chitrambari"
-arohana = "S R1 G2 M2 P D3 N3 S"
-avarohana = "S N3 D3 P M2 G2 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R2 G3 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G3 R2 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
-# Chakra 12 — Aditya (S R1 G3 M2 P …, melakartas 67–72)
+# Chakra 12 — Aditya (S R3 G3 M2 P …, melakartas 67–72)
 # ---------------------------------------------------------------------------
 
 [[melakarta]]
 number = 67
 name = "Sucharitra"
 alternate_names = ["Sucharita", "Santanamanjari"]
-arohana = "S R1 G3 M2 P D1 N1 S"
-avarohana = "S N1 D1 P M2 G3 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M2 P D1 N1 S"
+avarohana = "S N1 D1 P M2 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 68
 name = "Jyotiswarupini"
 alternate_names = ["Jyotiswaroopini"]
-arohana = "S R1 G3 M2 P D1 N2 S"
-avarohana = "S N2 D1 P M2 G3 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M2 P D1 N2 S"
+avarohana = "S N2 D1 P M2 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 69
 name = "Dhathuvardhini"
 alternate_names = ["Dhatuvardhani", "Dhouta Panchamam"]
-arohana = "S R1 G3 M2 P D1 N3 S"
-avarohana = "S N3 D1 P M2 G3 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M2 P D1 N3 S"
+avarohana = "S N3 D1 P M2 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 70
 name = "Nasikabhushani"
 alternate_names = ["Nasamani"]
-arohana = "S R1 G3 M2 P D2 N2 S"
-avarohana = "S N2 D2 P M2 G3 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M2 P D2 N2 S"
+avarohana = "S N2 D2 P M2 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 71
 name = "Kosalam"
-arohana = "S R1 G3 M2 P D2 N3 S"
-avarohana = "S N3 D2 P M2 G3 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M2 P D2 N3 S"
+avarohana = "S N3 D2 P M2 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 [[melakarta]]
 number = 72
 name = "Rasikapriya"
 alternate_names = ["Rasamanjari"]
-arohana = "S R1 G3 M2 P D3 N3 S"
-avarohana = "S N3 D3 P M2 G3 R1 S"
-reference = "Standard 72-melakarta scheme (Kanakangi-Rasikapriya)"
+arohana = "S R3 G3 M2 P D3 N3 S"
+avarohana = "S N3 D3 P M2 G3 R3 S"
+reference = "https://karnatik.com/melakarta.pdf"
 
 # ---------------------------------------------------------------------------
 # Janya ragas
