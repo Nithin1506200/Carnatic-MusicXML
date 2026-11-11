@@ -1,0 +1,13 @@
+schema_version = 1
+
+[[progressions]]
+id = "I-IV-V-I"
+name = "I–IV–V–I"
+root_offsets = [0, 5, 7, 0]
+qualities = ["major", "major", "major", "major"]
+
+[[progressions]]
+id = "ii7-V7-Imaj7"
+name = "ii7–V7–Imaj7"
+root_offsets = [2, 7, 0]
+qualities = ["minor7", "dominant7", "major7"]

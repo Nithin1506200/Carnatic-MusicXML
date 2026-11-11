@@ -1,0 +1,19 @@
+schema_version = 1
+
+[[patterns]]
+id = "ascending_three"
+name = "Ascending three"
+degrees = [1, 2, 3]
+rhythm_id = "three_note"
+
+[[patterns]]
+id = "descending_three"
+name = "Descending three"
+degrees = [3, 2, 1]
+rhythm_id = "three_note"
+
+[[patterns]]
+id = "return_five"
+name = "Five-note return"
+degrees = [1, 2, 3, 2, 1]
+rhythm_id = "return_five"

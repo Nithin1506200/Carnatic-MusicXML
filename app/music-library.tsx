@@ -28,12 +28,14 @@ import {
   type SearchHit,
 } from "./search";
 
+import EarTraining from "./ear-training";
+
 const MuseScoreViewer = lazy(() => import("../components/musescore-viewer"));
 const NotationPlayground = lazy(() => import("./notation-playground"));
 const ConverterCases = lazy(() => import("./converter-cases"));
 
 /** Tool pages that live outside the generated document list. */
-const TOOL_IDS = new Set(["playground", "cases"]);
+const TOOL_IDS = new Set(["playground", "cases", "ear-training"]);
 
 /**
  * The library shell. Only the handful of non-score documents are known at
@@ -754,6 +756,13 @@ export default function MusicLibrary() {
           <section className="nav-group">
             <h2>Tools</h2>
             <button
+              className={activeId === "ear-training" ? "active" : ""}
+              onClick={() => navigate("ear-training")}
+            >
+              <span>Ear Training</span>
+              {activeId === "ear-training" && <i aria-hidden="true" />}
+            </button>
+            <button
               className={activeId === "playground" ? "active" : ""}
               onClick={() => navigate("playground")}
             >
@@ -806,6 +815,12 @@ export default function MusicLibrary() {
               <p>Arohana · written Sa = G</p>
             </div>
           </section>
+        )}
+
+        {activeId === "ear-training" && (
+          <div className="content-layout ear-training-layout">
+            <EarTraining shortcutsEnabled={!searchOpen && !previewId && !tablePreview && !notationOverviewOpen && !engravedScore && !mobileOpen} />
+          </div>
         )}
 
         {activeId === "playground" && (

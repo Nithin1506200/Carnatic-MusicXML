@@ -1,0 +1,52 @@
+schema_version = 1
+
+[[rhythms]]
+id = "quarter"
+name = "Quarter note"
+events = [{ kind = "note", ticks = 480 }]
+
+[[rhythms]]
+id = "long_short"
+name = "Dotted quarter and eighth"
+events = [
+  { kind = "note", ticks = 720 },
+  { kind = "note", ticks = 240 },
+]
+
+[[rhythms]]
+id = "short_long"
+name = "Eighth and dotted quarter"
+events = [
+  { kind = "note", ticks = 240 },
+  { kind = "note", ticks = 720 },
+]
+
+[[rhythms]]
+id = "rest_response"
+name = "Quarter, eighth rest, eighth"
+events = [
+  { kind = "note", ticks = 480 },
+  { kind = "rest", ticks = 240 },
+  { kind = "note", ticks = 240 },
+]
+
+[[rhythms]]
+id = "three_note"
+name = "Quarter and two eighths"
+events = [
+  { kind = "note", ticks = 480 },
+  { kind = "note", ticks = 240 },
+  { kind = "note", ticks = 240 },
+]
+
+[[rhythms]]
+id = "return_five"
+name = "Five-note return rhythm"
+events = [
+  { kind = "note", ticks = 480 },
+  { kind = "note", ticks = 240 },
+  { kind = "note", ticks = 240 },
+  { kind = "rest", ticks = 240 },
+  { kind = "note", ticks = 240 },
+  { kind = "note", ticks = 480 },
+]

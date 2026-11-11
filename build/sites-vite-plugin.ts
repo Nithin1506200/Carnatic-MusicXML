@@ -26,6 +26,11 @@ export function sites(): Plugin {
     },
     async closeBundle() {
       const distDirectory = resolve(root, "dist");
+      // Loose MP3s are only a local packaging cache; deploy the tracked bundle.
+      await rm(resolve(distDirectory, "client", "ear-training-samples"), {
+        recursive: true,
+        force: true,
+      });
       const outputDirectory = resolve(distDirectory, ".openai");
       const serverDirectory = resolve(distDirectory, "server");
       const hostingConfig = resolve(root, ".openai", "hosting.json");

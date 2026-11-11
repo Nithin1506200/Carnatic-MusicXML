@@ -35,3 +35,6 @@ components/ragas.generated.ts
 *.swp
 *.swo
 *~
+
+# Loose audio cache only; public/ear-training-samples.tar.gz is tracked in Git
+public/ear-training-samples/

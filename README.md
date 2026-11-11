@@ -60,6 +60,51 @@ npm run validate:notation
 npm run build
 ```
 
+### Ear Training
+
+Open **Tools → Ear Training** (or `?doc=ear-training`) for Western-notation
+listening practice, rhythmic phrases, and long tones. Use Show notes to check
+an exercise, Replay to hear it again, and Next to continue. Space reveals
+hidden notes, then advances. Long-tone presets run automatically and have
+separate Stop and Restart controls. Default playback uses saxophone sound
+and E-flat alto written pitches over the saxophone range Bb3–F#6; switch to
+Concert pitch when needed. With no
+key/scale selected, each exercise chooses a compatible random key and scale.
+The staff stays on one horizontal line, with local scrolling for long phrases.
+Settings sit below the staff in a compact tabbed panel.
+
+Generated phrases offer connected melodic movement with adjustable variation,
+a maximum leap, chord guidance, and optional resolved chromaticism. The
+variation can be randomized within a chosen range for each new phrase. Uniform
+random sampling remains available. See the
+[melodic generation guide](docs/eartraining_melodic_generation.md) for details.
+
+Predefined melodies, rhythms, and long-tone routines live in
+`data/ear_training_patterns.toml`, `data/ear_training_rhythms.toml`, and
+`data/ear_training_long_tones.toml`. See the
+[implementation guide](docs/eartraining_implementation.md) for their schemas.
+
+All 74 piano and saxophone source samples are stored in the **tracked**
+`public/ear-training-samples.tar.gz`, with attribution and full license text.
+Dev/build verifies that archive locally; clean checkouts do not download audio
+from upstream. Playback downloads the archive once, verifies and unpacks it in
+memory, then prepares the selected instrument before starting. Replay and
+instrument changes reuse the cached bundle.
+
+We use **FluidR3 GM** samples by **Frank Wen**, converted and packaged by
+**gleitz and MIDI.js Soundfonts contributors**, under
+[CC BY 3.0 US](https://creativecommons.org/licenses/by/3.0/us/).
+Original MP3 bytes are unchanged; playback applies phase-matched sustain loops
+and crossfades. See [full attribution](licenses/ear-training-ATTRIBUTION.txt),
+[license text](licenses/CC-BY-3.0-US.txt), and the
+[sample packaging guide](docs/ear-training-assets.md).
+
+For an intentional sample update, run `npm run assets:ear-training:pack` to
+rebuild the archive from checksum-verified upstream samples, then commit the
+archive, updated manifest, and notices together. Keep the archive tracked in
+Git; loose MP3s are only an ignored local packaging cache. Normal builds never
+rewrite the committed archive.
+
 ### Generating MuseScore files and PDFs from MDX
 
 One companion MDX converts into a MuseScore `.mscz`, and by default also a

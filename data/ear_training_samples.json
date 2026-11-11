@@ -1,0 +1,785 @@
+{
+  "version": 1,
+  "provenance": {
+    "name": "FluidR3 GM / MIDI.js Soundfonts",
+    "author": "Frank Wen; MIDI.js conversion by gleitz and contributors",
+    "license": "CC-BY-3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/",
+    "source": "https://github.com/gleitz/midi-js-soundfonts",
+    "revision": "044fab8e1456bfafc5776e86dfd6bb8697149aef",
+    "modifications": "Every supported note (concert MIDI 48–84) as original MP3 source samples, unchanged downloaded bytes. Playback retains the sampled attack, phase-matches the sustain loop within the 0.6–1.0 second region and applies a 20 ms in-memory seam crossfade. Both instruments use a sampled sustain rather than an unlooped natural decay."
+  },
+  "instruments": {
+    "piano": {
+      "lowMidi": 48,
+      "highMidi": 84,
+      "sourceSha256": "00eebe0214c12ff8f32c47c2f7ac92ef352800e868ab0f883b80854486ac4ca6",
+      "samples": [
+        {
+          "sound": "piano",
+          "rootMidi": 48,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "C3",
+          "sha256": "7d0409ea3c40af25c6d3d606f12890f88f896d93c381b6eb8c58497f308b30d3",
+          "url": "/ear-training-samples/piano-48.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 49,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Db3",
+          "sha256": "c5bd77b92ad8411c47e509643a7d6fc9c74f3aaba2290e2f4aed6a2ba1446e88",
+          "url": "/ear-training-samples/piano-49.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 50,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "D3",
+          "sha256": "b8a5ed9cf147e10f484f3ad39930130d487b12045a35cef73f48dab401e6583b",
+          "url": "/ear-training-samples/piano-50.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 51,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Eb3",
+          "sha256": "bec9944789ef9e7ec3dd7f9fcdf63ed1e5e82e29447c81be3578df9b1269b4b6",
+          "url": "/ear-training-samples/piano-51.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 52,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "E3",
+          "sha256": "5e556a4850b93b1adba6655372c9e58913169864c52a8e6f232f4b1e901ca2dc",
+          "url": "/ear-training-samples/piano-52.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 53,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "F3",
+          "sha256": "ff912c3211f80dc0c4f541ebd39c1db11f21cfda684d54999f9bce87aaf0cf20",
+          "url": "/ear-training-samples/piano-53.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 54,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Gb3",
+          "sha256": "91605f55bf0265c1e526b966a3901f9c2813473ac890f4b7330ee08874c5d30f",
+          "url": "/ear-training-samples/piano-54.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 55,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "G3",
+          "sha256": "3b75e4dfd657723b3c7a30bca0409dce8013b4083d54e703c8ec513b535cee99",
+          "url": "/ear-training-samples/piano-55.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 56,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Ab3",
+          "sha256": "843d633061631861c943266b4836573fe8ba8b8a10df9bd94adc380376cdb8ce",
+          "url": "/ear-training-samples/piano-56.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 57,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "A3",
+          "sha256": "02dee2fa184b9b94a5f72886c2370bd076103ebb76fc179982fa503e549dcc10",
+          "url": "/ear-training-samples/piano-57.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 58,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Bb3",
+          "sha256": "6ac0f67f18e15db35553d4fcd83ceec4473ebe639e31659ce93cf8466cb06644",
+          "url": "/ear-training-samples/piano-58.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 59,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "B3",
+          "sha256": "82c0463af9c9fe51d44aa59b71d2dccefab11c1ea98e2748ee93244f8af9169e",
+          "url": "/ear-training-samples/piano-59.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 60,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "C4",
+          "sha256": "b6d32e0d9d0c2e4b88165a2ec27b8787a970f131a03d96d065f28f158640af96",
+          "url": "/ear-training-samples/piano-60.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 61,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Db4",
+          "sha256": "f49892c4e935296db1cb785000818e6a04bf0756c4443bffa6245144fdaf3e47",
+          "url": "/ear-training-samples/piano-61.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 62,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "D4",
+          "sha256": "90539782bdbbbe714de579bfbbe6f478e07e112c6f78d03e8ee82462fbf2a569",
+          "url": "/ear-training-samples/piano-62.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 63,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Eb4",
+          "sha256": "96586e2865651cfa0469e762f3bd40821f6e45eecf4761a86a37bc59cfebfb2c",
+          "url": "/ear-training-samples/piano-63.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 64,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "E4",
+          "sha256": "48bcecf53832988af83f74aa65efd7daa34f1e3ebf10de4679363b89d54f3852",
+          "url": "/ear-training-samples/piano-64.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 65,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "F4",
+          "sha256": "a7426425ed95ea8652a888d850c34c4b766c7c7a11c168ed6899c38a6836be0c",
+          "url": "/ear-training-samples/piano-65.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 66,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Gb4",
+          "sha256": "f0db7ee32b9175907ca60cf53e6c7a129ea8e7c8f6562dc7ebe6e5c81dcbdf99",
+          "url": "/ear-training-samples/piano-66.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 67,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "G4",
+          "sha256": "37d21e13d5cecc8c0f1645c83bfe82f6032407a3b7de3dde14021c196526664e",
+          "url": "/ear-training-samples/piano-67.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 68,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Ab4",
+          "sha256": "e8612f8602d1c146f9b7f69a441ee518876ccdfa469457366c8064c25d9d3116",
+          "url": "/ear-training-samples/piano-68.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 69,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "A4",
+          "sha256": "4f1671ac831bc41c845e67b18e6c9ea200fc9b753bdffe124703b7141aa928c3",
+          "url": "/ear-training-samples/piano-69.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 70,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Bb4",
+          "sha256": "d8f729899595116cb62ca9b7b801b4dfb9322bdf50d1bbfa847010e43a39f8f5",
+          "url": "/ear-training-samples/piano-70.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 71,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "B4",
+          "sha256": "5f09187820410b0f78575f232c3509f367478b7755b6eb5aa46ce6cf4c16a0e8",
+          "url": "/ear-training-samples/piano-71.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 72,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "C5",
+          "sha256": "7a4be6dae323ac5564ad1a617b554fd595e5e0a63f19c3581e3ee94c33ae2e4b",
+          "url": "/ear-training-samples/piano-72.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 73,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Db5",
+          "sha256": "924a70321fe728ff7a69c941029e060f529e6ada507f20357ee74039e270e588",
+          "url": "/ear-training-samples/piano-73.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 74,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "D5",
+          "sha256": "b25b5e541807af700f4e2272ac4c55a2f9b5cc8f176fcd9961d4456803af2b87",
+          "url": "/ear-training-samples/piano-74.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 75,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Eb5",
+          "sha256": "aad99b852c20c2aee66143dd103513523566716cb2f4c6ef6ac478ef84f282b0",
+          "url": "/ear-training-samples/piano-75.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 76,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "E5",
+          "sha256": "c48cee1a11528da53e1f780a1ed36558530f053b5ed8c7033709b2002b452513",
+          "url": "/ear-training-samples/piano-76.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 77,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "F5",
+          "sha256": "d7f046daec924ce8607ec92360e0d0e42e29e4b3a108839179e04aba4adadc51",
+          "url": "/ear-training-samples/piano-77.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 78,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Gb5",
+          "sha256": "bd1d81203f5338ab62372f88c0b4eb5b4a3133ef58518a8770f3dfdf34f74124",
+          "url": "/ear-training-samples/piano-78.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 79,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "G5",
+          "sha256": "2eb949282bc676f3dc96bf5008459b5fff02696e63b70ff799ff08c36bb97058",
+          "url": "/ear-training-samples/piano-79.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 80,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Ab5",
+          "sha256": "31c86a311eb68761b8008359b34addfeec249d1c7d6795a52f8f2e172e3e8a05",
+          "url": "/ear-training-samples/piano-80.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 81,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "A5",
+          "sha256": "2cccfe0aa8077bfd20bcbba470012faa0328ae97d5bd2297147c01f2b255e574",
+          "url": "/ear-training-samples/piano-81.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 82,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "Bb5",
+          "sha256": "51224d4c26f1c89b08e43865ef55d3638367f7f40fbc92e4ab88610b54d4301d",
+          "url": "/ear-training-samples/piano-82.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 83,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "B5",
+          "sha256": "4e0932827d3e9390080c4a9acd420e9b83871a5f73723feaf61d2d7f6b628b01",
+          "url": "/ear-training-samples/piano-83.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "piano",
+          "rootMidi": 84,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/acoustic_grand_piano-mp3.js",
+          "sourceKey": "C6",
+          "sha256": "6a0030c071ccd6c9a722455851d65b18cb86cbfe515772a6ded4c747eda339a0",
+          "url": "/ear-training-samples/piano-84.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        }
+      ],
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/",
+      "provenance": "https://github.com/gleitz/midi-js-soundfonts/tree/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM"
+    },
+    "saxophone": {
+      "lowMidi": 48,
+      "highMidi": 84,
+      "sourceSha256": "18ec57c02f27c7e8dc4620f57fa9b94e32babf4ebae7d1f2205e053d3287abce",
+      "samples": [
+        {
+          "sound": "saxophone",
+          "rootMidi": 48,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "C3",
+          "sha256": "97c41a65ce31f41fb6b1df3b860a2abf8989f69825bff2802af96d0864f855d9",
+          "url": "/ear-training-samples/saxophone-48.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 49,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Db3",
+          "sha256": "2df1d3aa87cea5496f525c5dc1941bb6e197a6d0934ac63ba9b8636c4416ce7c",
+          "url": "/ear-training-samples/saxophone-49.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 50,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "D3",
+          "sha256": "630a2153b271cbd8f3444d6ed46f8dab51e615e7cbd2507dd8d1d6f5b836a766",
+          "url": "/ear-training-samples/saxophone-50.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 51,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Eb3",
+          "sha256": "c2a97af04d8244fdbd8372149224af1d907183bf1296e052a1ef98631c9e916f",
+          "url": "/ear-training-samples/saxophone-51.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 52,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "E3",
+          "sha256": "04f27f20cc69351b472c132f41046d39b0ddd8a667761539782dc9d1731a2fa3",
+          "url": "/ear-training-samples/saxophone-52.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 53,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "F3",
+          "sha256": "3f238d0c478e962a9001c634fc845c5b7810bcbca3a9998104ff010a7c507844",
+          "url": "/ear-training-samples/saxophone-53.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 54,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Gb3",
+          "sha256": "71c1440e69de1b3d27d9b6e08567e849c713fd6554ec385e3be36d2dc9f821c1",
+          "url": "/ear-training-samples/saxophone-54.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 55,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "G3",
+          "sha256": "079c8cb903421d65f5e6b46946f7e57176f8ee3971adc8f338b45b7f3e7ac0a5",
+          "url": "/ear-training-samples/saxophone-55.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 56,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Ab3",
+          "sha256": "8a43eec317330d2a973a0f2b7eb27fea62f4a2bb0db0858b1549c20e6fb3b0aa",
+          "url": "/ear-training-samples/saxophone-56.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 57,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "A3",
+          "sha256": "1c18df2570ff134bede58981c59719a2feec6ee4e16d79eeadaeb680195ddfe6",
+          "url": "/ear-training-samples/saxophone-57.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 58,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Bb3",
+          "sha256": "232034e9678962ced3b49c50716139e2ea7ddd6bf92483b459a7f4d4632e3b07",
+          "url": "/ear-training-samples/saxophone-58.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 59,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "B3",
+          "sha256": "359571ee8f13b802ff6f0197d19e80fd9c1a7058224258bb299965dc3c794270",
+          "url": "/ear-training-samples/saxophone-59.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 60,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "C4",
+          "sha256": "4d3e59d0f84d21720ceee43eccda720370a7a891dfb336258cc8b2fd95c06dac",
+          "url": "/ear-training-samples/saxophone-60.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 61,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Db4",
+          "sha256": "ad3d302a0f478c70f5f05cf5b34ccab73fef18fc832bb7f1225f721d968b768e",
+          "url": "/ear-training-samples/saxophone-61.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 62,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "D4",
+          "sha256": "a2cee53c846d78637662678300c566cc6ab20ce0642ad7afb4787b1cb9cd156b",
+          "url": "/ear-training-samples/saxophone-62.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 63,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Eb4",
+          "sha256": "dedd8e2e2f1e46305b056a86a2a2c9628c41d168703b4803dc9c42d177908299",
+          "url": "/ear-training-samples/saxophone-63.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 64,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "E4",
+          "sha256": "3db04c2324eef606c989d22e308442b25310e829bb9f070752f6df9a8470c199",
+          "url": "/ear-training-samples/saxophone-64.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 65,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "F4",
+          "sha256": "ffef4fcc578945960c4370c29154a2ea936f6738fd2968ab3e709ee388cb01af",
+          "url": "/ear-training-samples/saxophone-65.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 66,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Gb4",
+          "sha256": "6096ebbefedc00bab6a77d29b7dd4137e8af92959cc2f45cdb9193e25efd6ed2",
+          "url": "/ear-training-samples/saxophone-66.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 67,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "G4",
+          "sha256": "a51e92588e8e0714b408d858feae7fd2ef4f335c1db3bece26d2d0a4f10507ed",
+          "url": "/ear-training-samples/saxophone-67.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 68,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Ab4",
+          "sha256": "d04b9a8ce2af438ce0ae63e3dca1f58a6be6f10b3f00089772fe85b31ffa92c2",
+          "url": "/ear-training-samples/saxophone-68.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 69,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "A4",
+          "sha256": "58173cd889fdeb5b948f15b49fe3a9cbfb17c1acd9ad6b217c96803b5e7519d0",
+          "url": "/ear-training-samples/saxophone-69.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 70,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Bb4",
+          "sha256": "3d703db7bcc0ab9268e67472b10dc249c161e0f75dd86bf153fa38049bc838ef",
+          "url": "/ear-training-samples/saxophone-70.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 71,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "B4",
+          "sha256": "bf2822e2f6d5f99395cd953d7e84bcf1f1bf88845626d05c04dde7fa9e188ea1",
+          "url": "/ear-training-samples/saxophone-71.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 72,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "C5",
+          "sha256": "1aed556973313bebb45d0ed056c1d08a05cb8631f419b130ea2b04b47df63aec",
+          "url": "/ear-training-samples/saxophone-72.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 73,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Db5",
+          "sha256": "0fc74621dcf0c3b1c9a43dcdca4e3a7b587f2714b05673378c6d66a25f3d0134",
+          "url": "/ear-training-samples/saxophone-73.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 74,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "D5",
+          "sha256": "4e4b43dfce0b0990cade6303eca9eca9f1e1d4c84eb9cae6fa8f62dee01d5cc0",
+          "url": "/ear-training-samples/saxophone-74.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 75,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Eb5",
+          "sha256": "5e8bc490ea806eecf37d3c8cc367d3ce1fd295f659895f63b0c8b421134ccb17",
+          "url": "/ear-training-samples/saxophone-75.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 76,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "E5",
+          "sha256": "bcb5a2f2a20739413bbce40a23199a66e8422212977cef279e9cb465d7fc3267",
+          "url": "/ear-training-samples/saxophone-76.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 77,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "F5",
+          "sha256": "ec6f36e698b857497345c65342531de1f4de1cb8d70fb6296062945223237ddb",
+          "url": "/ear-training-samples/saxophone-77.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 78,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Gb5",
+          "sha256": "a5afd78b1074cf3789952a9b9997f61fd7beb2a9ce452461868250f7deeb55b9",
+          "url": "/ear-training-samples/saxophone-78.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 79,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "G5",
+          "sha256": "cf5a84ace3235a3cde5e6b33b9a6ec80f8a5f2c790df8f501d27c53c3bdb4a28",
+          "url": "/ear-training-samples/saxophone-79.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 80,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Ab5",
+          "sha256": "32950872832a0516805b7a998eb89889d44e9b4bf499558bb2eaa30f9e24776e",
+          "url": "/ear-training-samples/saxophone-80.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 81,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "A5",
+          "sha256": "76eaa96e97195e8634cfd77e6cb85bbbe7febf3599eb1bd000f7cc35dc2c5ac3",
+          "url": "/ear-training-samples/saxophone-81.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 82,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "Bb5",
+          "sha256": "fe8550f0e1a1c4c2d3ee9ead2fa0448bf03bba0c94307f23abebb39339d17278",
+          "url": "/ear-training-samples/saxophone-82.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 83,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "B5",
+          "sha256": "87ced4f62ef87005e55a2eccffd55da5eb4deefe051c77eabf35f1d9bce53fd3",
+          "url": "/ear-training-samples/saxophone-83.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        },
+        {
+          "sound": "saxophone",
+          "rootMidi": 84,
+          "sourceUrl": "https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM/alto_sax-mp3.js",
+          "sourceKey": "C6",
+          "sha256": "73c5cc47b036deb27c3fd46f5e44c32d64ab4aac6022c76727583b141680a086",
+          "url": "/ear-training-samples/saxophone-84.mp3",
+          "loopStart": 0.6,
+          "loopEnd": 1
+        }
+      ],
+      "license": "CC-BY-3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/us/",
+      "provenance": "https://github.com/gleitz/midi-js-soundfonts/tree/044fab8e1456bfafc5776e86dfd6bb8697149aef/FluidR3_GM"
+    }
+  },
+  "bundle": {
+    "url": "/ear-training-samples.tar.gz",
+    "sha256": "728ce84082cec355066f1d143133c19a77d595806fb5a00ae2699b62fc2ee77a",
+    "uncompressedBytes": 1913856,
+    "uncompressedSha256": "0c171cf411735aa6ef80e26ad49d01459c19ebefe2c82a796b44e7c6241fcd71",
+    "entryCount": 76,
+    "notices": {
+      "ATTRIBUTION.txt": "86f2433ca5f081711bcad8300662108b75f18deb6c4a9b1b0b74ba9d199f3223",
+      "LICENSE.txt": "df36d89de58066f49fa9b81f4290ea409adbbdd9d69c620359efbdc8bccaac3c"
+    }
+  }
+}

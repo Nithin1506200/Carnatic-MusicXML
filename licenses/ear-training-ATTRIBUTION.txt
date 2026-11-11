@@ -1,0 +1,29 @@
+Audio samples used by Swara Adhyaaya Ear Training
+
+This application uses FluidR3 GM acoustic grand piano and alto saxophone
+samples by Frank Wen, converted and packaged for MIDI.js by gleitz and
+contributors. The upstream package identifies FluidR3 GM as licensed under
+Creative Commons Attribution 3.0 United States (CC BY 3.0 US).
+
+Work: FluidR3 GM / MIDI.js Soundfonts
+Creator: Frank Wen
+Packaging: gleitz and MIDI.js Soundfonts contributors
+License: https://creativecommons.org/licenses/by/3.0/us/
+Full license: LICENSE.txt inside the audio archive, and CC-BY-3.0-US.txt here.
+Source: https://github.com/gleitz/midi-js-soundfonts
+Pinned revision: 044fab8e1456bfafc5776e86dfd6bb8697149aef
+Upstream license declaration:
+https://github.com/gleitz/midi-js-soundfonts/blob/044fab8e1456bfafc5776e86dfd6bb8697149aef/README.md
+
+Use and changes:
+We selected the 37 source MP3 notes from concert MIDI 48 through 84 for each
+instrument, 74 files total. MP3 sample bytes remain unchanged. We packaged
+these files in one gzip-compressed TAR archive. During playback the application
+retains the sampled attack, phase-matches the sustain loop within the source's
+0.6–1.0 second region, and applies a 20 ms in-memory crossfade. Piano and
+saxophone holds use sampled sustain loops rather than unlooped natural decay.
+No endorsement by the creators or packagers is implied.
+
+The audio license applies to the samples, not automatically to application code.
+License text source:
+https://raw.githubusercontent.com/spdx/license-list-data/main/text/CC-BY-3.0-US.txt
