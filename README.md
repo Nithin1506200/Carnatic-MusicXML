@@ -71,7 +71,11 @@ and E-flat alto written pitches over the saxophone range Bb3–F#6; switch to
 Concert pitch when needed. With no
 key/scale selected, each exercise chooses a compatible random key and scale.
 The staff stays on one horizontal line, with local scrolling for long phrases.
-Settings sit below the staff in a compact tabbed panel.
+Settings sit below the staff in a compact tabbed panel. For saxophone, keys are
+selected in written pitch: G major displays a G-major staff and sounds concert
+B-flat major. Selecting saxophone restores alto written view; the optional
+concert view changes the displayed staff without changing the chosen sounding
+exercise. Key-signature accidentals are carried correctly within each bar.
 
 Generated phrases offer connected melodic movement with adjustable variation,
 a maximum leap, chord guidance, and optional resolved chromaticism. The

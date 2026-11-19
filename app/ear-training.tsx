@@ -426,6 +426,7 @@ export default function EarTraining({
       </option>
     ),
   );
+  const keyInputView = settings.sound === "saxophone" ? "alto-eb" : "concert";
   const isLong = settings.exerciseMode === "long-tone";
   const isRoutine = isLong && settings.longTone.practice === "routine";
   const isPhrase = settings.exerciseMode === "phrase";
@@ -577,6 +578,20 @@ export default function EarTraining({
                     : "E-flat alto written pitch"}
                 </span>
               </div>
+              {settings.sound === "saxophone" &&
+                (state.exercise || settings.keyScales.length > 0) && (
+                  <p className="ear-training-panel-note">
+                    {(state.exercise
+                      ? [state.exercise.keyScale]
+                      : settings.keyScales
+                    )
+                      .map(
+                        (key) =>
+                          `${keyLabel(key, "alto-eb")} written → ${keyLabel(key, "concert")} sounding`,
+                      )
+                      .join(" · ")}
+                  </p>
+                )}
               {state.exercise?.melody && (
                 <div className="ear-training-melody-context">
                   <span>
@@ -939,7 +954,14 @@ export default function EarTraining({
                       <select
                         value={settings.sound}
                         onChange={(e) =>
-                          update("sound", e.target.value as Settings["sound"])
+                          setSettings((current) => ({
+                            ...current,
+                            sound: e.target.value as Settings["sound"],
+                            pitchView:
+                              e.target.value === "saxophone"
+                                ? "alto-eb"
+                                : "concert",
+                          }))
                         }
                       >
                         <option value="piano">Piano</option>
@@ -1186,7 +1208,7 @@ export default function EarTraining({
                           <button
                             type="button"
                             key={`${key.tonicPc}-${key.scaleId}`}
-                            aria-label={`Remove ${keyLabel(key, settings.pitchView)}`}
+                            aria-label={`Remove ${keyLabel(key, keyInputView)}`}
                             onClick={() =>
                               update(
                                 "keyScales",
@@ -1196,23 +1218,26 @@ export default function EarTraining({
                               )
                             }
                           >
-                            {keyLabel(key, settings.pitchView)} ×
+                            {keyLabel(key, keyInputView)} ×
                           </button>
                         ))}
                       </div>
                       <div className="ear-training-fields">
                         <label>
-                          Key
+                          Key (
+                          {keyInputView === "alto-eb"
+                            ? "alto written"
+                            : "concert"}
+                          )
                           <select
                             value={
-                              (keyRoot +
-                                (settings.pitchView === "alto-eb" ? 9 : 0)) %
+                              (keyRoot + (keyInputView === "alto-eb" ? 9 : 0)) %
                               12
                             }
                             onChange={(e) =>
                               setKeyRoot(
                                 (Number(e.target.value) -
-                                  (settings.pitchView === "alto-eb" ? 9 : 0) +
+                                  (keyInputView === "alto-eb" ? 9 : 0) +
                                   12) %
                                   12,
                               )

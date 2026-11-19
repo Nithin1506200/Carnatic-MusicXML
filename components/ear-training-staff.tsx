@@ -20,6 +20,7 @@ import {
 
 import {
   engravingFragments,
+  planAccidentals,
   projectStaffEvents,
   vexDuration,
   type StaffFragment,
@@ -75,6 +76,16 @@ export default function EarTrainingStaff({
     try {
       const fragments = engravingFragments(
         projectStaffEvents(exercise, revealed, firstNoteHint, targetNoteIndex),
+      );
+      const accidentalPlan = planAccidentals(
+        fragments,
+        exercise.keyScale,
+        pitchView,
+      );
+      const accidentals = new Map(
+        fragments.map(
+          (fragment, index) => [fragment, accidentalPlan[index]] as const,
+        ),
       );
       const bars = [...new Set(fragments.map((f) => f.bar))];
       // Keep every measure on one system; scroll the staff rather than wrap it.
@@ -132,10 +143,8 @@ export default function EarTrainingStaff({
               ...vexDuration(fragment),
             });
             if (fragment.dotted) Dot.buildAndAttach([note]);
-            if (pitch && pitch.accidental)
-              note.addModifier(new Accidental(pitch.accidental), 0);
-            // Include naturals explicitly so raised/minor/chromatic tones are unambiguous.
-            else if (pitch) note.addModifier(new Accidental("n"), 0);
+            const accidental = accidentals.get(fragment);
+            if (accidental) note.addModifier(new Accidental(accidental), 0);
             if (pitch && noteNames && fragment.onsetTicks === event.onsetTicks)
               note.addModifier(
                 new Annotation(pitch.name).setFont("Arial", 12),

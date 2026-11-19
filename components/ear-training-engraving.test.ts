@@ -4,6 +4,7 @@ import {
   engravingFragments,
   projectStaffEvents,
   vexDuration,
+  planAccidentals,
 } from "./ear-training-engraving";
 import {
   DEFAULT_SETTINGS,
@@ -109,4 +110,120 @@ it("VexFlow receives dotted duration ticks as well as the visible dot", () => {
       ).toBe(durationTicks);
     }
   }
+});
+
+describe("key-signature-aware accidental engraving", () => {
+  const key = { tonicPc: 10, scaleId: "major" } as const;
+  const events = (midis: number[], spacing = 240) =>
+    midis.map((midi, noteIndex) => ({
+      kind: "note" as const,
+      midi,
+      noteIndex,
+      onsetTicks: noteIndex * spacing,
+      durationTicks: spacing,
+    }));
+
+  it("engraves written G major without redundant sharps or naturals", () => {
+    const source = events([58, 60, 62, 63, 65, 67, 69, 70]);
+    const before = JSON.stringify(source);
+    expect(planAccidentals(engravingFragments(source), key, "alto-eb")).toEqual(
+      Array(8).fill(null),
+    );
+    expect(JSON.stringify(source)).toBe(before);
+  });
+
+  it("cancels and restores F sharp only when the written pitch changes", () => {
+    const fragments = engravingFragments(events([69, 68, 68, 69, 69]));
+    expect(planAccidentals(fragments, key, "alto-eb")).toEqual([
+      null,
+      "n",
+      null,
+      "#",
+      null,
+    ]);
+  });
+
+  it("resets accidental carry at barlines and treats octaves independently", () => {
+    expect(
+      planAccidentals(
+        engravingFragments(events([69, 68, 69, 68, 69, 68], 480)),
+        key,
+        "alto-eb",
+      ),
+    ).toEqual([null, "n", "#", "n", null, "n"]);
+    expect(
+      planAccidentals(
+        engravingFragments(events([68, 56, 69, 57], 480)),
+        key,
+        "alto-eb",
+      ),
+    ).toEqual(["n", "n", "#", "#"]);
+  });
+
+  it("suppresses accidental glyphs on ties but restores them on a new attack", () => {
+    const fragments = engravingFragments([
+      {
+        kind: "note",
+        midi: 68,
+        noteIndex: 0,
+        onsetTicks: 1440,
+        durationTicks: 960,
+      },
+      {
+        kind: "note",
+        midi: 68,
+        noteIndex: 1,
+        onsetTicks: 2400,
+        durationTicks: 240,
+      },
+    ]);
+    expect(fragments.map((f) => f.bar)).toEqual([0, 1, 1]);
+    expect(planAccidentals(fragments, key, "alto-eb")).toEqual([
+      "n",
+      null,
+      "n",
+    ]);
+  });
+
+  it("matches every canonical major and minor key signature in both pitch views", () => {
+    for (const scaleId of ["major", "natural-minor"] as const) {
+      const offsets =
+        scaleId === "major"
+          ? [0, 2, 4, 5, 7, 9, 11, 12]
+          : [0, 2, 3, 5, 7, 8, 10, 12];
+      for (let tonicPc = 0; tonicPc < 12; tonicPc++) {
+        for (const view of ["concert", "alto-eb"] as const) {
+          const source = events(offsets.map((offset) => 48 + tonicPc + offset));
+          expect(
+            planAccidentals(
+              engravingFragments(source),
+              { tonicPc, scaleId },
+              view,
+            ),
+          ).toEqual(Array(8).fill(null));
+        }
+      }
+    }
+  });
+
+  it("engraves a double sharp and then restores the signature sharp", () => {
+    const source = events([67, 66, 66]);
+    expect(
+      planAccidentals(
+        engravingFragments(source),
+        { tonicPc: 8, scaleId: "harmonic-minor" },
+        "concert",
+      ),
+    ).toEqual(["##", "#", null]);
+  });
+
+  it("uses flats and natural cancellations in concert Bb major", () => {
+    expect(
+      planAccidentals(
+        engravingFragments(events([70, 71, 70, 70])),
+        key,
+        "concert",
+      ),
+    ).toEqual([null, "n", "b", null]);
+  });
 });

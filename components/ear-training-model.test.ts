@@ -236,6 +236,72 @@ describe("pitch display", () => {
     expect(parseNoteName("Bb3", "alto-eb")).toBe(49);
   });
 });
+describe("written G major on E-flat alto saxophone", () => {
+  const concertKey = { tonicPc: 10, scaleId: "major" } as const;
+  const concertPitches = [58, 60, 62, 63, 65, 67, 69, 70];
+  const writtenNames = ["G4", "A4", "B4", "C5", "D5", "E5", "F#5", "G5"];
+
+  it("spells concert Bb major as written G major and exactly inverts every note", () => {
+    expect(keySignature(concertKey, "alto-eb")).toBe("G");
+    expect(keySignature(concertKey, "concert")).toBe("Bb");
+    expect(
+      concertPitches.map((p) => spellPitch(p, concertKey, "alto-eb").name),
+    ).toEqual(writtenNames);
+    expect(writtenNames.map((name) => parseNoteName(name, "alto-eb"))).toEqual(
+      concertPitches,
+    );
+    expect(parseNoteName("G4", "alto-eb")).toBe(58);
+    expect(concertPitches).toEqual([58, 60, 62, 63, 65, 67, 69, 70]);
+  });
+
+  it("keeps generated audio in concert Bb when either display or sound changes", () => {
+    const scalePattern = {
+      id: "custom_alto_g_scale",
+      name: "Written G scale",
+      degrees: [1, 2, 3, 4, 5, 6, 7, 8],
+      rhythmId: "automatic",
+    };
+    const s = settings({
+      sound: "saxophone",
+      pitchView: "alto-eb",
+      keyScales: [concertKey],
+      lowMidi: 58,
+      highMidi: 70,
+      noteCount: 8,
+      generationMode: "patterns",
+      rhythmMode: "even",
+      enabledPatternIds: [scalePattern.id],
+    });
+    const sax = generateExercise(s, [scalePattern], () => 0, 801);
+    const originalEvents = JSON.stringify(sax.events);
+    expect(sax.keyScale).toEqual(concertKey);
+    expect(
+      sax.events.filter((e) => e.kind === "note").map((e) => e.midi),
+    ).toEqual(concertPitches);
+    expect(
+      sax.events
+        .filter((e) => e.kind === "note")
+        .map((e) => spellPitch(e.midi, sax.keyScale, "alto-eb").name),
+    ).toEqual(writtenNames);
+    for (const sound of ["piano", "saxophone"] as const) {
+      for (const pitchView of ["concert", "alto-eb"] as const) {
+        const exercise = generateExercise(
+          { ...s, sound, pitchView },
+          [scalePattern],
+          () => 0,
+          802,
+        );
+        expect(exercise.events).toEqual(sax.events);
+        expect(exercise.keyScale).toEqual(concertKey);
+      }
+    }
+    expect(JSON.stringify(sax.events)).toBe(originalEvents);
+    expect(sax.snapshot.pitchView).toBe("alto-eb");
+    expect(sax.snapshot.lowMidi).toBe(58);
+    expect(sax.snapshot.highMidi).toBe(70);
+  });
+});
+
 describe("manual long tones", () => {
   it("has preparation, one continuous attack, and recovery at the defaults", () => {
     const e = generateExercise(

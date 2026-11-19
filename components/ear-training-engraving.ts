@@ -1,3 +1,9 @@
+import {
+  keySignature,
+  spellPitch,
+  type KeyScale,
+  type PitchView,
+} from "./ear-training-model";
 import type { Exercise, ExerciseEvent } from "./ear-training-model";
 export interface StaffFragment {
   event: ExerciseEvent;
@@ -74,4 +80,74 @@ export function vexDuration(fragment: StaffFragment) {
     duration: fragment.duration + (fragment.event.kind === "rest" ? "r" : ""),
     dots: fragment.dotted ? 1 : 0,
   };
+}
+
+/** Engrave only accidentals that differ from the signature or earlier bar state. */
+export function planAccidentals(
+  fragments: readonly StaffFragment[],
+  key: KeyScale,
+  view: PitchView,
+): (string | null)[] {
+  const signature = keySignature(key, view);
+  const major = [
+    "Cb",
+    "Gb",
+    "Db",
+    "Ab",
+    "Eb",
+    "Bb",
+    "F",
+    "C",
+    "G",
+    "D",
+    "A",
+    "E",
+    "B",
+    "F#",
+    "C#",
+  ];
+  const minor = [
+    "Abm",
+    "Ebm",
+    "Bbm",
+    "Fm",
+    "Cm",
+    "Gm",
+    "Dm",
+    "Am",
+    "Em",
+    "Bm",
+    "F#m",
+    "C#m",
+    "G#m",
+    "D#m",
+    "A#m",
+  ];
+  const index = (signature.endsWith("m") ? minor : major).indexOf(signature);
+  if (index < 0) throw new Error(`Unsupported key signature: ${signature}`);
+  const fifths = index - 7;
+  const defaults = new Map<string, string>();
+  for (const letter of (fifths < 0
+    ? ["B", "E", "A", "D", "G", "C", "F"]
+    : ["F", "C", "G", "D", "A", "E", "B"]
+  ).slice(0, Math.abs(fifths)))
+    defaults.set(letter, fifths < 0 ? "b" : "#");
+  const state = new Map<string, string>();
+  let bar = -1;
+  return fragments.map((fragment, i) => {
+    if (fragment.bar !== bar) {
+      state.clear();
+      bar = fragment.bar;
+    }
+    const event = fragment.event;
+    if (event.kind !== "note") return null;
+    const previous = fragments[i - 1]?.event;
+    if (previous?.kind === "note" && previous.noteIndex === event.noteIndex)
+      return null;
+    const pitch = spellPitch(event.midi, key, view);
+    const position = `${pitch.letter}/${pitch.octave}`;
+    const current = state.get(position) ?? defaults.get(pitch.letter) ?? "";
+    state.set(position, pitch.accidental);
+    return current === pitch.accidental ? null : pitch.accidental || "n";
+  });
 }
